@@ -1,6 +1,13 @@
+#ifndef STRUCT_H
+#define STRUCT_H
+
 struct Player
 {
-    int player_color;
-    int player_identity;
+    int color;
+    int identity;
     int difficulty;
 };
+
+typedef struct Player Player;
+
+#endif

@@ -1,3 +1,11 @@
-#ifndef struct.h
-#include struct.h
+#include"struct.h"
+#include"constant.h"
+#include"GameENV.h"
+
+#ifndef AI_H
+#define AI_H
+
+int ai_play(Player player);
+void env_reset();
+
 #endif

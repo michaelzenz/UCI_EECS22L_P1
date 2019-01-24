@@ -1,0 +1,1 @@
+/usr/bin/gcc  -g   CMakeFiles/chess.dir/src/AI.c.o CMakeFiles/chess.dir/src/GameENV.c.o CMakeFiles/chess.dir/src/main.c.o CMakeFiles/chess.dir/src/GameGUI.c.o  -o ../bin/chess  -L/home/michaelz/Desktop/projects/courses/22L/chess/lib -rdynamic -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -Wl,-rpath,/home/michaelz/Desktop/projects/courses/22L/chess/lib 
