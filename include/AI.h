@@ -1,6 +1,6 @@
 #include"struct.h"
 #include"constant.h"
-#include"GameENV.h"
+#include"ENV.h"
 
 #ifndef AI_H
 #define AI_H

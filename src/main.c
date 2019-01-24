@@ -1,5 +1,5 @@
 #include"AI.h"
-#include"GameGUI.h"
+#include"GUI.h"
 #include"struct.h"
 
 #include"constant.h"

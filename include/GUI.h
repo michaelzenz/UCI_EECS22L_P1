@@ -1,6 +1,6 @@
 
 #include"SDL/SDL.h"
-#include"GameENV.h"
+#include"ENV.h"
 #include"struct.h"
 #include"constant.h"
 #include"stack.h"
