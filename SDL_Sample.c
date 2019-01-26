@@ -45,77 +45,14 @@ int main(int argc, char *argv[])
 	//Convert the surface to the appropriate display format
 	image = SDL_DisplayFormat(temp);
 	
-	//Release the temporary surface
-	SDL_FreeSurface(temp);
-	
-	//Construct the source rectangle for our blit
-	src.x = 0;
-	src.y = 0;
-	src.w = image->w;	//Use image->w to display the entire width of the image
-	src.h = image->h;	//Use image->h to display the entire height of the image
-	
-	//Construct the destination rectangle for our blit
-	dest.x = 0;		//Display the image at the (X,Y) coordinates (0,0)
-	dest.y = 0;
-	dest.w = image->w;	//Ensure the destination is large enough for the image's entire width/height
-	dest.h = image->h;
-	
-	for(x=0; x<8; x++)	// print 8 smileys at top row
-	{
-		dest.x = x*image->w;
-		//Blit the image to the backbuffer
-		SDL_BlitSurface(image, &src, screen, &dest);
-	
-		//Update the window at the modified region
-		SDL_UpdateRect(screen, dest.x, dest.y, dest.w, dest.h);
-	}
-	
-#ifdef WAIT
-	//Wait for 5s so we can see the image
-	SDL_Delay(5000);
-#endif
-
-#ifdef EVENTS
-	//Process events
-	Running = 1;
-	printf("Running!\n");
-	while(Running && SDL_WaitEvent(&event))
-	{
-		printf("Received event.type = %d\n", event.type);
-		switch(event.type)
-		{ /* Process the appropriate event type */
-			case SDL_KEYDOWN:  /* Handle a KEYDOWN event */
-			{	printf("Oh! Key pressed!\n");
-				break;
-			}
-			case SDL_MOUSEBUTTONDOWN:
-			{	printf("Oh! Mouse button %d pressed!\n",
-					event.button.button);
-				printf("Position is x=%d, y=%d.\n",
-					event.button.x, event.button.y);
-				// put a smiley there!
-				dest.x = event.button.x;
-				dest.y = event.button.y;
-				SDL_BlitSurface(image, &src, screen, &dest);
-				SDL_UpdateRect(screen, dest.x, dest.y, dest.w, dest.h);
-				break;
-			}
-			case SDL_QUIT:
-			{	printf("Quit event received!\n");
-				Running = 0;
-				break;
-			}
-			default: /* ignore any other events */
-			{	printf("Oops, unknown event!\n");
-				break;
-			}
-		} /* hctiws */
-	} /* elihw */
-#endif
-
-	//Release the surface
-	SDL_FreeSurface(image);
-	
-	//Return success!
 	return 0;
+
+	/****************/
+	Modify here
+	/****************/
+/****************/
+/****************/
+/****************/
+/****************/
+/****************/
 }
