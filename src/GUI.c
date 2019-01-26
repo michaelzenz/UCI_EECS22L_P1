@@ -1,6 +1,6 @@
 
 #include"SDL/SDL.h"
-#include"GameGUI.h"
+#include"GUI.h"
 
 #define GameMode_HvC 0
 #define GameMode_HvH 1

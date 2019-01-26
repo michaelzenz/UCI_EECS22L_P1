@@ -1,4 +1,9 @@
+<<<<<<< HEAD:src/GameENV.c
 #include"GameENV.h"
+=======
+#include"ENV.h"
+#include"stack.h"
+>>>>>>> f1507fa9a2ab3949b0feb1402412c6f8ae803b3c:src/ENV.c
 
 int playerTurn=1;
 
