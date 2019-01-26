@@ -1,4 +1,4 @@
-
+//Linked list will be used to implement this stack
 
 void stack_push(char* log)
 {
