@@ -56,7 +56,7 @@ void gui_quit_window(GameState gameState)
 
 int gui_main_menu()
 {
-
+	
 }
 
 void gui_player_HvC_menu(Player* player_arr)

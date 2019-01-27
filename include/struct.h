@@ -21,7 +21,8 @@ typedef struct GameState
     int playerTurn;
     Castling castling_arr[2];
     int board[8*8];
-    int scores;
 } GameState;
+
+typedef unsigned char uchar;
 
 #endif

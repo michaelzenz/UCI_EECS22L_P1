@@ -1,10 +1,5 @@
-<<<<<<< HEAD:src/GameENV.c
-#include"GameENV.h"
-=======
 #include"ENV.h"
 #include"stack.h"
->>>>>>> f1507fa9a2ab3949b0feb1402412c6f8ae803b3c:src/ENV.c
-
 int playerTurn=1;
 
 
@@ -13,7 +8,6 @@ GameState env_init()
 {
     GameState gameState;
     gameState.playerTurn=WHITE;
-    gameState.scores=0;
     gameState.castling_arr[PLAYER1].Left=gameState.castling_arr[PLAYER1].Right=0;
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
     return gameState;
@@ -25,6 +19,59 @@ void env_play(GameState gameState, Player player)
 
 }
 
+uchar env_check_end(GameState gameState, Player player)
+{
+    int K=-1;
+    vector legal_moves;
+    int pos=-1;
+    uchar threatened=1;
+    for(int y=0;y<8;y++)
+    {
+        for(int x=0;x<8;x++)
+        {
+            pos=y*8+x;
+            if(gameState.board[pos]*gameState.playerTurn>0)
+            {
+                legal_moves=env_get_legal_moves(gameState,player,pos);
+                for(int i=0;i<legal_moves.count;i++)
+                {
+                    env_play(gameState,player,pos,vector_get(&legal_moves,i));
+                    threatened=env_is_threatened(gameState,player);
+                    if(threatened==0)return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+uchar env_is_threatened(GameState gameState,Player player)
+{
+    int pos=-1;
+    vector legal_moves;
+    uchar threatened_area[8*8];
+    memset(threatened_area,0,sizeof(uchar)*8*8);
+    int K=-1;
+    for(int y=0;y<8;y++)
+    {
+        for(int x=0;x<8;x++)
+        {
+            pos=y*8+x;
+            if(gameState.board[pos]*gameState.playerTurn*-1==KING) K=pos;
+            else if(gameState.board[pos]*gameState.playerTurn>0)
+            {
+                legal_moves=env_get_legal_moves(gameState,player,pos);
+                for(int i=0;i<legal_moves.count;i++)
+                {
+                    threatened_area[vector_get(&legal_moves,pos)]=1;
+                }
+            }
+        }
+    }
+    if(threatened_area[k]==1)return 1;
+    else return 0;
+}
+
 vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
 {
     vector legal_moves;
@@ -34,7 +81,7 @@ vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
             env_get_legal_pawn(gameState,start_pt);
             break;
     }
-
+    
 }
 
 vector env_get_legal_pawn(GameState gameState, int start_pt)
