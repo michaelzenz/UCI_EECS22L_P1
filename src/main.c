@@ -1,40 +1,44 @@
 #include"AI.h"
-#include"GameGUI.h"
+#include"GUI.h"
+#include"struct.h"
 
-#define HUMAN 1
-#define COMPUTER -1
+#include"constant.h"
 
 int GameMode=0;
 
-int play(Player player)
+int play(GameState gameState,Player player)
 {
     int quit;
-    if(player.identity==HUMAN)
-        quit=gui_play();
-    else
-        quit=ai_play();
+    if(player.identity==HUMAN) quit=gui_play(gameState,player);
+    else quit=ai_play(gameState,player);
+    return quit;
 }
 
-int Game()
+void Game()
 {
-    Player player1,player2;
+    Player player_arr[2];
 
-    gui_init_video();
+    gui_init(player_arr);
+    Player player1=player_arr[0],player2=player_arr[1];
+    player1.id=PLAYER1;
+    player2.id=PLAYER2;
 
-	//gui_example();
-
-    gui_init(&player1,&player2);
+    GameState gameState=env_init();
 
     while(1)
     {
         int quit;
-        if(playerTurn==player1.color)
-            quit=play(player1);
-        else
-            quit=play(player2);
+        if(gameState.playerTurn==player1.color)
+        {
+            quit=play(gameState,player1);
+        }
+        else quit=play(gameState,player2);
         if(quit)
+        {
+            gui_quit_window(quit);
             return;
-        gui_refresh();
+        }
+        else gui_refresh(gameState,player_arr);
     }
 	
 }
@@ -43,10 +47,7 @@ int main(int argc, char *argv[])
 {
     while(1)
     {
-        int exit=Game();
-        if(exit)
-            break;
-        Reset();
+        Game();
     }
     
     return 0;

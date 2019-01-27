@@ -1,49 +1,40 @@
+// SDL_DisplaySmiley.c: Extended code with event processing and a smiley!  ;-)
+// RD, 01/17/13.
 
-#include"SDL/SDL.h"
-#include"GameGUI.h"
+#include "stdlib.h"
+#include "SDL/SDL.h"
 
-#define GameMode_HvC 0
-#define GameMode_HvH 1
-#define GameMode_CvC 2
+//#define WAIT		// wait some time to show the image
+#define EVENTS		// process events and wait for window close
 
-int gui_init_video()
+int main(int argc, char *argv[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+	SDL_Surface *screen;	//This pointer will reference the backbuffer
+	SDL_Surface *image;	//This pointer will reference our bitmap sprite
+	SDL_Surface *temp;	//This pointer will temporarily reference our bitmap sprite
+	SDL_Rect src, dest;	//These rectangles will describe the source and destination regions of our blit
+	int x;
+#ifdef EVENTS
+	SDL_Event event;	/* Event structure */
+	int Running;
+#endif
+
+	//We must first initialize the SDL video component, and check for success
+	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("Unable to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
-
-	gui_screen = SDL_SetVideoMode(320, 240, 32, SDL_ANYFORMAT /*SDL_DOUBLEBUF | SDL_FULLSCREEN*/);
-	if (gui_screen == NULL) {
+	
+	//When this program exits, SDL_Quit must be called
+	atexit(SDL_Quit);
+	
+	//Set the video mode to a window of size 320 by 240 pixels with 32 bits per pixel
+	screen = SDL_SetVideoMode(320, 240, 32, SDL_ANYFORMAT /*SDL_DOUBLEBUF | SDL_FULLSCREEN*/);
+	if (screen == NULL) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		return 1;
 	}
-	atexit(SDL_Quit);
-}
-
-int gui_init()
-{
-	Player player_arr[2];
-	gui_init_video();
-	int GameMode=gui_main_menu();
-	switch(GameMode)
-	{
-		case GameMode_HvC:
-			
-			break;
-	}
-	gui_gameplay_window();
-}
-
-int gui_example()
-{
-	SDL_Surface *image;	//This pointer will reference our bitmap sprite
-    SDL_Surface *temp;	//This pointer will temporarily reference our bitmap sprite
-	SDL_Rect src, dest;	//These rectangles will describe the source and destination regions of our blit
-	int x;
-	SDL_Event event;	/* Event structure */
-	int Running;
-
+	
 	//Load the bitmap into a temporary surface, and check for success
 	temp = SDL_LoadBMP("res/smiley.bmp");
 	if (temp == NULL) {
@@ -73,17 +64,18 @@ int gui_example()
 	{
 		dest.x = x*image->w;
 		//Blit the image to the backbuffer
-		SDL_BlitSurface(image, &src, gui_screen, &dest);
+		SDL_BlitSurface(image, &src, screen, &dest);
 	
 		//Update the window at the modified region
-		SDL_UpdateRect(gui_screen, dest.x, dest.y, dest.w, dest.h);
+		SDL_UpdateRect(screen, dest.x, dest.y, dest.w, dest.h);
 	}
 	
+#ifdef WAIT
+	//Wait for 5s so we can see the image
+	SDL_Delay(5000);
+#endif
 
-
-
-
-
+#ifdef EVENTS
 	//Process events
 	Running = 1;
 	printf("Running!\n");
@@ -104,8 +96,8 @@ int gui_example()
 				// put a smiley there!
 				dest.x = event.button.x;
 				dest.y = event.button.y;
-				SDL_BlitSurface(image, &src, gui_screen, &dest);
-				SDL_UpdateRect(gui_screen, dest.x, dest.y, dest.w, dest.h);
+				SDL_BlitSurface(image, &src, screen, &dest);
+				SDL_UpdateRect(screen, dest.x, dest.y, dest.w, dest.h);
 				break;
 			}
 			case SDL_QUIT:
@@ -119,11 +111,11 @@ int gui_example()
 			}
 		} /* hctiws */
 	} /* elihw */
-
+#endif
 
 	//Release the surface
 	SDL_FreeSurface(image);
+	
+	//Return success!
+	return 0;
 }
-
-
-
