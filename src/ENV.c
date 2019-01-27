@@ -1,6 +1,7 @@
+
 #include"ENV.h"
 #include"stack.h"
-int playerTurn=1;
+
 
 
 
@@ -13,11 +14,19 @@ GameState env_init()
     return gameState;
 }
 
-void env_play(GameState gameState, Player player)
+void env_play(GameState* gameState, Player player, int start_pt, int end_pt)
 {
     if(gameState.playerTurn!=player.id) return;
-
+//    int sx=start_pt%8, sy=start_pt/8;
+//    int ex=end_pt%8, ey=end_pt/8;
+    int s_piece=gameState.board[start_pt];
+    int e_piece=0;
+    if(gameState.board[end_pt]!=0) e_piece=gameState.board[end_pt];
+    gameState[start_pt]=0;
+    gameState[end_pt]=s_piece;
+    
 }
+
 
 uchar env_check_end(GameState gameState, Player player)
 {
@@ -81,7 +90,7 @@ vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
             env_get_legal_pawn(gameState,start_pt);
             break;
     }
-    
+
 }
 
 vector env_get_legal_pawn(GameState gameState, int start_pt)
