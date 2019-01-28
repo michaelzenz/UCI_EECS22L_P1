@@ -9,6 +9,33 @@
 #ifndef GAMEGUI_H
 #define GAMEGUI_H
 
+#define MAX_MSGLEN  100
+#define SQUARE_SIZE 50
+#define WINDOW_BORDER 10
+#define BOARD_BORDER 10
+#define BOARD_WIDTH  (8*SQUARE_SIZE)
+#define BOARD_HEIGHT (8*SQUARE_SIZE)
+#define WINDOW_WIDTH  (BOARD_WIDTH + 2*BOARD_BORDER)
+#define WINDOW_HEIGHT (BOARD_HEIGHT + 2*BOARD_BORDER)
+
+enum GRID
+{
+        BLACK = 0,
+        WHITE = 1,
+        wKING,
+	wRook,
+	wKnight,
+	wBishop,
+	wQueen,
+	wPawn,
+        bKING,
+	bRook,
+	bKnight,
+	bBishop,
+	bQueen,
+	bPawn
+
+};
 
 
 int gui_init_video();
