@@ -22,6 +22,16 @@ void Game()
     Player player1=player_arr[0],player2=player_arr[1];
     player1.id=PLAYER1;
     player2.id=PLAYER2;
+    int p[8][8];
+    for(int i=0;i<8;i++)
+    {
+        for(int j=0;j<8;j++)
+        {
+            p[i][j]=i+j*8;
+        }
+    }
+    int (*t)[8];
+    t=&p;
 
     GameState gameState=env_init();
 
