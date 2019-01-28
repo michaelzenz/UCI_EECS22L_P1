@@ -9,7 +9,7 @@ extern int playerTurn;
 
 
 GameState env_init();
-void env_play(GameState gameState, Player player);
+void env_play(GameState gameState, Player player, int start_pt, int end_pt);
 vector env_get_legal_moves(GameState gameState, Player player, int start_pt);
 vector env_get_legal_pawn(GameState gameState, int start_pt);
 int env_check_end_game(GameState gameState);

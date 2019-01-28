@@ -20,9 +20,7 @@
 
 enum GRID
 {
-        BLACK = 0,
-        WHITE = 1,
-        wKING,
+    wKING,
 	wRook,
 	wKnight,
 	wBishop,

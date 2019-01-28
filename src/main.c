@@ -30,8 +30,6 @@ void Game()
             p[i][j]=i+j*8;
         }
     }
-    int (*t)[8];
-    t=&p;
 
     GameState gameState=env_init();
 

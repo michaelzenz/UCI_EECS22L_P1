@@ -14,7 +14,7 @@ GameState env_init()
     return gameState;
 }
 
-void env_play(GameState* gameState, Player player, int start_pt, int end_pt)
+void env_play(GameState gameState, Player player, int start_pt, int end_pt)
 {
     if(gameState.playerTurn!=player.id) return;
 //    int sx=start_pt%8, sy=start_pt/8;
@@ -22,8 +22,8 @@ void env_play(GameState* gameState, Player player, int start_pt, int end_pt)
     int s_piece=gameState.board[start_pt];
     int e_piece=0;
     if(gameState.board[end_pt]!=0) e_piece=gameState.board[end_pt];
-    gameState[start_pt]=0;
-    gameState[end_pt]=s_piece;
+    gameState.board[start_pt]=0;
+    gameState.board[end_pt]=s_piece;
     
 }
 
@@ -77,7 +77,7 @@ uchar env_is_threatened(GameState gameState,Player player)
             }
         }
     }
-    if(threatened_area[k]==1)return 1;
+    if(threatened_area[K]==1)return 1;
     else return 0;
 }
 
