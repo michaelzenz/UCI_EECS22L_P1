@@ -25,10 +25,9 @@ GameState env_init()
 
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
-    if(gameState->playerTurn!=player->id) return;
+    if(gameState->playerTurn!=player->color) return;
     int s_piece=gameState->board[start_pt];
-    int e_piece=0;
-    if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
+    int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
@@ -111,7 +110,10 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
     switch(abs(gameState->board[start_pt]))
     {
         case PAWN:
-            env_get_legal_pawn(gameState,start_pt);
+            legal_moves=env_get_legal_pawn(gameState,start_pt);
+            break;
+        case KNIGHT:
+            legal_moves=env_get_legal_knight(gameState,start_pt);
             break;
     }
 
