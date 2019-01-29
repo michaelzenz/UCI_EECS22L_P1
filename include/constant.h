@@ -10,3 +10,9 @@
 #define PAWN 1
 #define PAWN_W 1
 #define PAWN_B -1
+
+#define KNIGHT 2
+#define CASTLE 3
+#define BISHOP 4
+#define QUEEN 5
+#define KING 6
