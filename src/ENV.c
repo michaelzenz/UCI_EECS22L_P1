@@ -144,8 +144,9 @@ void env_get_legal_cross(GameState *gameState, vector *legal_moves, int start_pt
 {
     int x=start_pt%8, y=start_pt/8;
     int playerTurn=gameState->playerTurn;
-
-    for(int i=y+1;i<MIN(y+step+1,8);i++)//iterates through the y in one direction
+    int xMax=MIN(x+step+1,8), xMin=MAX(x-step,0);
+    int yMax=MIN(y+step+1,8), yMin=MAX(y-step,0);
+    for(int i=y+1;i<yMax;i++)//iterates through the y in one direction
     {
         if(gameState->board[i*8+x]==0)
         {
@@ -160,7 +161,7 @@ void env_get_legal_cross(GameState *gameState, vector *legal_moves, int start_pt
             break;
     }
                        
-    for(int i=y-1;i>=MAX(y-step,0);i--)
+    for(int i=y-1;i>=yMin;i--)
     {
         if(gameState->board[i*8+x]==0)
         {
@@ -175,7 +176,7 @@ void env_get_legal_cross(GameState *gameState, vector *legal_moves, int start_pt
             break;
     }
     
-    for(int i=x+1;i<MIN(x+step+1,8);i++)//iterates through the y in one direction
+    for(int i=x+1;i<xMax;i++)//iterates through the y in one direction
     {
         if(gameState->board[y*8+i]==0)
         {
@@ -189,7 +190,7 @@ void env_get_legal_cross(GameState *gameState, vector *legal_moves, int start_pt
         else
             break;
    }
-    for(int i=x-1;i>=MAX(x-step,0);i--)
+    for(int i=x-1;i>=xMin;i--)
     {
         if(gameState->board[y*8+i]==0)
         {
@@ -210,7 +211,9 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
 {
     int x=start_pt%8, y=start_pt/8;
     int playerTurn=gameState->playerTurn;
-    for(int i=y+1,j=x+1 ; i<MIN(y+step+1,8) && j<MIN(x+step+1,8) ; i++, j++)//iterates through the x,y in one direction
+        int xMax=MIN(x+step+1,8), xMin=MAX(x-step,0);
+    int yMax=MIN(y+step+1,8), yMin=MAX(y-step,0);
+    for(int i=y+1,j=x+1 ; i<yMax && j<xMax ; i++, j++)//iterates through the x,y in one direction
     {
         if(gameState->board[i*8+j]==0)
         {
@@ -227,7 +230,7 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
         }
     }
     
-    for(int i=y+1,j=x-1 ; i<MIN(y+step+1,8) && j>=MAX(x-step,0) ; i++, j--)//iterates through the x,y in one direction
+    for(int i=y+1,j=x-1 ; i<yMax && j>=xMin ; i++, j--)//iterates through the x,y in one direction
     {
         if(gameState->board[i*8+j]==0)
         {
@@ -244,7 +247,7 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
         }
    }
 
-    for(int i=y-1,j=x-1 ; i>=MAX(y-step,0) && j>=MAX(x-step,0) ; i--, j--)//iterates through the x,y in one direction
+    for(int i=y-1,j=x-1 ; i>=yMin && j>=xMin ; i--, j--)//iterates through the x,y in one direction
     {
         if(gameState->board[i*8+j]==0)
         {
@@ -261,7 +264,7 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
         }
     }
     
-    for(int i=y-1,j=x+1 ; i>=MAX(y-step,0) && j<MIN(x+step+1,8) ; i--, j++)//iterates through the x,y in one direction
+    for(int i=y-1,j=x+1 ; i>=yMin && j<xMax ; i--, j++)//iterates through the x,y in one direction
     {
         if(gameState->board[i*8+j]==0)
         {
