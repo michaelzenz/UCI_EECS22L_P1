@@ -1,7 +1,6 @@
 #include"AI.h"
 #include"GUI.h"
 #include"struct.h"
-
 #include"constant.h"
 
 int GameMode=0;
@@ -52,10 +51,22 @@ void Game()
 
 int main(int argc, char *argv[])
 {
-    while(1)
-    {
-        Game();
-    }
+    // while(1)
+    // {
+    //     Game();
+    // }
+    char test[70];
+    Move move;
+    move.captured=1;
+    move.captured_pos=1;
+    move.end_pt=1;
+    move.piece=1;
+    move.special_move=1;
+    move.start_pt=1;
+    move2string(test,&move);
+    printf("%s",test);
+    move=string2move(test);
+    
     
     return 0;
 }

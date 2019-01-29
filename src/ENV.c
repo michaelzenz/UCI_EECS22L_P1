@@ -1,8 +1,5 @@
 
 #include"ENV.h"
-#include"stack.h"
-
-
 
 
 GameState env_init()
@@ -11,14 +8,13 @@ GameState env_init()
     gameState.playerTurn=WHITE;
     gameState.castling_arr[PLAYER1].Left=gameState.castling_arr[PLAYER1].Right=0;
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
+    gameState.moves_vector_cnt=0;
     return gameState;
 }
 
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     if(gameState->playerTurn!=player->id) return;
-//    int sx=start_pt%8, sy=start_pt/8;
-//    int ex=end_pt%8, ey=end_pt/8;
     int s_piece=gameState->board[start_pt];
     int e_piece=0;
     if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
@@ -34,6 +30,8 @@ uchar env_check_end(GameState *gameState, Player *player)
     vector legal_moves;
     int pos=-1;
     uchar threatened=1;
+    uchar end=1;
+    GameState check_state;
     for(int y=0;y<8;y++)
     {
         for(int x=0;x<8;x++)
@@ -42,17 +40,21 @@ uchar env_check_end(GameState *gameState, Player *player)
             if(gameState->board[pos]*gameState->playerTurn>0)
             {
                 legal_moves=env_get_legal_moves(gameState,player,pos);
+                gameState->container[gameState->moves_vector_cnt].pos=pos;
+                gameState->container[gameState->moves_vector_cnt].legal_moves=legal_moves;
+                gameState->moves_vector_cnt++;
                 for(int i=0;i<legal_moves.count;i++)
                 {
-
-                    env_play(gameState,player,pos,vector_get(&legal_moves,i));
-                    threatened=env_is_threatened(gameState,player);
-                    if(threatened==0)return 0;
+                    
+                    check_state=env_copy_State(gameState);
+                    env_play(&check_state,player,pos,vector_get(&legal_moves,i));
+                    threatened=env_is_threatened(&check_state,player);
+                    if(threatened==0)end=0;
                 }
             }
         }
     }
-    return 1;
+    return end;
 }
 
 GameState env_copy_State(GameState *gameState)

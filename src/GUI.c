@@ -133,7 +133,7 @@ void gui_player_CvC_menu(Player* player_arr)
 
 int gui_play(GameState *gameState,Player *player)
 {
-
+  
 }
 
 void gui_refresh(GameState *gameState,Player *player_arr)
