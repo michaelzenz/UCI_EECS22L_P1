@@ -22,14 +22,6 @@ void Game()
     Player player1=player_arr[0],player2=player_arr[1];
     player1.id=PLAYER1;
     player2.id=PLAYER2;
-    int p[8][8];
-    for(int i=0;i<8;i++)
-    {
-        for(int j=0;j<8;j++)
-        {
-            p[i][j]=i+j*8;
-        }
-    }
 
     GameState gameState=env_init();
 
@@ -50,14 +42,56 @@ void Game()
 	
 }
 
+void print_board(GameState *gameState)
+{
+    for(int i=0;i<64;i++)
+    {
+        if(i%8==0)printf("\n");
+        printf("%d\t",gameState->board[i]);
+    }
+}
+
+void test_env()
+{
+    GameState gameState=env_init();
+    vector legal_moves1,legal_moves2;
+    Player player1,player2;
+    player1.color=WHITE;
+    player2.color=BLACK;
+    player1.id=0;
+    player2.id=1;
+    printf("player1 is WHITE, player2 is BLACK\n");
+    int start_pt,end_pt;
+    while(1)
+    {
+        print_board(&gameState);
+        if(gameState.playerTurn==player1.color)
+        {
+            printf("\nPlayer1 moves from: ");
+            scanf("%d",&start_pt);
+            printf("to: ");
+            scanf("%d",&end_pt);
+            env_play(&gameState,&player1,start_pt,end_pt);
+
+        }
+        else
+        {
+            printf("\nPlayer2 moves from: ");
+            scanf("%d",&start_pt);
+            printf("to: ");
+            scanf("%d",&end_pt);
+            env_play(&gameState,&player2,start_pt,end_pt);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     gui_init_window(argc,argv);
-    while(1)
-    {
-        Game();
-    }
-    
+    // while(1)
+    //     Game();
+
+    test_env();
     
     return 0;
 }

@@ -15,25 +15,8 @@
 #define BOARD_BORDER 10
 #define BOARD_WIDTH  (8*SQUARE_SIZE)
 #define BOARD_HEIGHT (8*SQUARE_SIZE)
-#define WINDOW_WIDTH  (BOARD_WIDTH + 2*BOARD_BORDER)
-#define WINDOW_HEIGHT (BOARD_HEIGHT + 2*BOARD_BORDER)
-
-enum GRID
-{
-    wKING,
-	wRook,
-	wKnight,
-	wBishop,
-	wQueen,
-	wPawn,
-        bKING,
-	bRook,
-	bKnight,
-	bBishop,
-	bQueen,
-	bPawn
-
-};
+#define WINDOW_WIDTH  960
+#define WINDOW_HEIGHT 540
 
 
 int gui_init_window(int argc, char*argv[]);

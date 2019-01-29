@@ -3,6 +3,15 @@
 #define MIN(X,Y) (X)>(Y)?(Y):(X)
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 
+int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
+                        PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,
+                        BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,
+                        BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,
+                        BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,
+                        BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,
+                        PAWN_W,PAWN_W,PAWN_W,PAWN_W,PAWN_W,PAWN_W,PAWN_W,PAWN_W,
+                        CASTLE_W,KNIGHT_W,BISHOP_W,QUEEN_W,KING_W,BISHOP_W,KNIGHT_W,CASTLE_W};
+
 GameState env_init()
 {
     GameState gameState;
@@ -10,6 +19,7 @@ GameState env_init()
     gameState.castling_arr[PLAYER1].Left=gameState.castling_arr[PLAYER1].Right=0;
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
     gameState.moves_vector_cnt=0;
+    memcpy(gameState.board,initial_board,sizeof(int)*64);
     return gameState;
 }
 
@@ -21,7 +31,7 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
-    
+    gameState->playerTurn*=-1;
 }
 
 

@@ -17,14 +17,22 @@ GtkWidget *window ;
 GtkWidget *fixed ;
 GtkWidget *chess_icon ;
 GtkWidget *table ;
-GtkWidget *window2;
 GtkWidget *button;
-enum GRID Board[8][8];
 
 SDL_Surface *gui_screen;	//This pointer will reference the backbuffer
 
+void gui_render()
+{
+  gdk_threads_enter();
+  gtk_main() ;
+  gdk_threads_leave();
+}
+
 int gui_init_window(int argc, char*argv[])//Here you init the window and start the main loop
 {
+  
+
+
   gtk_init(&argc, &argv) ;
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
   gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
@@ -34,7 +42,9 @@ int gui_init_window(int argc, char*argv[])//Here you init the window and start t
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE) ; 
 
   gtk_widget_show_all(window) ; 
-  gtk_main() ; 
+
+  gdk_threads_init();
+  g_thread_new("render",(GThreadFunc)gui_render,NULL);
 }
 
 void gui_init(Player player_arr[2])
