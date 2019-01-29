@@ -68,3 +68,13 @@ void vector_free(vector *v)
 {
     free(v->data);
 }
+
+void vector_cat(vector *v1, vector *v2)
+{
+    for(int i=0;i<v2->count;i++)
+    {
+        vector_add(v1,vector_get(v2,i));
+    }
+    vector_free(v2);
+}
+

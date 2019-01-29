@@ -106,423 +106,258 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 
 }
 
+//board[pos]*playerTurn<0 -> enemy
+//board[pos]*playerTurn>0 -> mime
+
 vector env_get_legal_pawn(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
 
     int x=start_pt%8, y=start_pt/8;
-<<<<<<< HEAD
-    //if(x-1>=0 && gameState.board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
-    //else if(x+1<8 && gameState.board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
-=======
     if(x-1>=0 && gameState->board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
     else if(x+1<8 && gameState->board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
->>>>>>> decc355e65581c23e5c74d2e11e8af8b2ccc7b38
 
-    if(start_pt/8 == ((gameState.playerTurn>0)?6:1))//checking if on home row
+    if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
        {
-           if((gameState.board[(y+gameState.playerTurn*-1)*8+x]==0)&&(gameState.board[(y+2*gameState.playerTurn*-1)*8+x]*gameState.board(start_pt)<=0))
-               vector_add(&legal_moves,(y+2*gameState.playerTurn*-1)*8+x);
+           if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+               vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
            //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
         }
               
-    //y+=gameState.playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
+    //y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
     //checks if space ahead is empty/occupied by enemy
     //also checks if pawns are not on the last rows
-    if(((y+1<7)&&(y-1>0))  && (gameState.board[(y+gameState.playerTurn*-1)*8+x]*gameState.board(start_pt)<=0))
-        vector_add(&legal_moves,((y+gameState.playerTurn*-1)*8+x));
-    /*(gameState.board[(y+gameState.playerTurn*-1)*8+x]==0)||(*/
+    if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+        vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
+    /*(gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)||(*/
     
     //(x>=0 && x<8 && y>=0 && y<8)&&
-    if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState.board[(y+gameState.playerTurn*-1)*8+x+1]*gameState.board(start_pt)<0))vector_add(&legal_moves,((y+gameState.playerTurn*-1)*8+x+1));
-    if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState.board[(y+gameState.playerTurn*-1)*8+x-1]*gameState.board(start_pt)<0))vector_add(&legal_moves,((y+gameState.playerTurn*-1)*8+x-1));
+    if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
+    if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
                                                                                                                                                          
     return legal_moves;
 }
 
-
-vector env_get_legal_castle(GameState gameState, int start_pt)
+void env_get_legal_cross(GameState *gameState, vector *legal_moves, int start_pt, int step)
 {
-    vector legal_moves;
-    vector_init(&legal_moves);
     int x=start_pt%8, y=start_pt/8;
+    int playerTurn=gameState->playerTurn;
 
     for(int i=y+1;i<8;i++)//iterates through the y in one direction
     {
-        if(gameState.board(i*8+x)==0)
+        if(gameState->board[i*8+x]==0)
         {
-           vector_add(&legal_moves,(i*8+x));//adds every empty space
+            vector_add(legal_moves,(i*8+x));
         }
-        else if (gameState.board[i*8+x]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+x]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+x));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+x));//adds opponents space
+            break;//ternimates loop
         }
         else
-        {
-            i = 8;//terminates if something blocks its path
-        }
+            break;
     }
                        
     for(int i=y-1;i>=0;i--)
     {
-        if(gameState.board(i*8+x)==0)
+        if(gameState->board[i*8+x]==0)
         {
-            vector_add(&legal_moves,(i*8+x));
+            vector_add(legal_moves,(i*8+x));
         }
-        else if (gameState.board[i*8+x]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+x]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+x));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+x));//adds opponents space
+            break;//ternimates loop
         }
         else
-        {
-            i = 0;
-        }
+            break;
     }
     
     for(int i=x+1;i<8;i++)//iterates through the y in one direction
     {
-        if(gameState.board(y*8+i)==0)
+        if(gameState->board[y*8+i]==0)
         {
-            vector_add(&legal_moves,(y*8+i));//adds every empty space
+            vector_add(legal_moves,(y*8+i));//adds every empty space
         }
-        else if (gameState.board[y*8+i]*gameState.board(start_pt)<0)
+        else if (gameState->board[y*8+i]*playerTurn<0)
         {
-            vector_add(&legal_moves,(y*8+i));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(y*8+i));//adds opponents space
+            break;//ternimates loop
         }
         else
-        {
-            i = 8;//terminates if something blocks its path
-        }
+            break;
    }
-   for(int i=x-1;i>=0;i--)
-   {
-        if(gameState.board(y*8+i)==0)
-        {
-            vector_add(&legal_moves,(y*8+i));
-        }
-        else if (gameState.board[y*8+i]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(y*8+i));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-             i = 0;
-        }
-   }
-    return legal_moves;
-}
-
-vector env_get_legal_bishop(GameState gameState, int start_pt)
-{
-    vector legal_moves;
-    vector_init(&legal_moves);
-    int x=start_pt%8, y=start_pt/8;
-    
-    for(int i=y+1,j=x+1 ; i<8 && j<8 ; i++, j++)//iterates through the x,y in one direction
-    {
-        if(gameState.board(i*8+j)==0)
-        {
-              vector_add(&legal_moves,(i*8+j));//adds every empty space
-        }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-              i = 8;//terminates if something blocks its path
-        }
-    }
-    
-    for(int i=y+1,j=x-1 ; i<8 && j>=0 ; i++, j--)//iterates through the x,y in one direction
-    {
-        if(gameState.board(i*8+j)==0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
-        }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 8;//terminates if something blocks its path
-        }
-   }
-
-    for(int i=y-1,j=x-1 ; i>=0 && j>=0 ; i--, j--)//iterates through the x,y in one direction
-    {
-        if(gameState.board(i*8+j)==0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
-        }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 8;//terminates if something blocks its path
-        }
-    }
-    
-    for(int i=y-1,j=x+1 ; i>=0 && j<8 ; i--, j++)//iterates through the x,y in one direction
-    {
-        if(gameState.board(i*8+j)==0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
-        }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 8;//terminates if something blocks its path
-        }
-    }
-    return legal_moves;
-}
-
-vector env_get_legal_queen(GameState gameState, int start_pt)
-{
-    vector legal_moves;
-    vector_init(&legal_moves);
-    int x=start_pt%8, y=start_pt/8;
-    
-    for(int i=y+1;i<8;i++)//iterates through the y in one direction
-    {
-        if(gameState.board(i*8+x)==0)
-        {
-            vector_add(&legal_moves,(i*8+x));//adds every empty space
-        }
-        else if (gameState.board[i*8+x]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+x));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 8;//terminates if something blocks its path
-        }
-    }
-    
-    for(int i=y-1;i>=0;i--)
-    {
-        if(gameState.board(i*8+x)==0)
-        {
-            vector_add(&legal_moves,(i*8+x));
-        }
-        else if (gameState.board[i*8+x]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(i*8+x));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 0;
-        }
-    }
-    
-    for(int i=x+1;i<8;i++)//iterates through the x in one direction
-    {
-        if(gameState.board(y*8+i)==0)
-        {
-            vector_add(&legal_moves,(y*8+i));//adds every empty space
-        }
-        else if (gameState.board[y*8+i]*gameState.board(start_pt)<0)
-        {
-            vector_add(&legal_moves,(y*8+i));//adds opponents space
-            i = 8;//ternimates loop
-        }
-        else
-        {
-            i = 8;//terminates if something blocks its path
-        }
-    }
     for(int i=x-1;i>=0;i--)
     {
-        if(gameState.board(y*8+i)==0)
+        if(gameState->board[y*8+i]==0)
         {
-            vector_add(&legal_moves,(y*8+i));
+            vector_add(legal_moves,(y*8+i));
         }
-        else if (gameState.board[y*8+i]*gameState.board(start_pt)<0)
+        else if (gameState->board[y*8+i]*playerTurn<0)
         {
-            vector_add(&legal_moves,(y*8+i));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(y*8+i));//adds opponents space
+            break;//ternimates loop
         }
         else
-        {
-            i = 0;
-        }
+            break;
     }
-    
+
+}
+
+void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start_pt, int step)
+{
+    int x=start_pt%8, y=start_pt/8;
+    int playerTurn=gameState->playerTurn;
     for(int i=y+1,j=x+1 ; i<8 && j<8 ; i++, j++)//iterates through the x,y in one direction
     {
-        if(gameState.board(i*8+j)==0)
+        if(gameState->board[i*8+j]==0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
+              vector_add(legal_moves,(i*8+j));//adds every empty space
         }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+j]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+j));//adds opponents space
+            break;//ternimates loop
         }
         else
         {
-            i = 8;//terminates if something blocks its path
+            break;//terminates if something blocks its path
         }
     }
     
     for(int i=y+1,j=x-1 ; i<8 && j>=0 ; i++, j--)//iterates through the x,y in one direction
     {
-        if(gameState.board(i*8+j)==0)
+        if(gameState->board[i*8+j]==0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
+            vector_add(legal_moves,(i*8+j));//adds every empty space
         }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+j]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+j));//adds opponents space
+            break;//ternimates loop
         }
         else
         {
-            i = 8;//terminates if something blocks its path
+            break;//terminates if something blocks its path
         }
-    }
-    
+   }
+
     for(int i=y-1,j=x-1 ; i>=0 && j>=0 ; i--, j--)//iterates through the x,y in one direction
     {
-        if(gameState.board(i*8+j)==0)
+        if(gameState->board[i*8+j]==0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
+            vector_add(legal_moves,(i*8+j));//adds every empty space
         }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+j]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+j));//adds opponents space
+            break;//ternimates loop
         }
         else
         {
-            i = 8;//terminates if something blocks its path
+            break;//terminates if something blocks its path
         }
     }
     
     for(int i=y-1,j=x+1 ; i>=0 && j<8 ; i--, j++)//iterates through the x,y in one direction
     {
-        if(gameState.board(i*8+j)==0)
+        if(gameState->board[i*8+j]==0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds every empty space
+            vector_add(legal_moves,(i*8+j));//adds every empty space
         }
-        else if (gameState.board[i*8+j]*gameState.board(start_pt)<0)
+        else if (gameState->board[i*8+j]*playerTurn<0)
         {
-            vector_add(&legal_moves,(i*8+j));//adds opponents space
-            i = 8;//ternimates loop
+            vector_add(legal_moves,(i*8+j));//adds opponents space
+            break;//ternimates loop
         }
         else
         {
-            i = 8;//terminates if something blocks its path
+            break;//terminates if something blocks its path
         }
     }
-    return legal_moves;
 }
 
-vector env_get_legal_king(GameState gameState, int start_pt)
+vector env_get_legal_castle(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
-    int x=start_pt%8, y=start_pt/8;
-    
-    if((y+1<8)&&(gameState.board[(y+1)*8+x]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y+1)*8+x));
-    }
-    if((y-1>=0)&&(gameState.board[(y-1)*8+x]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y-1)*8+x));
-    }
-    if((x+1<8)&&(gameState.board[(y*8+(x+1)]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,(y*8+(x+1)));
-    }
-    if((x-1>=0)&&(gameState.board[(y*8+(x-1))]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,(y*8+(x-1)));
-    }
-    if((x+1<8 && y+1<8)&&(gameState.board[((y+1)*8+(x+1))]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y+1)*8+(x+1)));
-    }
-    if((x-1>=0 && y+1<8)&&(gameState.board[((y+1)*8+(x-1))]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y+1)*8+(x-1)));
-    }
-    if((x-1>=0 && y-1>=0)&&(gameState.board[((y-1)*8+(x-1))]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y-1)*8+(x-1)));
-    }
-    if((x-1>=0 && y+1<8)&&(gameState.board[((y+1)*8+(x-1))]*gameState.board(start_pt)<=0))
-    {
-        vector_add(&legal_moves,((y-1)*8+(x+1)));
-    }
- 
+    env_get_legal_cross(gameState,&legal_moves,start_pt,8);
     return legal_moves;
 }
 
-vector env_get_legal_knight(GameState gameState, int start_pt)
+vector env_get_legal_bishop(GameState *gameState, int start_pt)
+{
+    vector legal_moves;
+    vector_init(&legal_moves);
+    env_get_legal_diagonal(gameState,&legal_moves,start_pt,8);
+    return legal_moves;
+}
+
+vector env_get_legal_queen(GameState *gameState, int start_pt)
+{
+    vector legal_moves1,legal_moves2;
+    vector_init(&legal_moves1);
+    vector_init(&legal_moves2);
+    env_get_legal_cross(gameState,&legal_moves1,start_pt,8);
+    env_get_legal_diagonal(gameState,&legal_moves2,start_pt,8);
+    vector_cat(&legal_moves1,&legal_moves2);
+    vector_free(&legal_moves2);
+    return legal_moves1;
+}
+
+vector env_get_legal_king(GameState *gameState, int start_pt)
+{
+    vector legal_moves1,legal_moves2;
+    vector_init(&legal_moves1);
+    vector_init(&legal_moves2);
+    env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
+    env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
+    vector_cat(&legal_moves1,&legal_moves2);
+    vector_free(&legal_moves2);
+    return legal_moves1;
+}
+
+vector env_get_legal_knight(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
     int x=start_pt%8, y=start_pt/8;
     
     //jumps that are +/- 2 in the y
-    if((x+1<8 && y+2<8)&&(gameState.board[((y+2)*8+(x+1))]*gameState.board(start_pt)<=0))
+    if((x+1<8 && y+2<8)&&(gameState->board[((y+2)*8+(x+1))]*gameState->board[start_pt]<=0))
     {
         vector_add(&legal_moves,((y+2)*8+(x+1)));
     }
-    if((x-1>=0 && y+2<8)&&(gameState.board[((y+2)*8+(x-1))]*gameState.board(start_pt)<=0))
+    if((x-1>=0 && y+2<8)&&(gameState->board[((y+2)*8+(x-1))]*gameState->board[start_pt]<=0))
     {
         vector_add(&legal_moves,((y+2)*8+(x-1)));
     }
-    if((x+1<8 && y-2>=0)&&(gameState.board[((y-2)*8+(x+1))]*gameState.board(start_pt)<=0))
+    if((x+1<8 && y-2>=0)&&(gameState->board[((y-2)*8+(x+1))]*gameState->board[start_pt]<=0))
     {
         vector_add(&legal_moves,((y-2)*8+(x+1)));
     }
-    if((x-1>=0 && y-2>=0)&&(gameState.board[((y-2)*8+(x-1))]*gameState.board(start_pt)<=0))
+    if((x-1>=0 && y-2>=0)&&(gameState->board[((y-2)*8+(x-1))]*gameState->board[start_pt]<=0))
     {
         vector_add(&legal_moves,((y-2)*8+(x-1)));
     }
     
     //jumps that are +/- 2 in the x
-    if((x+2<8 && y+1<8)&&gameState.board[((y+1)*8+(x+2))]*gameState.board(start_pt)<=0)
+    if((x+2<8 && y+1<8)&&gameState->board[((y+1)*8+(x+2))]*gameState->board[start_pt]<=0)
     {
         vector_add(&legal_moves,((y+1)*8+(x+2)));
     }
-    if((x-2>=0 && y+1<8)&&gameState.board[((y+1)*8+(x-2))]*gameState.board(start_pt)<=0)
+    if((x-2>=0 && y+1<8)&&gameState->board[((y+1)*8+(x-2))]*gameState->board[start_pt]<=0)
     {
         vector_add(&legal_moves,((y+1)*8+(x-2)));
     }
-    if((x+2<8 && y-1>=0)&&gameState.board[((y-1)*8+(x+2))]*gameState.board(start_pt)<=0)
+    if((x+2<8 && y-1>=0)&&gameState->board[((y-1)*8+(x+2))]*gameState->board[start_pt]<=0)
     {
         vector_add(&legal_moves,((y-1)*8+(x+2)));
     }
-    if((x-2>=0 && y-1>=0)&&gameState.board[((y-1)*8+(x-2))]*gameState.board(start_pt)<=0)
+    if((x-2>=0 && y-1>=0)&&gameState->board[((y-1)*8+(x-2))]*gameState->board[start_pt]<=0)
     {
-<<<<<<< HEAD
         vector_add(&legal_moves,((y-1)*8+(x-2)));
-=======
-        y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
-        if(gameState->board[y*8+x]!=0)vector_add(&legal_moves,y*8+x);
->>>>>>> decc355e65581c23e5c74d2e11e8af8b2ccc7b38
     }
     
     return legal_moves;

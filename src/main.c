@@ -8,6 +8,7 @@ int GameMode=0;
 int play(GameState *gameState,Player *player)
 {
     int quit;
+    
     if(player->identity==HUMAN) quit=gui_play(gameState,player);
     else quit=ai_play(gameState,player);
     return quit;
@@ -51,21 +52,10 @@ void Game()
 
 int main(int argc, char *argv[])
 {
-    // while(1)
-    // {
-    //     Game();
-    // }
-    char test[70];
-    Move move;
-    move.captured=1;
-    move.captured_pos=1;
-    move.end_pt=1;
-    move.piece=1;
-    move.special_move=1;
-    move.start_pt=1;
-    move2string(test,&move);
-    printf("%s",test);
-    move=string2move(test);
+    while(1)
+    {
+        Game();
+    }
     
     
     return 0;
