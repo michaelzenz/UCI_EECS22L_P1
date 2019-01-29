@@ -159,6 +159,8 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
     /*(gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)||(*/
     
     //(x>=0 && x<8 && y>=0 && y<8)&&
+
+	//checks diagonal attacks
     if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
     if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
                                                                                                                                                          
