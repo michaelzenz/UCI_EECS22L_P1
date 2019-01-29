@@ -6,10 +6,10 @@
 
 int GameMode=0;
 
-int play(GameState gameState,Player player)
+int play(GameState *gameState,Player *player)
 {
     int quit;
-    if(player.identity==HUMAN) quit=gui_play(gameState,player);
+    if(player->identity==HUMAN) quit=gui_play(gameState,player);
     else quit=ai_play(gameState,player);
     return quit;
 }
@@ -36,17 +36,16 @@ void Game()
     while(1)
     {
         int quit;
-        if(gameState.playerTurn==player1.color)
-        {
-            quit=play(gameState,player1);
-        }
-        else quit=play(gameState,player2);
+        if(gameState.playerTurn==player1.color) 
+            quit=play(&gameState,&player1);
+        else 
+            quit=play(&gameState,&player2);
         if(quit)
         {
             gui_quit_window(quit);
             return;
         }
-        else gui_refresh(gameState,player_arr);
+        else gui_refresh(&gameState,player_arr);
     }
 	
 }

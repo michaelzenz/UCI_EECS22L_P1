@@ -14,21 +14,21 @@ GameState env_init()
     return gameState;
 }
 
-void env_play(GameState gameState, Player player, int start_pt, int end_pt)
+void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
-    if(gameState.playerTurn!=player.id) return;
+    if(gameState->playerTurn!=player->id) return;
 //    int sx=start_pt%8, sy=start_pt/8;
 //    int ex=end_pt%8, ey=end_pt/8;
-    int s_piece=gameState.board[start_pt];
+    int s_piece=gameState->board[start_pt];
     int e_piece=0;
-    if(gameState.board[end_pt]!=0) e_piece=gameState.board[end_pt];
-    gameState.board[start_pt]=0;
-    gameState.board[end_pt]=s_piece;
+    if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
+    gameState->board[start_pt]=0;
+    gameState->board[end_pt]=s_piece;
     
 }
 
 
-uchar env_check_end(GameState gameState, Player player)
+uchar env_check_end(GameState *gameState, Player *player)
 {
     int K=-1;
     vector legal_moves;
@@ -39,11 +39,12 @@ uchar env_check_end(GameState gameState, Player player)
         for(int x=0;x<8;x++)
         {
             pos=y*8+x;
-            if(gameState.board[pos]*gameState.playerTurn>0)
+            if(gameState->board[pos]*gameState->playerTurn>0)
             {
                 legal_moves=env_get_legal_moves(gameState,player,pos);
                 for(int i=0;i<legal_moves.count;i++)
                 {
+
                     env_play(gameState,player,pos,vector_get(&legal_moves,i));
                     threatened=env_is_threatened(gameState,player);
                     if(threatened==0)return 0;
@@ -54,7 +55,17 @@ uchar env_check_end(GameState gameState, Player player)
     return 1;
 }
 
-uchar env_is_threatened(GameState gameState,Player player)
+GameState env_copy_State(GameState *gameState)
+{
+    GameState newState;
+    memcpy(newState.board,gameState->board,64*sizeof(int));
+    newState.playerTurn=gameState->playerTurn;
+    newState.castling_arr[0]=gameState->castling_arr[0];
+    newState.castling_arr[1]=gameState->castling_arr[1];
+    return newState;
+}
+
+uchar env_is_threatened(GameState *gameState,Player *player)
 {
     int pos=-1;
     vector legal_moves;
@@ -66,8 +77,8 @@ uchar env_is_threatened(GameState gameState,Player player)
         for(int x=0;x<8;x++)
         {
             pos=y*8+x;
-            if(gameState.board[pos]*gameState.playerTurn*-1==KING) K=pos;
-            else if(gameState.board[pos]*gameState.playerTurn>0)
+            if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
+            else if(gameState->board[pos]*gameState->playerTurn>0)
             {
                 legal_moves=env_get_legal_moves(gameState,player,pos);
                 for(int i=0;i<legal_moves.count;i++)
@@ -81,10 +92,10 @@ uchar env_is_threatened(GameState gameState,Player player)
     else return 0;
 }
 
-vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
+vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 {
     vector legal_moves;
-    switch(abs(gameState.board[start_pt]))
+    switch(abs(gameState->board[start_pt]))
     {
         case PAWN:
             env_get_legal_pawn(gameState,start_pt);
@@ -93,19 +104,19 @@ vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
 
 }
 
-vector env_get_legal_pawn(GameState gameState, int start_pt)
+vector env_get_legal_pawn(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
 
     int x=start_pt%8, y=start_pt/8;
-    if(x-1>=0 && gameState.board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
-    else if(x+1<8 && gameState.board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
+    if(x-1>=0 && gameState->board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
+    else if(x+1<8 && gameState->board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
 
     for(int i=0;i<2;i++)
     {
-        y+=gameState.playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
-        if(gameState.board[y*8+x]!=0)vector_add(&legal_moves,y*8+x);
+        y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
+        if(gameState->board[y*8+x]!=0)vector_add(&legal_moves,y*8+x);
     }
     return legal_moves;
 }

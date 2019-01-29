@@ -42,7 +42,7 @@ int gui_example();
 void gui_init();
 int gui_main_menu();
 Player gui_player_menu();
-int gui_play(GameState gameState,Player player);
+int gui_play(GameState *gameState,Player *player);
 void gui_quit_window();
 void gui_refresh();
 
@@ -52,8 +52,8 @@ void gui_player_CvC_menu(Player* player_arr);
 
 void gui_gameplay_window();
 
-int gui_play(GameState gameState,Player player);
+int gui_play(GameState *gameState,Player *player);
 
-void gui_refresh(GameState gameState,Player *player_arr);
+void gui_refresh(GameState *gameState,Player *player_arr);
 
 #endif
