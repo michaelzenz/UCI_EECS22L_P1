@@ -113,6 +113,21 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
         case PAWN:
             env_get_legal_pawn(gameState,start_pt);
             break;
+        case KNIGHT:
+            env_get_legal_knight(gameState,start_pt);
+            break;
+        case CASTLE:
+            env_get_legal_castle(gameState,start_pt);
+            break;
+        case BISHOP:
+            env_get_legal_bishop(gameState,start_pt);
+            break;
+        case QUEEN:
+            env_get_legal_queen(gameState,start_pt);
+            break;
+        case KING:
+            env_get_legal_king(gameState,start_pt);
+            break;
     }
 
 }
