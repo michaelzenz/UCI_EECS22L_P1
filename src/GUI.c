@@ -23,8 +23,9 @@ enum GRID Board[8][8];
 
 SDL_Surface *gui_screen;	//This pointer will reference the backbuffer
 
-int gui_init_window()//Here you init the window and start the main loop
+int gui_init_window(int argc, char*argv[])//Here you init the window and start the main loop
 {
+  gtk_init(&argc, &argv) ;
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
   gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
   gtk_container_set_border_width (GTK_CONTAINER(window), WINDOW_BORDER) ; 
@@ -39,7 +40,6 @@ int gui_init_window()//Here you init the window and start the main loop
 void gui_init(Player player_arr[2])
 {
 	
-	gui_init_window();//here you init the window and pointer to window
 	int GameMode=gui_main_menu();
 	switch(GameMode)
 	{

@@ -52,6 +52,7 @@ void Game()
 
 int main(int argc, char *argv[])
 {
+    gui_init_window(argc,argv);
     while(1)
     {
         Game();

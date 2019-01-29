@@ -36,7 +36,7 @@ enum GRID
 };
 
 
-int gui_init_video();
+int gui_init_window(int argc, char*argv[]);
 int gui_free_video();
 int gui_example();
 void gui_init();

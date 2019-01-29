@@ -2,7 +2,7 @@
 #define __JSMN_H_
 
 #include <stddef.h>
-
+#include <stdio.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
