@@ -143,30 +143,54 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
-
     int x=start_pt%8, y=start_pt/8;
-    if(x-1>=0 && gameState->board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
-    else if(x+1<8 && gameState->board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
 
-    if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
-       {
-           if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-               vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
-           //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
+    if(gameState->playerTurn>0)//checking if white
+    {
+        if(y == (gameState->board[y*8+x] == 6)//checking if on home row
+        {
+            //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
+            if(gameState->board[(y-2)*8+x]<=0)vector_add(&legal_moves,(y-2)*8+x);
         }
+           
+        if(((y-1>=0))  && (gameState->board[(y-1)*8+x]==0)) vector_add(&legal_moves,((y-1)*8+x));//adding the space in front if unoccupied
+   
+        if(((x+1<=7)&&(y-1>=0))  && (gameState->board[(y-1)*8+x+1]<=0)) vector_add(&legal_moves,((y-1)*8+x+1));//diagonal attack 1
+           
+        if(((x-1<=7)&&(y-1>=0))  && (gameState->board[(y-1)*8+x-1]<=0)) vector_add(&legal_moves,((y-1)*8+x-1));//diagonal attack 2
+    }
+     else
+    {
+        if(y == (gameState->board[y*8+x] == 1)//checking if on home row
+           {
+               //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
+               if(gameState->board[(y+2)*8+x]>=0)vector_add(&legal_moves,(y+2)*8+x);
+           }
+           
+           if(((y+1>=0))  && (gameState->board[(y+1)*8+x]==0)) vector_add(&legal_moves,((y+1)*8+x));//adding the space in front if unoccupied
+           
+           if(((x+1<=7)&&(y+1>=0))  && (gameState->board[(y+1)*8+x+1]>=0)) vector_add(&legal_moves,((y+1)*8+x+1));//diagonal attack 1
+           
+           if(((x-1<=7)&&(y+1>=0))  && (gameState->board[(y+1)*8+x-1]>=0)) vector_add(&legal_moves,((y+1)*8+x-1));//diagonal attack 2
+    }
+        
+    //if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
+       //{
+          // if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+            //   vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
+           //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
+        //}
               
     //y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
     //checks if space ahead is empty/occupied by enemy
     //also checks if pawns are not on the last rows
-    if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-        vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
+    //if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+        //vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
     /*(gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)||(*/
-    
-    //(x>=0 && x<8 && y>=0 && y<8)&&
 
 	//checks diagonal attacks
-    if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
-    if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
+    //if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
+    //if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
                                                                                                                                                          
     return legal_moves;
 }
