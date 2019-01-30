@@ -6,6 +6,24 @@
 
 jsmn_parser str_move_parser;
 
+char *my_itoa(int num, char *str)
+{
+        if(str == NULL)
+        {
+            return NULL;
+        }
+        sprintf(str, "%d", num);
+        return str;
+}
+
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+	if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start &&
+			strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+		return 0;
+	}
+	return -1;
+}
+
 void stack_push(Node** head_ref, char* new_log, size_t data_size)
 {
     Node* new_node = (Node*)malloc(sizeof(Node));
@@ -33,10 +51,6 @@ int stack_get_size()
     //will write when Michael confirms current design
 }
 
-char *my_itoa(int n, char*str)
-{
-    
-}
 
 
 void move2string(char *str_move, Move *move)

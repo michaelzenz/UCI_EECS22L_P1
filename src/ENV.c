@@ -31,6 +31,12 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
+    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    // char str_move[20];
+    // move2string(str_move,&move);
+    // gameState->moves_stack.log=str_move;
+    //stack_push(&(gameState->moves_stack),str_move,sizeof(str_move));
+
 }
 
 
@@ -128,7 +134,6 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
             legal_moves=env_get_legal_king(gameState,start_pt);
             break;
     }
-
 }
 
 //board[pos]*playerTurn<0 -> enemy

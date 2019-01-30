@@ -17,6 +17,18 @@ GtkWidget *chess_icon ;
 GtkWidget *table ;
 GtkWidget *button;
 
+//Look up table
+char *color[2]={"White","Black"};
+char *piece[6]={"Pawn.jpg"};
+char *square[2]={"WhiteSquare","BlackSquare"};
+
+// char icon[20];
+// strcat(square[0]);
+// strcat(icon,color[0]);
+// strcat(icon,piece[0]);
+
+// icon=="WhitePawnWhiteS.jpg";
+
 void gui_render()
 {
   gdk_threads_enter();
