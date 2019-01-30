@@ -21,11 +21,11 @@ GameState env_init()
 
 void env_play(GameState gameState, Player player)
 {
-    if(gameState.playerTurn!=player.id) return;
+    if(gameState.playerTurn!=player.id) return; //check for player
 
 }
 
-vector env_get_legal_moves(GameState gameState, Player player, int start_pt)
+vector env_get_legal_moves(GameState gameState, Player player, int start_pt) //array with an undefined length
 {
     vector legal_moves;
     switch(abs(gameState.board[start_pt]))
