@@ -25,13 +25,18 @@ GameState env_init()
 
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
-    if(gameState->playerTurn!=player->id) return;
+    if(gameState->playerTurn!=player->color) return;
     int s_piece=gameState->board[start_pt];
-    int e_piece=0;
-    if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
+    int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
+    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    // char str_move[20];
+    // move2string(str_move,&move);
+    // gameState->moves_stack.log=str_move;
+    //stack_push(&(gameState->moves_stack),str_move,sizeof(str_move));
+
 }
 
 
@@ -111,25 +116,24 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
     switch(abs(gameState->board[start_pt]))
     {
         case PAWN:
-            env_get_legal_pawn(gameState,start_pt);
+            legal_moves=env_get_legal_pawn(gameState,start_pt);
             break;
         case KNIGHT:
-            env_get_legal_knight(gameState,start_pt);
+            legal_moves=env_get_legal_knight(gameState,start_pt);
             break;
         case CASTLE:
-            env_get_legal_castle(gameState,start_pt);
+            legal_moves=env_get_legal_castle(gameState,start_pt);
             break;
         case BISHOP:
-            env_get_legal_bishop(gameState,start_pt);
+            legal_moves=env_get_legal_bishop(gameState,start_pt);
             break;
         case QUEEN:
-            env_get_legal_queen(gameState,start_pt);
+            legal_moves=env_get_legal_queen(gameState,start_pt);
             break;
         case KING:
-            env_get_legal_king(gameState,start_pt);
+            legal_moves=env_get_legal_king(gameState,start_pt);
             break;
     }
-
 }
 
 //board[pos]*playerTurn<0 -> enemy

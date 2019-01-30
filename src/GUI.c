@@ -1,6 +1,4 @@
-/*
-#include"SDL/SDL.h"
-*/
+
 
 #include <gtk/gtk.h>
 #include"GUI.h"
@@ -19,7 +17,17 @@ GtkWidget *chess_icon ;
 GtkWidget *table ;
 GtkWidget *button;
 
-SDL_Surface *gui_screen;	//This pointer will reference the backbuffer
+//Look up table
+char *color[2]={"White","Black"};
+char *piece[6]={"Pawn.jpg"};
+char *square[2]={"WhiteSquare","BlackSquare"};
+
+// char icon[20];
+// strcat(square[0]);
+// strcat(icon,color[0]);
+// strcat(icon,piece[0]);
+
+// icon=="WhitePawnWhiteS.jpg";
 
 void gui_render()
 {
@@ -43,8 +51,8 @@ int gui_init_window(int argc, char*argv[])//Here you init the window and start t
 
   gtk_widget_show_all(window) ; 
 
-  gdk_threads_init();
-  g_thread_new("render",(GThreadFunc)gui_render,NULL);
+  // gdk_threads_init();
+  // g_thread_new("render",(GThreadFunc)gui_render,NULL);
 }
 
 void gui_init(Player player_arr[2])
