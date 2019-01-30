@@ -71,28 +71,35 @@ void test_env()
     player2.id=1;
     printf("player1 is WHITE, player2 is BLACK\n");
     int start_pt,end_pt;
+    int check_end=0;
     while(1)
     {
         print_board(&gameState);
         if(gameState.playerTurn==player1.color)
         {
+            check_end=env_check_end(&gameState,&player1);
+            if(check_end)printf("player2 wins\n");
             printf("\nPlayer1 moves from: ");
             scanf("%d",&start_pt);
             legal_moves1=env_get_legal_moves(&gameState,&player1,start_pt);
             print_legal_moves(legal_moves1,start_pt);
             printf("to: ");
             scanf("%d",&end_pt);
+            if(vector_contain(&legal_moves1,end_pt)!=1)continue;
             env_play(&gameState,&player1,start_pt,end_pt);
             vector_free(&legal_moves1);
         }
         else
         {
+            check_end=env_check_end(&gameState,&player2);
+            if(check_end)printf("player1 wins\n");
             printf("\nPlayer2 moves from: ");
             scanf("%d",&start_pt);
             legal_moves2=env_get_legal_moves(&gameState,&player2,start_pt);
             print_legal_moves(legal_moves2,start_pt);
             printf("to: ");
             scanf("%d",&end_pt);
+            if(vector_contain(&legal_moves2,end_pt)!=1)continue;
             env_play(&gameState,&player2,start_pt,end_pt);
             vector_free(&legal_moves2);
         }
@@ -120,12 +127,13 @@ void test_gui_menu()
 
 int main(int argc, char *argv[])
 {
-    gui_init_window(argc,argv);
+    //gui_init_window(argc,argv);
     // while(1)
     //     Game();
 
-    //test_env();
-    test_gui_menu();
+    test_env();
+    //test_gui_menu();//specially created for aria to test
+    
     
     return 0;
 }

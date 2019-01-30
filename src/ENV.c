@@ -2,7 +2,7 @@
 #include"ENV.h"
 #define MIN(X,Y) (X)>(Y)?(Y):(X)
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
-#define XY2ID(X,Y) (Y*8+X)
+#define XY2ID(X,Y) ((Y)*8+X)
 
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
                         PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,
@@ -113,7 +113,11 @@ uchar env_is_threatened(GameState *gameState,Player *player)
 
 vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 {
+    
     vector legal_moves;
+    vector_init(&legal_moves);
+    if(start_pt<0||start_pt>=64)return legal_moves;
+    if(gameState->playerTurn*gameState->board[start_pt]<=0)return legal_moves;
     switch(abs(gameState->board[start_pt]))
     {
         case PAWN:
@@ -135,6 +139,7 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
             legal_moves=env_get_legal_king(gameState,start_pt);
             break;
     }
+    return legal_moves;
 }
 
 //board[pos]*playerTurn<0 -> enemy
@@ -146,33 +151,20 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
     vector_init(&legal_moves);
     int x=start_pt%8, y=start_pt/8;
 
-    if(gameState->playerTurn>0)//checking if white
+    int playerTurn=gameState->playerTurn;
+    int maxStep=1;
+    if((7-y*2)*playerTurn==-5)//means that pawn is on home row
+        maxStep=2;
+    for(int k=1;k<=maxStep;k++)
     {
-        if(y == (gameState->board[y*8+x] == 6)//checking if on home row
-        {
-            //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
-            if(gameState->board[(y-2)*8+x]<=0)vector_add(&legal_moves,(y-2)*8+x);
-        }
-           
-        if(((y-1>=0))  && (gameState->board[(y-1)*8+x]==0)) vector_add(&legal_moves,((y-1)*8+x));//adding the space in front if unoccupied
-   
-        if(((x+1<=7)&&(y-1>=0))  && (gameState->board[(y-1)*8+x+1]<=0)) vector_add(&legal_moves,((y-1)*8+x+1));//diagonal attack 1
-           
-        if(((x-1<=7)&&(y-1>=0))  && (gameState->board[(y-1)*8+x-1]<=0)) vector_add(&legal_moves,((y-1)*8+x-1));//diagonal attack 2
+        if(abs(7-(y+k*playerTurn*-1)*2)>7)break;
+        if(gameState->board[XY2ID(x,y+k*playerTurn*-1)]*playerTurn==0)vector_add(&legal_moves,XY2ID(x,y+k*playerTurn*-1));
     }
-     else
+    for(int dx=-1;dx<=1;dx+=2)
     {
-        if(y == (gameState->board[y*8+x] == 1)//checking if on home row
-           {
-               //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
-               if(gameState->board[(y+2)*8+x]>=0)vector_add(&legal_moves,(y+2)*8+x);
-           }
-           
-           if(((y+1>=0))  && (gameState->board[(y+1)*8+x]==0)) vector_add(&legal_moves,((y+1)*8+x));//adding the space in front if unoccupied
-           
-           if(((x+1<=7)&&(y+1>=0))  && (gameState->board[(y+1)*8+x+1]>=0)) vector_add(&legal_moves,((y+1)*8+x+1));//diagonal attack 1
-           
-           if(((x-1<=7)&&(y+1>=0))  && (gameState->board[(y+1)*8+x-1]>=0)) vector_add(&legal_moves,((y+1)*8+x-1));//diagonal attack 2
+        if(abs(7-(y+playerTurn*-1)*2)>7)break;
+        if(x+dx<0||x+dx>7)continue;
+        if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
     }
         
     //if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row

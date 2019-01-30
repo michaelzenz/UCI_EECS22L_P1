@@ -18,7 +18,7 @@ vector env_get_legal_castle(GameState *gameState, int start_pt);
 vector env_get_legal_bishop(GameState *gameState, int start_pt);
 vector env_get_legal_queen(GameState *gameState, int start_pt);
 vector env_get_legal_king(GameState *gameState, int start_pt);
-int env_check_end_game(GameState *gameState);
+uchar env_check_end(GameState *gameState, Player *player);
 uchar env_is_threatened(GameState*,Player*);
 GameState env_copy_State(GameState *gameState);
 #endif
