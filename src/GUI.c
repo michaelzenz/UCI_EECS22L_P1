@@ -57,8 +57,9 @@ void gui_render()
     gtk_main() ;
     gdk_threads_leave();
 }
-
-int gui_init_window(int argc, char*argv[])//Here you init the window and start the main loop
+//Here you init the window and start the main loop
+//Don`t do anything to this part if you don`t know what it`s doing
+int gui_init_window(int argc, char*argv[])
 {
     gtk_init(&argc, &argv) ;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
@@ -80,8 +81,6 @@ void gui_init(Player player_arr[2])
 {
     
     int GameMode=gui_main_menu();
-    
-
     switch(GameMode)
     {
     case GameMode_HvC:
@@ -123,6 +122,7 @@ static gboolean on_delete_event (GtkWidget *widget, GdkEvent  *event, gpointer d
     return FALSE;
 }
 
+//The callback for main menu window
 gint main_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
     int x, y;
@@ -144,9 +144,10 @@ gint main_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     printf("GameMode:%d\n",*GameMode);
 }
 
+//draw the main menu and set callback
 int gui_main_menu()
 {
-    gdk_threads_enter();
+    gdk_threads_enter();//this is important, before you call any gtk_* or g_* or gdk_* functions, call this function first
     main_menu_pixbuf=load_pixbuf_from_file(main_menu_path);
     main_menu_pixbuf=gdk_pixbuf_scale_simple(main_menu_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
     
@@ -156,9 +157,9 @@ int gui_main_menu()
     int GameMode=0;
     gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(main_menu_callback), &GameMode);
     gtk_widget_show_all(window);
-    gdk_threads_leave();
-    while(GameMode==0)sleep(1);
-    gdk_threads_enter();
+    gdk_threads_leave();//after you finich calling gtk functions, call this
+    while(GameMode==0)sleep(1);//must call sleep to release some cpu resources for gtk thread to run
+    gdk_threads_enter();//again, you know what I am gonna say
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
     return GameMode;
