@@ -2,6 +2,7 @@
 #include"ENV.h"
 #define MIN(X,Y) (X)>(Y)?(Y):(X)
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
+#define XY2ID(X,Y) (Y*8+X)
 
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
                         PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,

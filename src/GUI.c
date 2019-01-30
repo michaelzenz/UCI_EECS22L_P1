@@ -5,22 +5,30 @@
 #include <stdio.h>
 
 
-#define GameMode_HvC 0
-#define GameMode_HvH 1
-#define GameMode_CvC 2
+
 
 /*Global Variables */
 
 GtkWidget *window ;
-GtkWidget *fixed ;
+GtkWidget *image;
+GtkWidget *layout;
+GtkWidget *fixed;
 GtkWidget *chess_icon ;
-GtkWidget *table ;
+GtkWidget *table;
 GtkWidget *button;
+
+GdkPixbuf *main_menu_pixbuf = NULL;
+GdkPixbuf *HvC_pixbuf = NULL;
+GdkPixbuf *HvH_pixbuf = NULL;
+GdkPixbuf *CvC_pixbuf = NULL;
 
 //Look up table
 char *color[2]={"White","Black"};
 char *piece[6]={"Pawn.jpg"};
 char *square[2]={"WhiteSquare","BlackSquare"};
+
+char *main_menu_path="res/MainMenu.png";
+char *HvC_Menu_path="res/HvC_Menu.png";
 
 // char icon[20];
 // strcat(square[0]);
@@ -29,72 +37,68 @@ char *square[2]={"WhiteSquare","BlackSquare"};
 
 // icon=="WhitePawnWhiteS.jpg";
 
+GdkPixbuf *load_pixbuf_from_file (const char *filename)
+{
+    GError *error = NULL;
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (filename, &error);
+ 
+    if (pixbuf == NULL)
+    {
+        g_print ("Error loading file: %d : %s\n", error->code, error->message);
+        g_error_free (error);
+        exit (1);
+    }
+    return pixbuf;
+}
+
 void gui_render()
 {
-  gdk_threads_enter();
-  gtk_main() ;
-  gdk_threads_leave();
+    gdk_threads_enter();
+    gtk_main() ;
+    gdk_threads_leave();
 }
 
 int gui_init_window(int argc, char*argv[])//Here you init the window and start the main loop
 {
-  
+    gtk_init(&argc, &argv) ;
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
+    gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
+    gtk_container_set_border_width (GTK_CONTAINER(window), WINDOW_BORDER) ; 
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER) ; 
+    gtk_window_set_title(GTK_WINDOW(window), "King Me!") ; 
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
+    layout = gtk_layout_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER (window), layout);
 
-  gtk_init(&argc, &argv) ;
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
-  gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
-  gtk_container_set_border_width (GTK_CONTAINER(window), WINDOW_BORDER) ; 
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER) ; 
-  gtk_window_set_title(GTK_WINDOW(window), "Let's play Chess!") ; 
-  gtk_window_set_resizable(GTK_WINDOW(window), FALSE) ; 
-
-  gtk_widget_show_all(window) ; 
-
-  // gdk_threads_init();
-  // g_thread_new("render",(GThreadFunc)gui_render,NULL);
+    gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK|GDK_POINTER_MOTION_MASK);
+    gdk_threads_init();
+    g_thread_new("render",(GThreadFunc)gui_render,NULL);
 }
 
 void gui_init(Player player_arr[2])
 {
-	
-	int GameMode=gui_main_menu();
-	switch(GameMode)
-	{
-		case GameMode_HvC:
-			gui_player_HvC_menu(player_arr);
-			break;
-		case GameMode_HvH:
-			gui_player_HvH_menu(player_arr);
-			break;
-		case GameMode_CvC:
-			gui_player_CvC_menu(player_arr);
-			break;
-	}
-  //here you use window pointer to draw gameplay window
-  //bind an event to listen to the click
-	gui_gameplay_window();
+    
+    int GameMode=gui_main_menu();
+    
+
+    switch(GameMode)
+    {
+    case GameMode_HvC:
+        gui_player_HvC_menu(player_arr);
+        break;
+    case GameMode_HvH:
+        gui_player_HvH_menu(player_arr);
+        break;
+    case GameMode_CvC:
+        gui_player_CvC_menu(player_arr);
+        break;
+    }
+    //here you use window pointer to draw gameplay window
+    //bind an event to listen to the click
+    gui_gameplay_window();
 }
 
-void InitBoard()
-{
-}
-
-void ResetBoard()
-{
-}
-
-void ReverseGridColor(int g_x, int g_y)
-{
-}
-
-
-
-
-void DrawBoard()
-{
-        
-}
 
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 {
@@ -104,54 +108,64 @@ void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 
 
 
-static gboolean
-on_delete_event (GtkWidget *widget,
-         GdkEvent  *event,
-         gpointer   data)
+static gboolean on_delete_event (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
-  /* If you return FALSE in the "delete_event" signal handler,
-   * GTK will emit the "destroy" signal. Returning TRUE means
-   * you don't want the window to be destroyed.
-   *
-   * This is useful for popping up 'are you sure you want to quit?'
-   * type dialogs.
-   */
+    /* If you return FALSE in the "delete_event" signal handler,
+    * GTK will emit the "destroy" signal. Returning TRUE means
+    * you don't want the window to be destroyed.
+    *
+    * This is useful for popping up 'are you sure you want to quit?'
+    * type dialogs.
+    */
 
-  g_print ("delete event occurred\n");
-  gtk_main_quit();
-  return FALSE;
+    g_print ("delete event occurred\n");
+    gtk_main_quit();
+    return FALSE;
 }
 
-gint area_click (GtkWidget *widget,
-                 GdkEvent  *event,
-                 gpointer  data)
+gint main_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    int *GameMode=(int*)data;
+    if(x>715&&x<879&&y>238&&y<264)
+    {
+        *GameMode=GameMode_HvC;
+    }
+    else if(x>702&&x<887&&y>287&&y<319)
+    {
+        *GameMode=GameMode_HvH;
+    }
+    else if(x>630&&x<958&&y>346&&y<367)
+    {
+        *GameMode=GameMode_CvC;
+    }
+    printf("GameMode:%d\n",*GameMode);
 }
 
-
-void gui_gameplay_window()
-{
-
-}
-
-void gui_quit_window(GameState gameState)
-{
-
-}
-
-//here you use window pointer to draw main menu
-//bind an event to listen to the click
-//then use a while loop to wait for the user click
-//after that return the GameMode
-//WARNING: you must use sleep(10) in your main loop
-//because gtk creates a new thread to render the window
-//thus you must let the main thread release some cpu resource for it to run
-
-//WARNING: Don`t forget to unbind the event to click
 int gui_main_menu()
 {
-        
+    gdk_threads_enter();
+    main_menu_pixbuf=load_pixbuf_from_file(main_menu_path);
+    main_menu_pixbuf=gdk_pixbuf_scale_simple(main_menu_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+    
+    image = gtk_image_new_from_pixbuf(main_menu_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+
+    int GameMode=0;
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(main_menu_callback), &GameMode);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(GameMode==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
+    return GameMode;
 }
+
+
+
 
 //here you use window pointer to draw player menu
 //bind an event to listen to the click
@@ -162,9 +176,45 @@ int gui_main_menu()
 //thus you must let the main thread release some cpu resource for it to run
 
 //WARNING: Don`t forget to unbind the event to click
+
+/**************/
+//Because the Callback of gtk only take one variable, so you can create a new struct
+
+typedef struct _PlayerOptions{
+    Player *player_arr;
+    unsigned char play;
+}PlayerOptions;
+
+gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+    
+}
+
 void gui_player_HvC_menu(Player* player_arr)
 {
+    PlayerOptions options;
+    options.player_arr=player_arr;
+    options.play=0;
 
+    gdk_threads_enter();
+    HvC_pixbuf=load_pixbuf_from_file(HvC_Menu_path);
+    HvC_pixbuf=gdk_pixbuf_scale_simple(HvC_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+    
+    image = gtk_image_new_from_pixbuf(HvC_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(HvC_menu_callback), &options);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(options.play==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
 }
 
 void gui_player_HvH_menu(Player* player_arr)
@@ -177,10 +227,20 @@ void gui_player_CvC_menu(Player* player_arr)
 
 }
 
+void gui_gameplay_window()
+{
+
+}
+
+void gui_quit_window(GameState gameState)
+{
+
+}
+
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-  
+    
 }
 
 //here you will use the gameState to refresh the board
@@ -204,7 +264,7 @@ int gui_play(GameState *gameState,Player *player)
 //by the way, all constants are defined in constant.h, have a look
 void gui_refresh(GameState *gameState,Player *player_arr)
 {
-	
+    
 }
 
 

@@ -99,13 +99,14 @@ void test_env()
     }
 }
 
+//specially for aria
 void test_gui_menu()
 {
     Player player_arr[2];
     player_arr[0].id=0;
     player_arr[1].id=1;
-    gui_init(player_arr);
 
+    gui_init(player_arr);
     for(int i=0;i<2;i++)
     {
         printf("Player%d uses ",i+1);
@@ -114,15 +115,16 @@ void test_gui_menu()
         if(player_arr[i].identity==HUMAN)printf("Human\n");
         else printf("Computer\n");
     }
+    
 }
 
 int main(int argc, char *argv[])
 {
-    //gui_init_window(argc,argv);
+    gui_init_window(argc,argv);
     // while(1)
     //     Game();
 
-    test_env();
+    //test_env();
     test_gui_menu();
     
     return 0;
