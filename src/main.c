@@ -221,8 +221,8 @@ int main(int argc, char *argv[])
     //     Game();
     srand(time(0));
     //test_env();
-    Test_AI(2);
-    //AI_Contest();
+    //Test_AI(2);
+    AI_Contest(1,2);
     
     return 0;
 }

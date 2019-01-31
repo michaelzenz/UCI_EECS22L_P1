@@ -1,5 +1,5 @@
 #include"AI.h"
-#define MAXSTEP 2
+#define MAXSTEP 3
 
 
 
@@ -32,7 +32,6 @@ int ai_model1_simulate(GameState *gameState, Player *player, int depth)
             GameState simulation;
             simulation=env_copy_State(gameState);
             env_play(&simulation,player,start_pt,vector_get(&legal_moves,k));
-
             score=ai_model1_simulate(&simulation,player,depth+1);
             MaxScore=MAX(MaxScore,score);
         }

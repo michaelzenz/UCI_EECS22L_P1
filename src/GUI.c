@@ -4,10 +4,6 @@
 #include"GUI.h"
 #include <stdio.h>
 
-
-#define GameMode_HvC 0
-#define GameMode_HvH 1
-#define GameMode_CvC 2
 #define xy21d(x,y) (y*8+x)
 
 /*Global Variables */
@@ -26,9 +22,9 @@ GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
 
 //Look up table
-char *color[2]={"White","Black"};
-char *piece[6]={"Pawn.jpg"};
-char *square[2]={"WhiteSquare","BlackSquare"};
+char *str_square[2]={"./res/WhiteSquare","./res/BlackSquare"};
+char *str_color[2]={"White","Black"};
+char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Rook.jpg", "Knight.jpg", "Bishop.jpg", "Queen.jpg", "King.jpg"};
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
@@ -54,7 +50,45 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
     return pixbuf;
 }
 
+void DrawBoard(GameState *gamestate)
+{
+	int x, y;
 
+//	char *main_menu_path="res/MainMenu.png";
+//	char *HvC_Menu_path="res/HvC_Menu.png";
+	char path[50];
+	for(int i = 0 ; i< 64; i++){
+        memset(path,'\0',sizeof(path));
+		x = (gamestate->board[i])%8;
+		y = (gamestate->board[i])/8;
+        
+        strcat(path,str_square[(x+y)%2]);
+
+        if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
+        else
+        {
+            int color=gamestate->board[i]/abs(gamestate->board[i]);
+            int colorID=MAX(color*-1,0);
+            strcat(path, str_color[colorID]);
+            strcat(path,str_piece[abs(gamestate->board[i])]);
+        }
+
+		gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
+	}
+
+
+
+	//Look up table
+
+// char icon[20];
+// strcat(square[0]);
+// strcat(icon,color[0]);
+// strcat(icon,piece[0]);
+
+// icon=="WhitePawnWhiteS.jpg";
+
+
+}
 void gui_render()
 {
     gdk_threads_enter();
@@ -101,6 +135,7 @@ void gui_init(Player player_arr[2])
     //bind an event to listen to the click
     gui_gameplay_window();
 }
+
 
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 {
@@ -233,18 +268,33 @@ void gui_player_CvC_menu(Player* player_arr)
 
 void gui_gameplay_window()
 {
+	/*create a table and draw the board*/
+  	table = gtk_table_new (8, 8, TRUE) ;
+  	gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT) ;
 
+  	fixed = gtk_fixed_new() ;
+  	gtk_fixed_put(GTK_FIXED(fixed), table, 0, 0) ;
+  	gtk_container_add(GTK_CONTAINER(window), fixed) ;
+
+//accept mouse press
+  	gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK) ;
+//when mouse presses window callback (TBD)
+  	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
 void gui_quit_window(GameState gameState)
 {
+  /*register event handlers*/
+  g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL) ;
 
 }
 
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-    
+	
+  	return 0 ;
+
 }
 
 //here you will use the gameState to refresh the board
