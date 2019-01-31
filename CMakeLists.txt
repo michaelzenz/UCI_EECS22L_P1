@@ -22,7 +22,6 @@ find_package (PkgConfig REQUIRED)
 PKG_CHECK_MODULES(GTK2 REQUIRED 
 gtk+-2.0 
 glib-2.0
-atk-1.0
 cairo
 gdk-pixbuf-2.0)
 
