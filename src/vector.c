@@ -77,7 +77,6 @@ void vector_cat(vector *v1, vector *v2)
     {
         vector_add(v1,vector_get(v2,i));
     }
-    vector_free(v2);
 }
 
 unsigned char vector_contain(vector *v, int p)

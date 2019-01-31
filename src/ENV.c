@@ -26,7 +26,6 @@ GameState env_init()
 
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
-    if(gameState->playerTurn!=player->color) return;
     int s_piece=gameState->board[start_pt];
     int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
@@ -57,17 +56,27 @@ uchar env_check_end(GameState *gameState, Player *player)
             if(gameState->board[pos]*gameState->playerTurn>0)
             {
                 legal_moves=env_get_legal_moves(gameState,player,pos);
-                gameState->container[gameState->moves_vector_cnt].pos=pos;
-                gameState->container[gameState->moves_vector_cnt].legal_moves=legal_moves;
-                gameState->moves_vector_cnt++;
+                if(legal_moves.count>0)
+                {
+                    gameState->container[gameState->moves_vector_cnt].pos=pos;
+                    gameState->container[gameState->moves_vector_cnt].legal_moves=legal_moves;
+                    gameState->moves_vector_cnt++;
+                }
+                else
+                    continue;
                 for(int i=0;i<legal_moves.count;i++)
                 {
                     
                     check_state=env_copy_State(gameState);
                     env_play(&check_state,player,pos,vector_get(&legal_moves,i));
                     threatened=env_is_threatened(&check_state,player);
-                    if(threatened==0)end=0;
+                    if(threatened==0)
+                    {
+                        end=0;
+                        break;
+                    }
                 }
+                //here is the only position where vector_free is not necessary
             }
         }
     }
@@ -81,7 +90,15 @@ GameState env_copy_State(GameState *gameState)
     newState.playerTurn=gameState->playerTurn;
     newState.castling_arr[0]=gameState->castling_arr[0];
     newState.castling_arr[1]=gameState->castling_arr[1];
+    newState.moves_vector_cnt=0;
     return newState;
+}
+
+void env_free_container(GameState *gameState)
+{
+    for(int i=0;i<gameState->moves_vector_cnt;i++)
+        vector_free(&(gameState->container[i].legal_moves));
+    gameState->moves_vector_cnt=0;
 }
 
 uchar env_is_threatened(GameState *gameState,Player *player)
@@ -104,10 +121,12 @@ uchar env_is_threatened(GameState *gameState,Player *player)
                 {
                     threatened_area[vector_get(&legal_moves,pos)]=1;
                 }
+                vector_free(&legal_moves);
             }
         }
     }
-    if(threatened_area[K]==1)return 1;
+    if(K==-1)return 1;
+    else if(threatened_area[K]==1)return 1;
     else return 0;
 }
 
@@ -162,7 +181,7 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
     }
     for(int dx=-1;dx<=1;dx+=2)
     {
-        if(abs(7-(y+playerTurn*-1)*2)>7)break;
+        if(abs(7-(y+playerTurn*(-1))*2)>7)break;
         if(x+dx<0||x+dx>7)continue;
         if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
     }

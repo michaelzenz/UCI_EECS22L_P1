@@ -1,6 +1,7 @@
-#include"vector.h"
 #ifndef STRUCT_H
 #define STRUCT_H
+#include"vector.h"
+
 
 typedef struct _Player
 {

@@ -21,5 +21,6 @@ vector env_get_legal_king(GameState *gameState, int start_pt);
 uchar env_check_end(GameState *gameState, Player *player);
 uchar env_is_threatened(GameState*,Player*);
 GameState env_copy_State(GameState *gameState);
+void env_free_container(GameState *gameState);
 #endif
 

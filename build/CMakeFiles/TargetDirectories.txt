@@ -1,0 +1,3 @@
+/home/michaelz/Desktop/projects/courses/22L/chess/build/CMakeFiles/edit_cache.dir
+/home/michaelz/Desktop/projects/courses/22L/chess/build/CMakeFiles/rebuild_cache.dir
+/home/michaelz/Desktop/projects/courses/22L/chess/build/CMakeFiles/chess.dir
