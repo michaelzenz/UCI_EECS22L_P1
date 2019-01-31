@@ -40,5 +40,3 @@ add_executable(${PROJECT_NAME} ${DIR_SRCS})
 # set(SOURCE src/SDL_Sample.c)
 # add_executable(${PROJECT_NAME} ${SOURCE})
 
-
-
