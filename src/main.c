@@ -50,7 +50,7 @@ void print_board(GameState *gameState)
         if(i%8==0)printf("\n");
         printf("%d\t",gameState->board[i]);
     }
-    printf("\n*****************\n*****************\n");
+    printf("*****************\n*****************\n");
 }
 
 void fprint_board(GameState *gameState,FILE *fp)
@@ -58,9 +58,9 @@ void fprint_board(GameState *gameState,FILE *fp)
     for(int i=0;i<64;i++)
     {
         if(i%8==0)printf("\n");
-        fprintf("%d\t",gameState->board[i],fp);
+        fprintf(fp,"%d\t",gameState->board[i]);
     }
-    fprintf("\n*****************\n*****************\n",fp);
+    fprintf(fp,"*****************\n*****************\n");
 }
 
 void print_legal_moves(vector legal_moves, int start_pt)
@@ -157,7 +157,32 @@ void AI_Contest()
     print_board(&gameState);
 
     FILE *fp = NULL;
-    fp = fopen("/tmp/test.txt", "w+");
+    fp = fopen("TestLog/test", "w+");
+    while(quit==0)
+    {
+        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,1);
+        else quit=ai_play(&gameState,&player2,1);
+        print_board(&gameState);
+        fprint_board(&gameState,fp);
+    }
+    fclose(fp);
+}
+
+void Test_AI()
+{
+    GameState gameState=env_init();
+    Player player1,player2;
+    player1.color=WHITE;
+    player2.color=BLACK;
+    player1.id=0;
+    player2.id=1;
+    player1.identity=HUMAN;
+    player2.identity=COMPUTER;
+    int quit=0;
+    print_board(&gameState);
+
+    FILE *fp = NULL;
+    fp = fopen("TestLog/test", "w+");
     while(quit==0)
     {
         if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,1);
@@ -177,7 +202,7 @@ int main(int argc, char *argv[])
     srand(time(0));
     //test_env();
     
-    AI_Contest();
+    //AI_Contest();
     
     return 0;
 }

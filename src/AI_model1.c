@@ -59,10 +59,10 @@ int ai_model1_play(GameState *gameState, Player *player)
         int start_pt=gameState->container[i].pos;
         vector legal_moves=gameState->container[i].legal_moves;
         int cnt=legal_moves.count;
-        vector_add(&MovesStart,start_pt);
         for(int k=0;k<cnt;k++)
         {
             int end_pt=vector_get(&legal_moves,k);
+            vector_add(&MovesStart,start_pt);
             vector_add(&MovesEnd,end_pt);
             GameState simulation;
             simulation=env_copy_State(gameState);

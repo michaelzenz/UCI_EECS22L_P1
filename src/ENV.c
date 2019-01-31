@@ -125,7 +125,8 @@ uchar env_is_threatened(GameState *gameState,Player *player)
             }
         }
     }
-    if(threatened_area[K]==1)return 1;
+    if(K==-1)return 1;
+    else if(threatened_area[K]==1)return 1;
     else return 0;
 }
 
@@ -180,7 +181,7 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
     }
     for(int dx=-1;dx<=1;dx+=2)
     {
-        if(abs(7-(y+playerTurn*-1)*2)>7)break;
+        if(abs(7-(y+playerTurn*(-1))*2)>7)break;
         if(x+dx<0||x+dx>7)continue;
         if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
     }
