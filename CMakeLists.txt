@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-MESSAGE("This template works on linux")
-
-
 
 project(chess)
 
@@ -22,7 +19,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
 
 find_package (PkgConfig REQUIRED)
-PKG_CHECK_MODULES(GTK2 REQUIRED gtk+-2.0)
+PKG_CHECK_MODULES(GTK2 REQUIRED gtk+-2.0 glib-2.0)
 
 FIND_PACKAGE(GTK2 REQUIRED)
 
