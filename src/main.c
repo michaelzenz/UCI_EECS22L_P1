@@ -144,7 +144,7 @@ void test_gui_menu()
     
 }
 
-void AI_Contest()
+void AI_Contest(int model1,int model2)
 {
     GameState gameState=env_init();
     Player player1,player2;
@@ -160,15 +160,15 @@ void AI_Contest()
     fp = fopen("TestLog/test", "w+");
     while(quit==0)
     {
-        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,1);
-        else quit=ai_play(&gameState,&player2,1);
+        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
+        else quit=ai_play(&gameState,&player2,model2);
         print_board(&gameState);
         fprint_board(&gameState,fp);
     }
     fclose(fp);
 }
 
-void Test_AI()
+void Test_AI(int model)
 {
     GameState gameState=env_init();
     Player player1,player2;
@@ -176,21 +176,41 @@ void Test_AI()
     player2.color=BLACK;
     player1.id=0;
     player2.id=1;
-    player1.identity=HUMAN;
-    player2.identity=COMPUTER;
+    player1.identity=COMPUTER;
+    player2.identity=HUMAN;
     int quit=0;
-    print_board(&gameState);
 
-    FILE *fp = NULL;
-    fp = fopen("TestLog/test", "w+");
+    vector legal_moves;
+    vector_init(&legal_moves);
+
+    int start_pt,end_pt;
+    int check_end=0;
     while(quit==0)
     {
-        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,1);
-        else quit=ai_play(&gameState,&player2,1);
         print_board(&gameState);
-        fprint_board(&gameState,fp);
+        if(gameState.playerTurn==player1.color)
+        {
+            quit=ai_play(&gameState,&player1,model);
+            if(quit==1)printf("player2 wins\n");
+            else if(quit==2)printf("player1 wins\n");
+        }
+        else
+        {
+            check_end=env_check_end(&gameState,&player2);
+            if(check_end)printf("player1 wins\n");
+            printf("\nPlayer2 moves from: ");
+            scanf("%d",&start_pt);
+            legal_moves=env_get_legal_moves(&gameState,&player2,start_pt);
+            print_legal_moves(legal_moves,start_pt);
+            printf("to: ");
+            scanf("%d",&end_pt);
+            
+            if(vector_contain(&legal_moves,end_pt)!=1)continue;
+            env_play(&gameState,&player2,start_pt,end_pt);
+            vector_free(&legal_moves);
+            env_free_container(&gameState);
+        }
     }
-    fclose(fp);
 }
 
 int main(int argc, char *argv[])
@@ -201,7 +221,7 @@ int main(int argc, char *argv[])
     //     Game();
     srand(time(0));
     //test_env();
-    
+    Test_AI(2);
     //AI_Contest();
     
     return 0;

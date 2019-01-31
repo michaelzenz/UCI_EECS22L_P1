@@ -194,6 +194,9 @@ int ai_play(GameState *gameState,Player *player, int model)
         case 1:
             quit=ai_model1_play(gameState,player);
             break;
+        case 2:
+            quit=ai_easy_play(gameState,player);
+            break;
     }
     return quit;
 }

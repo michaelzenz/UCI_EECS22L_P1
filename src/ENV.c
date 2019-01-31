@@ -75,6 +75,7 @@ uchar env_check_end(GameState *gameState, Player *player)
                         end=0;
                         break;
                     }
+                    else if(threatened==2)end=2;
                 }
                 //here is the only position where vector_free is not necessary
             }
@@ -125,7 +126,7 @@ uchar env_is_threatened(GameState *gameState,Player *player)
             }
         }
     }
-    if(K==-1)return 1;
+    if(K==-1)return 2;
     else if(threatened_area[K]==1)return 1;
     else return 0;
 }
