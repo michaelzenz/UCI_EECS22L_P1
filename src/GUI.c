@@ -10,6 +10,7 @@
 #define GameMode_HvC 0
 #define GameMode_HvH 1
 #define GameMode_CvC 2
+#define xy21d(x,y) (y*8+x)
 
 /*Global Variables */
 
@@ -68,24 +69,10 @@ void gui_init(Player player_arr[2])
 	gui_gameplay_window();
 }
 
-void InitBoard()
+
+void DrawBoard(GameState *gamestate)
 {
-}
-
-void ResetBoard()
-{
-}
-
-void ReverseGridColor(int g_x, int g_y)
-{
-}
-
-
-
-
-void DrawBoard()
-{
-        
+	for()
 }
 
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
