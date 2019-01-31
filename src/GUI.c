@@ -29,20 +29,6 @@ GdkPixbuf *HvC_pixbuf = NULL;
 GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
 
-//Look up table
-char *color[2]={"White","Black"};
-char *piece[6]={"Pawn.jpg"};
-char *square[2]={"WhiteSquare","BlackSquare"};
-
-char *main_menu_path="res/MainMenu.png";
-char *HvC_Menu_path="res/HvC_Menu.png";
-
-// char icon[20];
-// strcat(square[0]);
-// strcat(icon,color[0]);
-// strcat(icon,piece[0]);
-
-// icon=="WhitePawnWhiteS.jpg";
 
 GdkPixbuf *load_pixbuf_from_file (const char *filename)
 {
@@ -62,7 +48,223 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
 
 void DrawBoard(GameState *gamestate)
 {
-	for()
+	int x, y;
+	char *color[2]={"White","Black"};
+	char *piece[7]={"Pawn.jpg", "Rook.jpg", "Knight.jpg", "Bishop.jpg", "Queen.jpg", "King.jpg", "EmptySpace.jpg"};
+	char *square[2]={"WhiteSquare","BlackSquare"};
+	char path = "";
+
+//	char *main_menu_path="res/MainMenu.png";
+//	char *HvC_Menu_path="res/HvC_Menu.png";
+	
+	for(int i = 0 ; i< 64; i++){
+		x = (gamestate->board[i])%8;
+		y = (gamestate->board[i])/8;
+		path = "./res/";
+
+//WhiteSqureEmptyspace.jpg
+		if(gamestate->board[i] == 0 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, piece[6]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//BlackSquareEmptySpace.jpg
+		if(gamestate->board[i] == 0 && (x+y)%2==1){
+			path = strcat(path, square[1]);
+			path = strcat(path, piece[6]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//ROOK
+//WhiteSquareWhiteRook.jpg
+		if(gamestate->board[i] == 3 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[1]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackRook.jpg
+		if(gamestate->board[i] == -3 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[1]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhiteRook.jpg
+		if(gamestate->board[i] == 3 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[1]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackRook.jpg
+		if(gamestate->board[i] == -3 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[1]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//KNIGHT
+//WhiteSquareWhiteKnight.jpg
+		if(gamestate->board[i] == 2 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[2]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackknight.jpg
+		if(gamestate->board[i] == -2 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[2]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhiteKnight.jpg
+		if(gamestate->board[i] == 2 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[2]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackKnight.jpg
+		if(gamestate->board[i] == -2 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[2]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//PAWN
+//WhiteSquareWhitePawn.jpg
+		if(gamestate->board[i] == 1 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[0]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackPawn.jpg
+		if(gamestate->board[i] == -1 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[0]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhitePawn.jpg
+		if(gamestate->board[i] == 1 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[0]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackPawn.jpg
+		if(gamestate->board[i] == -1 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[0]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//BISHOP
+//WhiteSquareWhiteBishop.jpg
+		if(gamestate->board[i] == 4 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[3]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackBishop.jpg
+		if(gamestate->board[i] == -4 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[3]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhiteBishop.jpg
+		if(gamestate->board[i] == 4 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[3]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackBishop.jpg
+		if(gamestate->board[i] == -4 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[3]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//QUEEN
+//WhiteSquareWhiteQueen.jpg
+		if(gamestate->board[i] == 5 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[4]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackQueen.jpg
+		if(gamestate->board[i] == -5 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[4]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhiteQueen.jpg
+		if(gamestate->board[i] == 5 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[4]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackQueen.jpg
+		if(gamestate->board[i] == -5 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[4]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//KING
+//WhiteSquareWhiteKing.jpg
+		if(gamestate->board[i] == 6 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[5]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackKing.jpg
+		if(gamestate->board[i] == -6 && (x+y)%2==0){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[5]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareWhiteKing.jpg
+		if(gamestate->board[i] == 6 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[0]);
+			path = strcat(path, piece[5]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+//WhiteSquareBlackKing.jpg
+		if(gamestate->board[i] == -6 && (x+y)%2==1){
+			path = strcat(path, square[0]);
+			path = strcat(path, color[1]);
+			path = strcat(path, piece[5]);
+			chess_icon = gtk_image_new_from_file(path);
+		}
+
+
+		gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
+	}
+
+
+
+	//Look up table
+
+// char icon[20];
+// strcat(square[0]);
+// strcat(icon,color[0]);
+// strcat(icon,piece[0]);
+
+// icon=="WhitePawnWhiteS.jpg";
+
+
 }
 
 =======
@@ -246,18 +448,43 @@ void gui_player_CvC_menu(Player* player_arr)
 
 void gui_gameplay_window()
 {
+	/*create a table and draw the board*/
+  	table = gtk_table_new (8, 8, TRUE) ;
+  	gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT) ;
+ 	DrawBoard();
 
+  	fixed = gtk_fixed_new() ;
+  	gtk_fixed_put(GTK_FIXED(fixed), table, 0, 0) ;
+  	gtk_container_add(GTK_CONTAINER(window), fixed) ;
+
+//accept mouse press
+  	gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK) ;
+//when mouse presses window callback (TBD)
+  	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
 void gui_quit_window(GameState gameState)
 {
+  /*register event handlers*/
+  g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL) ;
 
 }
 
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-    
+	//create game board window
+   	gui_init_window(&argc, &argv);
+	//Event handlers
+	gui_quit_window(gamestate);
+	//insert game board table into board window
+	gui_gameplay_window();
+	//show window
+	gtk_widget_show_all(window) ;
+	gtk_main() ;
+
+  	return 0 ;
+
 }
 
 //here you will use the gameState to refresh the board
