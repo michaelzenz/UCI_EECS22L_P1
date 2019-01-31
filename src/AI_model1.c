@@ -1,5 +1,5 @@
 #include"AI.h"
-#define MAXSTEP 3
+#define MAXSTEP 4
 
 
 
