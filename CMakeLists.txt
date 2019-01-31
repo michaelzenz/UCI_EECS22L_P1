@@ -4,6 +4,8 @@ MESSAGE("This template works on linux")
 
 project(chess)
 
+
+
 SET(CMAKE_MODULE_PATH "/home/michaelz/Desktop/projects/courses/22L/chess")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
