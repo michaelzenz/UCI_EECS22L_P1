@@ -12,22 +12,25 @@ GtkWidget *window ;
 GtkWidget *image;
 GtkWidget *layout;
 GtkWidget *fixed;
-GtkWidget *chess_icon ;
+GtkWidget *chess_icon;
 GtkWidget *table;
 GtkWidget *button;
+GtkWidget *vbox;
 
 GdkPixbuf *main_menu_pixbuf = NULL;
 GdkPixbuf *HvC_pixbuf = NULL;
 GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
+GdkPixbuf *Background_pixbuf=NULL;
 
 //Look up table
 char *str_square[2]={"./res/WhiteSquare","./res/BlackSquare"};
 char *str_color[2]={"White","Black"};
-char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Rook.jpg", "Knight.jpg", "Bishop.jpg", "Queen.jpg", "King.jpg"};
+char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bishop.jpg", "Queen.jpg", "King.jpg"};
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
+char *Background_path="res/background.png";
 
 // char icon[20];
 // strcat(square[0]);
@@ -50,51 +53,15 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
     return pixbuf;
 }
 
-void DrawBoard(GameState *gamestate)
-{
-	int x, y;
-
-//	char *main_menu_path="res/MainMenu.png";
-//	char *HvC_Menu_path="res/HvC_Menu.png";
-	char path[50];
-	for(int i = 0 ; i< 64; i++){
-        memset(path,'\0',sizeof(path));
-		x = (gamestate->board[i])%8;
-		y = (gamestate->board[i])/8;
-        
-        strcat(path,str_square[(x+y)%2]);
-
-        if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
-        else
-        {
-            int color=gamestate->board[i]/abs(gamestate->board[i]);
-            int colorID=MAX(color*-1,0);
-            strcat(path, str_color[colorID]);
-            strcat(path,str_piece[abs(gamestate->board[i])]);
-        }
-
-		gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
-	}
 
 
-
-	//Look up table
-
-// char icon[20];
-// strcat(square[0]);
-// strcat(icon,color[0]);
-// strcat(icon,piece[0]);
-
-// icon=="WhitePawnWhiteS.jpg";
-
-
-}
 void gui_render()
 {
     gdk_threads_enter();
     gtk_main() ;
     gdk_threads_leave();
 }
+
 //Here you init the window and start the main loop
 //Don`t do anything to this part if you don`t know what it`s doing
 int gui_init_window(int argc, char*argv[])
@@ -109,13 +76,14 @@ int gui_init_window(int argc, char*argv[])
 
     layout = gtk_layout_new(NULL, NULL);
     gtk_container_add(GTK_CONTAINER (window), layout);
+    //fill_with_content (vbox);
 
     gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK|GDK_POINTER_MOTION_MASK);
     gdk_threads_init();
     g_thread_new("render",(GThreadFunc)gui_render,NULL);
 }
 
-void gui_init(Player player_arr[2])
+void gui_init(GameState *gameState,Player player_arr[2])
 {
     
     int GameMode=gui_main_menu();
@@ -133,7 +101,7 @@ void gui_init(Player player_arr[2])
     }
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
-    gui_gameplay_window();
+    gui_gameplay_window(gameState);
 }
 
 
@@ -266,19 +234,63 @@ void gui_player_CvC_menu(Player* player_arr)
 
 }
 
-void gui_gameplay_window()
+void DrawBoard(GameState *gamestate)
+{
+	int x, y;
+
+//	char *main_menu_path="res/MainMenu.png";
+//	char *HvC_Menu_path="res/HvC_Menu.png";
+	char path[50];
+	for(int i = 0 ; i< 64; i++)
+    {
+        memset(path,'\0',sizeof(path));
+        x = (i)%8;
+        y = (i)/8;
+        
+        strcat(path,str_square[(x+y)%2]);
+
+        if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
+        else
+        {
+            int color=gamestate->board[i]/abs(gamestate->board[i]);
+            int colorID=MAX(color*-1,0);
+            strcat(path, str_color[colorID]);
+            strcat(path,str_piece[abs(gamestate->board[i])]);
+        }
+
+        chess_icon=gtk_image_new_from_file(path);
+        gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
+    }
+//Look up table
+// char icon[20];
+// strcat(square[0]);
+// strcat(icon,color[0]);
+// strcat(icon,piece[0]);
+
+// icon=="WhitePawnWhiteS.jpg";
+}
+
+void gui_gameplay_window(GameState *gameState)
 {
 	/*create a table and draw the board*/
-  	table = gtk_table_new (8, 8, TRUE) ;
-  	gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT) ;
+    gdk_threads_enter();//this is important, before you call any gtk_* or g_* or gdk_* functions, call this function first
+    
+    Background_pixbuf=load_pixbuf_from_file(Background_path);
+    Background_pixbuf=gdk_pixbuf_scale_simple(Background_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+    image = gtk_image_new_from_pixbuf(Background_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
 
-  	fixed = gtk_fixed_new() ;
-  	gtk_fixed_put(GTK_FIXED(fixed), table, 0, 0) ;
-  	gtk_container_add(GTK_CONTAINER(window), fixed) ;
-
+    table = gtk_table_new (8, 8, TRUE) ;
+    gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT);
+    DrawBoard(gameState);
+    fixed = gtk_fixed_new();
+    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
+    gtk_container_add(GTK_CONTAINER(layout), fixed);
+    gtk_widget_show_all(window);
 //accept mouse press
-  	gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK) ;
-//when mouse presses window callback (TBD)
+    gdk_threads_leave();
+
+    //when mouse presses window callback (TBD)
   	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
@@ -318,7 +330,19 @@ int gui_play(GameState *gameState,Player *player)
 //by the way, all constants are defined in constant.h, have a look
 void gui_refresh(GameState *gameState,Player *player_arr)
 {
+    gdk_threads_enter();//this is important, before you call any gtk_* or g_* or gdk_* functions, call this function first
     
+
+    gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
+    table = gtk_table_new (8, 8, TRUE) ;
+    gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT);
+    DrawBoard(gameState);
+    fixed = gtk_fixed_new();
+    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
+    gtk_container_add(GTK_CONTAINER(layout), fixed);
+    gtk_widget_show_all(window);
+
+    gdk_threads_leave();
 }
 
 

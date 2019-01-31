@@ -35,6 +35,8 @@ SDL/SDL.h
 ../include/SDL/SDL.h
 ENV.h
 ../include/ENV.h
+string.h
+-
 struct.h
 ../include/struct.h
 constant.h

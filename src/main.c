@@ -18,13 +18,13 @@ int play(GameState *gameState,Player *player)
 void Game()
 {
     Player player_arr[2];
-
-    gui_init(player_arr);
+    GameState gameState=env_init();
+    gui_init(&gameState,player_arr);
     Player player1=player_arr[0],player2=player_arr[1];
     player1.id=PLAYER1;
     player2.id=PLAYER2;
 
-    GameState gameState=env_init();
+    
 
     while(1)
     {
@@ -50,7 +50,7 @@ void print_board(GameState *gameState)
         if(i%8==0)printf("\n");
         printf("%d\t",gameState->board[i]);
     }
-    printf("*****************\n*****************\n");
+    printf("\n*****************\n");
 }
 
 void fprint_board(GameState *gameState,FILE *fp)
@@ -60,7 +60,7 @@ void fprint_board(GameState *gameState,FILE *fp)
         if(i%8==0)printf("\n");
         fprintf(fp,"%d\t",gameState->board[i]);
     }
-    fprintf(fp,"*****************\n*****************\n");
+    fprintf(fp,"\n*****************\n");
 }
 
 void print_legal_moves(vector legal_moves, int start_pt)
@@ -126,13 +126,14 @@ void test_env()
 
 
 //specially for aria
-void test_gui_menu()
+void test_gui_menu(int argc, char *argv[])
 {
+    gui_init_window(argc,argv);
     Player player_arr[2];
     player_arr[0].id=0;
     player_arr[1].id=1;
-
-    gui_init(player_arr);
+    GameState gameState=env_init();
+    gui_init(&gameState,player_arr);
     for(int i=0;i<2;i++)
     {
         printf("Player%d uses ",i+1);
@@ -168,6 +169,30 @@ void AI_Contest(int model1,int model2)
     fclose(fp);
 }
 
+
+void AI_ContestWithGUI(int argc, char *argv[],int model1,int model2)
+{
+    gui_init_window(argc,argv);
+    GameState gameState=env_init();
+    Player player1,player2;
+    player1.color=WHITE;
+    player2.color=BLACK;
+    player1.id=0;
+    player2.id=1;
+    player1.identity=player2.identity=COMPUTER;
+    gui_gameplay_window(&gameState);
+
+    int quit=0;
+    while(quit==0)
+    {
+        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
+        else quit=ai_play(&gameState,&player2,model2);
+        // sleep(1);
+        //print_board(&gameState);
+        gui_refresh(&gameState,&player1);
+    }
+}   
+
 void Test_AI(int model)
 {
     GameState gameState=env_init();
@@ -185,6 +210,7 @@ void Test_AI(int model)
 
     int start_pt,end_pt;
     int check_end=0;
+    int score;
     while(quit==0)
     {
         print_board(&gameState);
@@ -208,9 +234,26 @@ void Test_AI(int model)
             if(vector_contain(&legal_moves,end_pt)!=1)continue;
             env_play(&gameState,&player2,start_pt,end_pt);
             vector_free(&legal_moves);
+            score=gameState.playerTurn*ai_sum_scores(&gameState,&player2);
+            printf("Current Scores:%d\n",score);
             env_free_container(&gameState);
         }
     }
+}
+
+//specially for armando
+void test_gamePlay_window(int argc, char *argv[])
+{
+    gui_init_window(argc,argv);
+    GameState gameState=env_init();
+    Player player1,player2;
+    player1.color=WHITE;
+    player2.color=BLACK;
+    player1.id=0;
+    player2.id=1;
+    player1.identity=player2.identity=COMPUTER;
+
+    gui_gameplay_window(&gameState);
 }
 
 int main(int argc, char *argv[])
@@ -221,8 +264,9 @@ int main(int argc, char *argv[])
     //     Game();
     srand(time(0));
     //test_env();
-    //Test_AI(2);
-    AI_Contest(1,2);
-    
+    //Test_AI(1);
+    //AI_Contest(1,1);
+    //test_gamePlay_window(argc,argv);
+    AI_ContestWithGUI(argc,argv,1,1);
     return 0;
 }

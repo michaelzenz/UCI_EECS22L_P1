@@ -19,6 +19,8 @@ typedef struct _SimpleMove{
 int ai_play(GameState *gameState,Player *player, int model);
 void env_reset();
 
+void ai_print_board(GameState *gameState);
+
 extern int pos_scores_pawn[2][64];
 extern int pos_scores_knights[2][64];
 extern int pos_scores_bishops[2][64];

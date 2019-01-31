@@ -97,9 +97,9 @@ int pos_scores_queens[2][64]=
     -20,-10,-10, -5, -5,-10,-10,-20},
 
     {-20,-10,-10, -5, -5,-10,-10,-20,
-    -10,  0,  5,  0,  0,  0,  0,-10,
+    -10,  0,  0,  0,  0,  5,  0,-10,
     -10,  5,  5,  5,  5,  5,  0,-10,
-    0,  0,  5,  5,  5,  5,  0, -5,
+    -5,  0,  5,  5,  5,  5,  0, 0,
     -5,  0,  5,  5,  5,  5,  0, -5,
     -10,  0,  5,  5,  5,  5,  0,-10,
     -10,  0,  0,  0,  0,  0,  0,-10,
@@ -148,7 +148,17 @@ int pos_scores_kings_end[2][64]=
     -50,-40,-30,-20,-20,-30,-40,-50}
 };
 
-int piece_scores[6]={10,30,50,30,90,900};
+int piece_scores[6]={100,300,500,300,900,9000};
+
+void ai_print_board(GameState *gameState)
+{
+    for(int i=0;i<64;i++)
+    {
+        if(i%8==0)printf("\n");
+        printf("%d\t",gameState->board[i]);
+    }
+    printf("\n*****************\n*****************\n");
+}
 
 int ai_sum_scores(GameState *gameState, Player *player)
 {
@@ -183,7 +193,11 @@ int ai_sum_scores(GameState *gameState, Player *player)
                 break;
         }
     }
-    return player->color*sum;
+    #ifdef CHECK_SCORES
+    ai_print_board(gameState);
+    printf("%d is playing, Scores: %d", player->color, sum);
+    #endif
+    return sum;
 }
 
 int ai_play(GameState *gameState,Player *player, int model)
