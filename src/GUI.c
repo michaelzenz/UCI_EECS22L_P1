@@ -79,8 +79,14 @@ int gui_init_window(int argc, char*argv[])
     //fill_with_content (vbox);
 
     gtk_widget_set_events(window, GDK_BUTTON_PRESS_MASK|GDK_POINTER_MOTION_MASK);
+
+
     gdk_threads_init();
+#ifdef ANTEDILUVIAN
+	g_thread_create((GThreadFunc)gui_render,NULL,TRUE,NULL);
+#else
     g_thread_new("render",(GThreadFunc)gui_render,NULL);
+#endif
 }
 
 void gui_init(GameState *gameState,Player player_arr[2])
