@@ -5,7 +5,14 @@
 #include <stdio.h>
 
 
+<<<<<<< HEAD
+#define GameMode_HvC 0
+#define GameMode_HvH 1
+#define GameMode_CvC 2
+#define xy21d(x,y) (y*8+x)
+=======
 
+>>>>>>> a880522296ba66ece0db8e983053ad0fde89fe3b
 
 /*Global Variables */
 
@@ -51,6 +58,14 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
     return pixbuf;
 }
 
+<<<<<<< HEAD
+
+void DrawBoard(GameState *gamestate)
+{
+	for()
+}
+
+=======
 void gui_render()
 {
     gdk_threads_enter();
@@ -99,6 +114,7 @@ void gui_init(Player player_arr[2])
 }
 
 
+>>>>>>> a880522296ba66ece0db8e983053ad0fde89fe3b
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 {
         *g_x = (c_x - BOARD_BORDER) / SQUARE_SIZE;
