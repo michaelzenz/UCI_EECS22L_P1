@@ -1,5 +1,5 @@
 #include"AI.h"
-#define MAXSTEP 4
+#define MAXSTEP 3
 
 
 
@@ -11,7 +11,7 @@ int ai_model1_simulate(GameState *gameState, Player *player, int depth)
     if(check)return -10000;
     else if(depth>=MAXSTEP)return ai_sum_scores(gameState,player);
 
-    int MaxScore=-9999999;
+    int MaxScore=-99999999;
     int score;
     int moves_cnt=gameState->moves_vector_cnt;
     int playerTurn=gameState->playerTurn;
@@ -37,7 +37,7 @@ int ai_model1_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
     if(check_end) return 1;
-    int MaxScore=-9999999;
+    int MaxScore=-99999999;
     int score;
     vector BestMovesID,MovesStart,MovesEnd,Scores;
     vector_init(&BestMovesID);

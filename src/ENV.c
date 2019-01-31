@@ -279,7 +279,7 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
 {
     int x=start_pt%8, y=start_pt/8;
     int playerTurn=gameState->playerTurn;
-        int xMax=MIN(x+step+1,8), xMin=MAX(x-step,0);
+    int xMax=MIN(x+step+1,8), xMin=MAX(x-step,0);
     int yMax=MIN(y+step+1,8), yMin=MAX(y-step,0);
     for(int i=y+1,j=x+1 ; i<yMax && j<xMax ; i++, j++)//iterates through the x,y in one direction
     {

@@ -188,7 +188,7 @@ void AI_ContestWithGUI(int argc, char *argv[],int model1,int model2)
         if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
         else quit=ai_play(&gameState,&player2,model2);
         // sleep(1);
-        //print_board(&gameState);
+        print_board(&gameState);
         gui_refresh(&gameState,&player1);
     }
 }   
