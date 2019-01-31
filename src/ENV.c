@@ -2,6 +2,7 @@
 #include"ENV.h"
 #define MIN(X,Y) (X)>(Y)?(Y):(X)
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
+#define XY2ID(X,Y) ((Y)*8+X)
 
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
                         PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,
@@ -25,13 +26,18 @@ GameState env_init()
 
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
-    if(gameState->playerTurn!=player->id) return;
+    if(gameState->playerTurn!=player->color) return;
     int s_piece=gameState->board[start_pt];
-    int e_piece=0;
-    if(gameState->board[end_pt]!=0) e_piece=gameState->board[end_pt];
+    int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
+    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    // char str_move[20];
+    // move2string(str_move,&move);
+    // gameState->moves_stack.log=str_move;
+    //stack_push(&(gameState->moves_stack),str_move,sizeof(str_move));
+
 }
 
 
@@ -107,29 +113,33 @@ uchar env_is_threatened(GameState *gameState,Player *player)
 
 vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 {
+    
     vector legal_moves;
+    vector_init(&legal_moves);
+    if(start_pt<0||start_pt>=64)return legal_moves;
+    if(gameState->playerTurn*gameState->board[start_pt]<=0)return legal_moves;
     switch(abs(gameState->board[start_pt]))
     {
         case PAWN:
-            env_get_legal_pawn(gameState,start_pt);
+            legal_moves=env_get_legal_pawn(gameState,start_pt);
             break;
         case KNIGHT:
-            env_get_legal_knight(gameState,start_pt);
+            legal_moves=env_get_legal_knight(gameState,start_pt);
             break;
         case CASTLE:
-            env_get_legal_castle(gameState,start_pt);
+            legal_moves=env_get_legal_castle(gameState,start_pt);
             break;
         case BISHOP:
-            env_get_legal_bishop(gameState,start_pt);
+            legal_moves=env_get_legal_bishop(gameState,start_pt);
             break;
         case QUEEN:
-            env_get_legal_queen(gameState,start_pt);
+            legal_moves=env_get_legal_queen(gameState,start_pt);
             break;
         case KING:
-            env_get_legal_king(gameState,start_pt);
+            legal_moves=env_get_legal_king(gameState,start_pt);
             break;
     }
-
+    return legal_moves;
 }
 
 //board[pos]*playerTurn<0 -> enemy
@@ -139,28 +149,41 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
 {
     vector legal_moves;
     vector_init(&legal_moves);
-
     int x=start_pt%8, y=start_pt/8;
-    if(x-1>=0 && gameState->board[y*8+x-1]<0)vector_add(&legal_moves,y*8+x-1);
-    else if(x+1<8 && gameState->board[y*8+x+1]<0)vector_add(&legal_moves,y*8+x+1);
 
-    if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
-       {
-           if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-               vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
+    int playerTurn=gameState->playerTurn;
+    int maxStep=1;
+    if((7-y*2)*playerTurn==-5)//means that pawn is on home row
+        maxStep=2;
+    for(int k=1;k<=maxStep;k++)
+    {
+        if(abs(7-(y+k*playerTurn*-1)*2)>7)break;
+        if(gameState->board[XY2ID(x,y+k*playerTurn*-1)]*playerTurn==0)vector_add(&legal_moves,XY2ID(x,y+k*playerTurn*-1));
+    }
+    for(int dx=-1;dx<=1;dx+=2)
+    {
+        if(abs(7-(y+playerTurn*-1)*2)>7)break;
+        if(x+dx<0||x+dx>7)continue;
+        if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
+    }
+        
+    //if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
+       //{
+          // if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+            //   vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
            //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
-        }
+        //}
               
     //y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
     //checks if space ahead is empty/occupied by enemy
     //also checks if pawns are not on the last rows
-    if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-        vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
+    //if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
+        //vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
     /*(gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)||(*/
-    
-    //(x>=0 && x<8 && y>=0 && y<8)&&
-    if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
-    if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
+
+	//checks diagonal attacks
+    //if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
+    //if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
                                                                                                                                                          
     return legal_moves;
 }

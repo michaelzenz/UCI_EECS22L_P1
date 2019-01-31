@@ -4,6 +4,8 @@
 
 #include "vector.h"
 
+
+
 void vector_init(vector *v)
 {
     v->data = NULL;
@@ -78,3 +80,12 @@ void vector_cat(vector *v1, vector *v2)
     vector_free(v2);
 }
 
+unsigned char vector_contain(vector *v, int p)
+{
+    int cnt=v->count;
+    for(int i=0;i<cnt;i++)
+    {
+        if(vector_get(v,i)==p)return 1;
+    }
+    return 0;
+}

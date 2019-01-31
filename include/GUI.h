@@ -11,13 +11,16 @@
 
 #define MAX_MSGLEN  100
 #define SQUARE_SIZE 50
-#define WINDOW_BORDER 10
-#define BOARD_BORDER 10
+#define WINDOW_BORDER 0
+#define BOARD_BORDER 0
 #define BOARD_WIDTH  (8*SQUARE_SIZE)
 #define BOARD_HEIGHT (8*SQUARE_SIZE)
 #define WINDOW_WIDTH  960
 #define WINDOW_HEIGHT 540
 
+#define GameMode_HvC 1
+#define GameMode_HvH 2
+#define GameMode_CvC 3
 
 int gui_init_window(int argc, char*argv[]);
 int gui_free_video();

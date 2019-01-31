@@ -27,3 +27,7 @@
 #define KING 6
 #define KING_W 6
 #define KING_B -6
+
+#define NOSPECIAL 0
+#define ENPASSANT 1
+#define CASTLING 2
