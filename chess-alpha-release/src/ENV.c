@@ -24,13 +24,6 @@ GameState env_init()
     return gameState;
 }
 
-void env_free_container(GameState *gameState)
-{
-    for(int i=0;i<gameState->moves_vector_cnt;i++)
-        vector_free(&(gameState->container[i].legal_moves));
-    gameState->moves_vector_cnt=0;
-}
-
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     int s_piece=gameState->board[start_pt];
@@ -102,7 +95,12 @@ GameState env_copy_State(GameState *gameState)
     return newState;
 }
 
-
+void env_free_container(GameState *gameState)
+{
+    for(int i=0;i<gameState->moves_vector_cnt;i++)
+        vector_free(&(gameState->container[i].legal_moves));
+    gameState->moves_vector_cnt=0;
+}
 
 uchar env_is_threatened(GameState *gameState,Player *player)
 {
