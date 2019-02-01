@@ -42,8 +42,13 @@ glib-2.0
 gthread-2.0
 ${GLIB_LDFLAGS})
 
-AUX_SOURCE_DIRECTORY(src DIR_SRCS )
+AUX_SOURCE_DIRECTORY("${PROJECT_SOURCE_DIR}/src" DIR_SRCS )
 add_executable(${PROJECT_NAME} ${DIR_SRCS})
+
+add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/res"
+        "${EXECUTABLE_OUTPUT_PATH}/res")
 
 # set(SOURCE src/SDL_Sample.c)
 # add_executable(${PROJECT_NAME} ${SOURCE})

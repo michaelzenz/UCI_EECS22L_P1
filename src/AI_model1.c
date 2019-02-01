@@ -1,6 +1,6 @@
 #include"AI.h"
 #define MAXSTEP 3
-
+#define CHECK_SCORE
 
 
 
@@ -8,7 +8,7 @@
 int ai_model1_simulate(GameState *gameState, Player *player, int depth)
 {
     uchar check=env_check_end(gameState,player);
-    if(check)return -10000;
+    if(check)return gameState->playerTurn*-99999999;
     else if(depth>=MAXSTEP)return ai_sum_scores(gameState,player);
 
     int MaxScore=-99999999;
@@ -77,7 +77,15 @@ int ai_model1_play(GameState *gameState, Player *player)
         
     }
     int id=vector_get(&BestMovesID,rand()%BestMovesCnt);
+    #ifdef CHECK_SCORE
+    printf("It is %d playing\n",gameState->playerTurn);
+    printf("Current Score is %d\n",ai_sum_scores(gameState,player));
+    #endif
     env_play(gameState,player,vector_get(&MovesStart,id),vector_get(&MovesEnd,id));
+    #ifdef CHECK_SCORE
+    printf("The player has decided to move from %d to %d\n",vector_get(&MovesStart,id),vector_get(&MovesEnd,id));
+    printf("After making the move, the score is %d\n",ai_sum_scores(gameState,player));
+    #endif
     vector_free(&BestMovesID);
     vector_free(&MovesStart);
     vector_free(&MovesEnd);

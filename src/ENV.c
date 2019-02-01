@@ -120,7 +120,7 @@ uchar env_is_threatened(GameState *gameState,Player *player)
                 legal_moves=env_get_legal_moves(gameState,player,pos);
                 for(int i=0;i<legal_moves.count;i++)
                 {
-                    threatened_area[vector_get(&legal_moves,pos)]=1;
+                    threatened_area[vector_get(&legal_moves,i)]=1;
                 }
                 vector_free(&legal_moves);
             }
@@ -179,6 +179,7 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
     {
         if(abs(7-(y+k*playerTurn*-1)*2)>7)break;
         if(gameState->board[XY2ID(x,y+k*playerTurn*-1)]*playerTurn==0)vector_add(&legal_moves,XY2ID(x,y+k*playerTurn*-1));
+        else break;
     }
     for(int dx=-1;dx<=1;dx+=2)
     {

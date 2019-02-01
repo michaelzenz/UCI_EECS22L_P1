@@ -237,10 +237,11 @@ void gui_player_CvC_menu(Player* player_arr)
 
 void DrawBoard(GameState *gamestate)
 {
-	int x, y;
 
-//	char *main_menu_path="res/MainMenu.png";
-//	char *HvC_Menu_path="res/HvC_Menu.png";
+    table = gtk_table_new (8, 8, TRUE) ;
+    gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT);
+
+	int x, y;
 	char path[50];
 	for(int i = 0 ; i< 64; i++)
     {
@@ -262,13 +263,12 @@ void DrawBoard(GameState *gamestate)
         chess_icon=gtk_image_new_from_file(path);
         gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
     }
-//Look up table
-// char icon[20];
-// strcat(square[0]);
-// strcat(icon,color[0]);
-// strcat(icon,piece[0]);
 
-// icon=="WhitePawnWhiteS.jpg";
+    fixed = gtk_fixed_new();
+    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
+    gtk_container_add(GTK_CONTAINER(layout), fixed);
+    gtk_widget_show_all(window);
+
 }
 
 void gui_gameplay_window(GameState *gameState)
@@ -281,13 +281,7 @@ void gui_gameplay_window(GameState *gameState)
     image = gtk_image_new_from_pixbuf(Background_pixbuf);
     gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
 
-    table = gtk_table_new (8, 8, TRUE) ;
-    gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT);
     DrawBoard(gameState);
-    fixed = gtk_fixed_new();
-    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
-    gtk_container_add(GTK_CONTAINER(layout), fixed);
-    gtk_widget_show_all(window);
 //accept mouse press
     gdk_threads_leave();
 
@@ -335,13 +329,8 @@ void gui_refresh(GameState *gameState,Player *player_arr)
     
 
     gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
-    table = gtk_table_new (8, 8, TRUE) ;
-    gtk_widget_set_size_request (table, BOARD_WIDTH, BOARD_HEIGHT);
+    
     DrawBoard(gameState);
-    fixed = gtk_fixed_new();
-    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
-    gtk_container_add(GTK_CONTAINER(layout), fixed);
-    gtk_widget_show_all(window);
 
     gdk_threads_leave();
 }

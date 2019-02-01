@@ -148,7 +148,7 @@ int pos_scores_kings_end[2][64]=
     -50,-40,-30,-20,-20,-30,-40,-50}
 };
 
-int piece_scores[6]={100,300,500,300,900,20000};
+int piece_scores[6]={100,300,500,300,900,9000};
 
 void ai_print_board(GameState *gameState)
 {
