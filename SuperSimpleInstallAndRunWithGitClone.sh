@@ -1,4 +1,4 @@
-
+git checkout server
 rm -rf build
 mkdir build
 cd build
