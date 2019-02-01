@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
+
 project(chess)
 
 set(CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
