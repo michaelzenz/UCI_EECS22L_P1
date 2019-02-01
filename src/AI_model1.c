@@ -79,11 +79,13 @@ int ai_model1_play(GameState *gameState, Player *player)
     int id=vector_get(&BestMovesID,rand()%BestMovesCnt);
     #ifdef CHECK_SCORE
     printf("It is %d playing\n",gameState->playerTurn);
+    ai_print_board(gameState);
     printf("Current Score is %d\n",ai_sum_scores(gameState,player));
     #endif
     env_play(gameState,player,vector_get(&MovesStart,id),vector_get(&MovesEnd,id));
     #ifdef CHECK_SCORE
     printf("The player has decided to move from %d to %d\n",vector_get(&MovesStart,id),vector_get(&MovesEnd,id));
+    ai_print_board(gameState);
     printf("After making the move, the score is %d\n",ai_sum_scores(gameState,player));
     #endif
     vector_free(&BestMovesID);

@@ -58,9 +58,7 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
 
 void gui_render()
 {
-    gdk_threads_enter();
     gtk_main() ;
-    gdk_threads_leave();
 }
 
 //Here you init the window and start the main loop
@@ -112,11 +110,7 @@ void gui_init(GameState *gameState,Player player_arr[2])
 }
 
 
-void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
-{
-        *g_x = (c_x - BOARD_BORDER) / SQUARE_SIZE;
-        *g_y = (c_y - BOARD_BORDER) / SQUARE_SIZE;
-}
+
 
 
 
@@ -277,6 +271,12 @@ void DrawBoard(GameState *gamestate)
 
 }
 
+void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
+{
+        *g_x = (c_x - BOARD_BORDER) / SQUARE_SIZE;
+        *g_y = (c_y - BOARD_BORDER) / SQUARE_SIZE;
+}
+
 void gui_gameplay_window(GameState *gameState)
 {
 	/*create a table and draw the board*/
@@ -295,12 +295,7 @@ void gui_gameplay_window(GameState *gameState)
   	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
-void gui_quit_window(GameState gameState)
-{
-  /*register event handlers*/
-  g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL) ;
 
-}
 
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
@@ -341,5 +336,11 @@ void gui_refresh(GameState *gameState,Player *player_arr)
     gdk_threads_leave();
 }
 
+void gui_checkmate_window(int winner)
+{
+  /*register event handlers*/
+//   g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL) ;
+
+}
 
 
