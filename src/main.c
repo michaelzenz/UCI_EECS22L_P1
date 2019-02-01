@@ -259,7 +259,7 @@ void test_gamePlay_window(int argc, char *argv[])
 int main(int argc, char *argv[])
 {   
     #ifdef ANTEDILUVIAN
-    printf("\n\n\********************\");
+    printf("\n\n\\********************\\");
     printf("You are seeing this message because you are using a very old version of Glib\n");
     printf("This is strongly NOT recommended because when TODAY`s HUMAN BEINGS download you project from Internet\n");
     printf("You expect them to install the latest glib instead of some outdated version\n");
