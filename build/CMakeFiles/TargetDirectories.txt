@@ -1,3 +1,0 @@
-/home/michaelz/Desktop/projects/courses/22L/UCI_EECS22L_P1/build/CMakeFiles/edit_cache.dir
-/home/michaelz/Desktop/projects/courses/22L/UCI_EECS22L_P1/build/CMakeFiles/rebuild_cache.dir
-/home/michaelz/Desktop/projects/courses/22L/UCI_EECS22L_P1/build/CMakeFiles/chess.dir
