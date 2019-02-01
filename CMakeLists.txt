@@ -54,5 +54,3 @@ add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
 # set(SOURCE src/SDL_Sample.c)
 # add_executable(${PROJECT_NAME} ${SOURCE})
 
-
-
