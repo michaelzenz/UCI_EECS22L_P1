@@ -188,7 +188,7 @@ void AI_ContestWithGUI(int argc, char *argv[],int model1,int model2)
         if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
         else quit=ai_play(&gameState,&player2,model2);
         // sleep(1);
-        print_board(&gameState);
+        //print_board(&gameState);
         gui_refresh(&gameState,&player1);
     }
 }   
@@ -257,7 +257,17 @@ void test_gamePlay_window(int argc, char *argv[])
 }
 
 int main(int argc, char *argv[])
-{
+{   
+    #ifdef ANTEDILUVIAN
+    printf("\n\n\\********************\\\n");
+    printf("You are seeing this message because you are using a very old version of Glib\n");
+    printf("This is strongly NOT recommended because when TODAY`s HUMAN BEINGS download you project from Internet\n");
+    printf("You expect them to install the latest glib instead of some outdated version\n");
+    printf("But after all I can`t do anything to stop you.\n");
+    printf("Besides we got to finish our homework\n");
+    printf("\n\"This is life\"\n");
+    #endif
+
     //gui_init_window(argc,argv);
     //test_gui_menu();//specially created for aria to test
     // while(1)

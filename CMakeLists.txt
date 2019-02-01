@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-
 project(chess)
 
 set(CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
@@ -52,4 +51,6 @@ add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
 
 # set(SOURCE src/SDL_Sample.c)
 # add_executable(${PROJECT_NAME} ${SOURCE})
+
+
 
