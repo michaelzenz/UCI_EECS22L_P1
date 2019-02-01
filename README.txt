@@ -1,16 +1,34 @@
 
+++++++++++++++++++++++++++++++++++++++++++++++++++
 Team 11: King Me!
 ++++++++++++++++++++++++++++++++++++++++++++++++++
-Aria Javanmard		Armando Rodriguez	Keenan Lau	Marshall Payatt		Michael Zeng  
+By Aria Javanmard	Armando Rodriguez	Keenan Lau	Marshall Payatt		Michael Zeng  
 University of California Irvine
 
 Alpha Version
 Feb 1, 2019
 
+Copyright © 2019 by Marshall Payatt, Keenan Lau, Zhifang Zeng, Armando Rodriguez, Aria Javanmard
+All rights reserved. This book and program or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the publisher except for the use of brief quotations in a book review
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Gameplay
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In the alpha release, only AI vs AI is playable. Launching the program will open the Chess Board GUI, and two AI players will begin automatically without any user input. The program closes if one AI player wins. In future versions we will have safeguards against stalemates but the current version will continue plating until the user closes the program.
 
 
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Error Messages
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Illegal Move: Appears when a player attempts a move that is not permitted by the rules of chess. See Glossary on page 3 for more information.
 
+Illegal Selection: Appears when a player selects a piece that does not belong to the current player or is unoccupied.
+
+King in Check: Appears when a player makes a move that does not resolve check. See the entry for King in the Glossary on page 5 for more information
+
+Error: a catch-all for unforeseen errors in the game program.
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -36,15 +54,18 @@ Change into the directory by running:
 To compile run this command:
     bash SuperSimpleIntstallAndRun.sh
 
-
+++++++++++++++++++++++++++++++++++++++++++++++++++
 Glossary
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Terminology
+
 Capture  -  When a piece is taken by another from the opposite player, it is removed from the board.
 
 Check  -  When a King is threatened by an opponent’s pieces. The player’s next move must protect the king in some way.
 
 CheckMate  -  When the King is put in check, but the player has no means of protecting it from being captured on the opponent's next turn. When you are out of moves in this situation, you lose.
+
 
 Pieces
 
@@ -59,6 +80,8 @@ Knight  -  A piece that can move in an ‘L’ shape of two spaces in one of the
 Queen  -  A piece that can move both horizontally, vertically and diagonally like both the Rook or Bishop. Along these directions, she can capture as well as move as long as she is unobstructed.
 
 King  -  The King is the most valuable piece. It can move and capture within one space horizontally, vertically as well as diagonally. It cannot move to a space that would put it in check, which would be considered an illegal move. The game is lost if the king is put into checkmate, where the player cannot make a move that would save it.
+
+
 Advanced Moves
 
 Castling  -  An advanced move that can be used when a king is separated from a Rook of its own color by two or three empty spaces in the horizontal direction. You are allowed to move both the King and Rook at the same time by moving the king two spaces in the direction of the Rook as well moving the Rook to space next to the king's new position on the opposite side of the Rook’s original position.
@@ -70,89 +93,4 @@ Castling is only permissible if all of the following conditions hold:
 
 En Passant  -  An advanced move that allows a pawn to capture a pawn under very specific conditions. It can occur when a pawn is moved for the first time two spaces to avoid being captured on the space directly in front of it by an opposing pawn that is two spaces in front and one space to either side. The enemy pawn is only able to pull off this move immediately on the next turn. If the enemy pawn is allowed to move diagonally behind the first pawn and can capture the first pawn from behind.
 
-Computer Chess
 
-Usage Scenario
-
-Main Menu for the program
-
-Game Mode Selection - Player can choose the game mode here. Options are highlighted when the mouse is hovered over it. Left-click it to select this mode.
-One Player - Player will play against the computer. More options can be found in One Player Menu 
-Two Players - Two Human Players can play against each other, proceeds to game.
-Computer vs Computer - Let two AI play against each other automatically and proceeds to game.
-
-One Player Menu
-
-The One Player Menu, which will appear after the player chooses the one player option in the Main Menu. Again, options are highlighted when the mouse hovers over it. Left-click it to select this option.
-
-Difficulty - Only one of the 3 options: Easy, Medium, Advanced can be chosen. This option determines the intelligence of the AI. Easy will be selected by default.
-Easy - the computer will make legal moves randomly. 
-Medium - the computer will consider only the current board state, and make a move in response to your last move.
-Advanced - the computer will consider and simulate several moves in advanced and select the best strategy.
-
-Color - Players can choose between one of the 2 options: Black and White. This option determines the color that the player will play as. White will be selected by default.
-Black - the player will play with black pieces. The status window of black will be placed on the top left. Upon beginning the game, the black moves second, and the game starts automatically after the computer makes the first move as white.
-White - the player will play with white pieces. The status window of white will be placed on the bottom right. Upon beginning the game, the white moves first, and the game will start after the player make the first move.
-
-Play - left-click to proceed to the gameplay window. 
-
-Quit - the player can return to the previous menu by left-clicking this option, which will be highlighted when the mouse is hovered over it.
-
-Gameplay Board
-
-Window title - Shows the current mode of the game. In the example above, the player has chosen white and is currently playing against the computer.
-
-Chess board - an interactive area where the player plays the game. Player can use only the mouse to play the game.
-Moving with mouse - click the piece that the player wants to move, and then all possible legal moves will be displayed on the board. Click the legal destination again to finish a move. An error message will occur if an illegal move is attempted to be made and the game state will stay unchanged.
-Undo moves - player can undo their moves when this option is clicked, and will be highlighted when the mouse is hovered over it.
-
-Status window - a sub window that contains pertinent information of the game. The status window for black will always be placed on top left and the status window for black will always be placed bottom right. At the top of each sub window is the player`s name(Player1, Player2 or Computer) of the corresponding color. Below the player`s name is the timer showing the left time for play. 
-
-Quit - the player can return to the previous menu by left-clicking this option, which will be highlighted when the mouse is hovered over it.
-
-Goals
-Victory is achieved by capturing the opponent's King through checkmate.
-Features
-Text log
-Player Color Choice
-Graphical User Interface
-Player versus Player
-Player versus Computer 
-Computer versus Computer
-Multi-level difficulty 
-Show legal moves
-Undo option
-
-
-
-
-
-
-
-Chess Program Functions and Features 
-
-
-User Interface  -  Users can navigate a readable set of menus to select game modes and other options. 
-
-Game Modes  -  Users can choose between multiple game modes from the menus. Game modes include Player versus Player, Player versus Computer and Computer versus Computer
-
-Difficulty  -  Users can select their desired difficulty from Easy to Advanced.
-
-Piece Color Choice  -  Users can choose their desired color and first turn advantage
-
-Text Log  -  Games generate a text log that can be loaded up at user convenience
-
-Copyright
-
-Copyright © 2019 by Marshall Payatt, Keenan Lau, Zhifang Zeng, Armando Rodriguez, Aria Javanmard
-All rights reserved. This book and program or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the publisher except for the use of brief quotations in a book review
-
-Error Messages
-
-Illegal Move: Appears when a player attempts a move that is not permitted by the rules of chess. See Glossary on page 3 for more information.
-
-Illegal Selection: Appears when a player selects a piece that does not belong to the current player or is unoccupied.
-
-King in Check: Appears when a player makes a move that does not resolve check. See the entry for King in the Glossary on page 5 for more information
-
-Error: a catch-all for unforeseen errors in the game program.
