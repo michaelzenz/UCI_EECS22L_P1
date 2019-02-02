@@ -3,7 +3,9 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include",
+                "/usr/include/gtk-2.0"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
