@@ -235,7 +235,7 @@ void gui_player_CvC_menu(Player* player_arr)
 
 }
 
-void DrawBoard(GameState *gamestate)
+void DrawBoard(GameState *gamestate, int highlight[64])
 {
 
     table = gtk_table_new (8, 8, TRUE) ;
@@ -248,8 +248,12 @@ void DrawBoard(GameState *gamestate)
         memset(path,'\0',sizeof(path));
         x = (i)%8;
         y = (i)/8;
-        
-        strcat(path,str_square[(x+y)%2]);
+        if(highlight[(x+y)%2] != 0){
+		strcat(path, str_square[highlight[(x+y)%2]]);
+	}
+	else{
+        	strcat(path, str_square[(x+y)%2]);
+	}
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else
@@ -362,6 +366,7 @@ vector cur_legal_moves;
 void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
     int pixelX, pixelY, gridX, gridY, index, piece;
+    int highlight[64];
     GameState *gameState=(GameState*)data;
 	
 	//IDK what this is
@@ -391,6 +396,13 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
                 }
                 check_legal_start=1;
                 move_start=pos;
+		//highlight selected piece and move options
+		highlight[pos]= 2;
+		for(int i=1; i<Legal_move_count; i++){
+			highlight[i] = 3;
+		}
+		DrawBoard(gameState, highlight);
+		gui_refresh(gameState, player);
                 break;
             }
         }
