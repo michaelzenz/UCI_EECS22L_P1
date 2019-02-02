@@ -25,7 +25,7 @@ typedef struct _LegalMovesContainer
 
 typedef struct _Node
 {
-    char* log;
+    char log[20];
     struct Node *next;
     struct Node *prev;
 }Node;
@@ -46,7 +46,7 @@ typedef struct _GameState
     int board[8*8];
     LegalMovesContainer container[16];
     int moves_vector_cnt;
-    Node moves_stack;
+    Node** moves_stack;
 } GameState;
 
 typedef unsigned char uchar;
