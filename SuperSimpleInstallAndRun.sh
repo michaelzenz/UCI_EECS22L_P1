@@ -1,4 +1,5 @@
-
+sudo apt update
+sudo apt install pkg-config gtk+2.0 cmake
 
 rm -rf build
 mkdir build
