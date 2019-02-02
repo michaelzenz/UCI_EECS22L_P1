@@ -31,6 +31,11 @@ char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/background.png";
 
+//variables for movement
+int old_index;
+int new_index;
+int selected_piece;
+
 // char icon[20];
 // strcat(square[0]);
 // strcat(icon,color[0]);
@@ -265,17 +270,76 @@ void DrawBoard(GameState *gamestate)
     }
 
     fixed = gtk_fixed_new();
-    gtk_fixed_put(GTK_FIXED(fixed), table, WINDOW_WIDTH/2-BOARD_WIDTH/2, WINDOW_HEIGHT/2-BOARD_WIDTH/2);
+    gtk_fixed_put(GTK_FIXED(fixed), table, BOARD_BORDER_LEFT, BOARD_BORDER_UP);
     gtk_container_add(GTK_CONTAINER(layout), fixed);
     gtk_widget_show_all(window);
 
 }
 
+// pixel coordinates to board grid coordinates
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 {
-        *g_x = (c_x - BOARD_BORDER) / SQUARE_SIZE;
-        *g_y = (c_y - BOARD_BORDER) / SQUARE_SIZE;
+        *g_x = (c_x - BOARD_BORDER_LEFT) / SQUARE_SIZE;
+        *g_y = (c_y - BOARD_BORDER_UP) / SQUARE_SIZE;
 }
+
+
+//selects piece with click
+void Select_Piece(GtkWidget *widget, GdkEvent *event, gpointer data){
+
+	int pixelX, pixelY, gridX, gridY, index, piece;
+	
+	//IDK what this is
+ 	GdkModifierType state;
+	
+	//gets the location of where the person clicked
+	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
+
+	//change pixel to xy coordinates
+	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
+
+	//change xy to 1D and label as index
+	old_index = xy21d(gridX, gridY);
+
+	//gets info of what piece is on that space
+	//selected_piece = gameState->board[index];
+}
+
+//selects target space with click
+void Select_Movement(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+
+	int pixelX, pixelY, gridX, gridY, index, piece;
+	
+	//IDK what this is
+ 	GdkModifierType state;
+	
+	//gets the location of where the person clicked
+	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
+
+	//change pixel to xy coordinates
+	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
+
+	//change xy to 1D and label as index
+	new_index = xy21d(gridX, gridY);
+}
+
+//checks if move selection is legal
+void Legal_Move_Check(GameState *gameState){
+	//idk how our move list works yet
+}
+
+//Moves the selected Piece
+void Move_Piece(GameState *gameState){
+	
+	//moves piece to new space
+	gameState->board[new_index] = selected_piece;
+	//erases piece from old position
+	gameState->board[old_index] = 0;
+	//update board, idk if this should be here or outside the function
+	DrawBoard(gameState);
+}
+
 
 void gui_gameplay_window(GameState *gameState)
 {
@@ -291,16 +355,93 @@ void gui_gameplay_window(GameState *gameState)
 //accept mouse press
     gdk_threads_leave();
 
-    //when mouse presses window callback (TBD)
-  	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
+    //when mouse presses window callback (select piece)
+    //g_signal_connect(window, "button_press_event", G_CALLBACK(Select_Piece), NULL) ;
+    
+    //when mouse presses window callback (select movement)
+    //g_signal_connect(window, "button_press_event", G_CALLBACK(Select_Movement), NULL) ;
 }
 
+int check_MoveMade=0;
+int check_legal_start=0;
+int move_start=-1;
+int move_end=-1;
+vector cur_legal_moves;
 
+void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+    int pixelX, pixelY, gridX, gridY, index, piece;
+    GameState *gameState=(GameState*)data;
+	
+	//IDK what this is
+ 	GdkModifierType state;
+	
+	//gets the location of where the person clicked
+	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
+
+	//change pixel to xy coordinates
+	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
+    int pos=gridY*8+gridX;
+
+    printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
+
+    if(!check_legal_start)
+    {
+        int move_vector_cnt=gameState->moves_vector_cnt;
+        for(int i=0;i<move_vector_cnt;i++)
+        {
+            if(pos==gameState->container[i].pos)
+            {
+                cur_legal_moves=gameState->container[i].legal_moves;
+                int vector_cnt=cur_legal_moves.count;
+                for(int i=0;i<vector_cnt;i++)
+                {
+                    
+                }
+                check_legal_start=1;
+                move_start=pos;
+                break;
+            }
+        }
+    }
+    else 
+    {
+        if(vector_contain(&cur_legal_moves,pos))
+        {
+            move_end=pos;
+            check_MoveMade=1;
+        }
+        else
+        {
+            check_legal_start=0;
+            move_end=-1;
+            move_start=-1;
+        }
+        
+    }
+    
+    
+}
 
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-	
+    env_check_end(gameState,player);
+	gdk_threads_enter();
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(gui_play_callback), gameState);
+    gdk_threads_leave();
+    while(check_MoveMade==0){
+        sleep(1);
+    }
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
+    env_play(gameState,player,move_start,move_end);
+    move_start=-1;
+    move_start=-1;
+    check_legal_start=0;
+    check_MoveMade=0;
+    env_free_container(gameState);
   	return 0 ;
 
 }

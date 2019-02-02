@@ -6,16 +6,16 @@
 int GameMode=0;
 #define MODEL 1
 
-int play(GameState *gameState,Player *player)
+int play(GameState *gameState,Player *player,int model)
 {
     int quit;
     
     if(player->identity==HUMAN) quit=gui_play(gameState,player);
-    else quit=ai_play(gameState,player,MODEL);
+    else quit=ai_play(gameState,player,model);
     return quit;
 }
 
-void Game()
+void Game(int model)
 {
     Player player_arr[2];
     GameState gameState=env_init();
@@ -30,9 +30,9 @@ void Game()
     {
         int quit;
         if(gameState.playerTurn==player1.color) 
-            quit=play(&gameState,&player1);
+            quit=play(&gameState,&player1,model);
         else 
-            quit=play(&gameState,&player2);
+            quit=play(&gameState,&player2,model);
         if(quit)
         {
             gui_checkmate_window(quit);
@@ -256,6 +256,34 @@ void test_gamePlay_window(int argc, char *argv[])
     gui_gameplay_window(&gameState);
 }
 
+void Test_AI_withGUI(int argc, char *argv[],int model)
+{
+    gui_init_window(argc,argv);
+
+    GameState gameState=env_init();
+    Player player1,player2;
+    player1.color=WHITE;
+    player2.color=BLACK;
+    player1.id=0;
+    player2.id=1;
+    player1.identity=HUMAN;
+    player2.identity=COMPUTER;
+    gui_gameplay_window(&gameState);
+    int quit=0;
+
+    while(quit==0)
+    {
+        if(gameState.playerTurn==player1.color) 
+            quit=play(&gameState,&player1,model);
+        else 
+            quit=play(&gameState,&player2,model);
+
+        gui_refresh(&gameState,&player1);
+    }
+    
+
+}
+
 int main(int argc, char *argv[])
 {   
     #ifdef ANTEDILUVIAN
@@ -271,11 +299,13 @@ int main(int argc, char *argv[])
     //test_gui_menu();//specially created for aria to test
     // while(1)
     //     Game();
+    
     srand(time(0));
     //test_env();
     //Test_AI(1);
     //AI_Contest(1,1);
     //test_gamePlay_window(argc,argv);
-    AI_ContestWithGUI(argc,argv,1,1);
+    //AI_ContestWithGUI(argc,argv,1,1);
+    Test_AI_withGUI(argc,argv,1);
     return 0;
 }
