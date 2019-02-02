@@ -30,6 +30,30 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
+    //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
+    if(((s_piece*==6)||(s_piece*==-6))&&(start_pt%8==4))
+    {
+        if(end_pt==58)
+        {
+            gameState->board[56]=0;
+            gameState->board[59]=3;
+        }
+        else if(end_pt==62)
+        {
+            gameState->board[63]=0;
+            gameState->board[61]=3;
+        }
+        else if(end_pt==6)
+        {
+            gameState->board[7]=0;
+            gameState->board[5]=3;
+        }
+        else if(end_pt==2)
+        {
+            gameState->board[0]=0;
+            gameState->board[3]=3;
+        }
+    }
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
     // char str_move[20];
@@ -348,6 +372,36 @@ void env_get_legal_diagonal(GameState *gameState, vector *legal_moves, int start
     }
 }
 
+void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start_pt)
+{
+    int x=start_pt%8, y=start_pt/8;
+    int playerTurn=gameState->playerTurn;
+    //space numbers are hardcoded in
+    if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
+    {
+        if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
+        {
+           vector_add(legal_moves,(58));
+        }
+        if((gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(62));
+        }
+    }
+       
+    if(((y==0)&&(x==4))&&(playerTurn==-1))//checks for king being in its original position
+    {
+        if(((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(2));
+        }
+        if((gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
+        {
+            vector_add(legal_moves,(6));
+        }
+    }
+}
+
 vector env_get_legal_castle(GameState *gameState, int start_pt)
 {
     vector legal_moves;
@@ -378,13 +432,17 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
 
 vector env_get_legal_king(GameState *gameState, int start_pt)
 {
-    vector legal_moves1,legal_moves2;
+    vector legal_moves1,legal_moves2,legal_moves3;
     vector_init(&legal_moves1);
     vector_init(&legal_moves2);
+    vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
+    env_get_legal_castling(gameState,&legal_moves3,start_pt)//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
+    vector_cat(&legal_moves1,&legal_moves3);
+    vector_free(&legal_moves3);
     return legal_moves1;
 }
 
