@@ -42,13 +42,32 @@ void stack_push(Node** head_ref, char* new_log, size_t data_size)
     // Change head pointer as new node is added at the beginning 
     (*head_ref)    = new_node; 
 }
-char* stack_pop()
+char* stack_pop(Node** head_ref, size_t data_size)
 {
-    //will write when Michael confirms current design
+    char* log = malloc(data_size);
+    // Copy contents of node->log to newly allocated memory. 
+    // Assumption: char takes 1 byte. 
+    int i;
+    for(i=0; i<data_size; i++)
+    {
+        *(char *)(log + i) = *(char *)((*head_ref)->log + i);
+    }
+    (*head_ref) = (*head_ref)->next;
+    free((*head_ref)->prev->log);//free the space in mem holding the log
+    free((*head_ref)->prev);//free the node that was holding the log
+    (*head_ref)->prev = NULL;
+    stack_get_size(2);//remove 1 from stack size
+    return log;//returns a copy of the log
 }
-int stack_get_size()
+int stack_get_size(int operator)
 {
-    //will write when Michael confirms current design
+    static int size = 0;
+    if (operator == 1)//if we are pushing increase size
+        size++;
+    else if (operator == 2) //if we poping decrease size
+        size--;
+    //if operator == 0 or anything else we just want to return size with out editing
+    return size;
 }
 
 
