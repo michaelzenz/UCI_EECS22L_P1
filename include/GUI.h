@@ -1,10 +1,12 @@
 
-#include"SDL/SDL.h"
 #include"ENV.h"
 #include<string.h>
 #include"struct.h"
 #include"constant.h"
 #include"stack.h"
+#include <gtk/gtk.h>
+#include <glib.h>
+#include <stdio.h>
 
 
 #ifndef GAMEGUI_H

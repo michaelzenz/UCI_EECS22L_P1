@@ -58,7 +58,9 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
 
 void gui_render()
 {
+    gdk_threads_enter();
     gtk_main() ;
+    gdk_threads_leave();
 }
 
 //Here you init the window and start the main loop

@@ -3,8 +3,6 @@
 #define CHECK_SCORE
 
 
-
-
 int ai_model1_simulate(GameState *gameState, Player *player, int depth)
 {
     uchar check=env_check_end(gameState,player);

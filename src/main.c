@@ -265,7 +265,6 @@ int main(int argc, char *argv[])
     printf("You expect them to install the latest glib instead of some outdated version\n");
     printf("But after all I can`t do anything to stop you.\n");
     printf("Besides we got to finish our homework\n");
-    printf("\n\"This is life\"\n");
     #endif
 
     //gui_init_window(argc,argv);

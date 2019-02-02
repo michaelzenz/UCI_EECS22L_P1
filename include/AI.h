@@ -29,7 +29,7 @@ extern int pos_scores_queens[2][64];
 extern int pos_scores_kings_mid[2][64];
 extern int pos_scores_kings_end[2][64];
 
-extern int piece_scores[6];
+extern int piece_scores[7];
 
 int ai_sum_scores(GameState *gameState, Player *player);
 

@@ -1,9 +1,7 @@
 
 
-#include <gtk/gtk.h>
+
 #include"GUI.h"
-#include <glib.h>
-#include <stdio.h>
 
 #define xy21d(x,y) (y*8+x)
 

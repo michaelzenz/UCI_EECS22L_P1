@@ -35,7 +35,7 @@ void Game()
             quit=play(&gameState,&player2);
         if(quit)
         {
-            gui_quit_window(quit);
+            gui_checkmate_window(quit);
             return;
         }
         else gui_refresh(&gameState,player_arr);
@@ -191,7 +191,7 @@ void AI_ContestWithGUI(int argc, char *argv[],int model1,int model2)
         //print_board(&gameState);
         gui_refresh(&gameState,&player1);
     }
-}   
+}
 
 void Test_AI(int model)
 {
@@ -265,7 +265,6 @@ int main(int argc, char *argv[])
     printf("You expect them to install the latest glib instead of some outdated version\n");
     printf("But after all I can`t do anything to stop you.\n");
     printf("Besides we got to finish our homework\n");
-    printf("\n\"This is life\"\n");
     #endif
 
     //gui_init_window(argc,argv);
