@@ -23,7 +23,7 @@ GdkPixbuf *CvC_pixbuf = NULL;
 GdkPixbuf *Background_pixbuf=NULL;
 
 //Look up table
-char *str_square[2]={"./res/WhiteSquare","./res/BlackSquare"};
+char *str_square[4]={"./res/WhiteSquare","./res/BlackSquare", "./res/SelectedSquare", "./res/LegalSquare"};
 char *str_color[2]={"White","Black"};
 char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bishop.jpg", "Queen.jpg", "King.jpg"};
 
