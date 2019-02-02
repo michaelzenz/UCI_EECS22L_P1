@@ -31,3 +31,4 @@
 #define NOSPECIAL 0
 #define ENPASSANT 1
 #define CASTLING 2
+

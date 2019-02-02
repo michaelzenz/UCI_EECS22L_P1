@@ -26,6 +26,10 @@
 #define GameMode_HvH 2
 #define GameMode_CvC 3
 
+#define EASY 1
+#define MEDIUM 2
+#define ADVANCED 3
+
 int gui_init_window(int argc, char*argv[]);
 
 void gui_init(GameState *gameState,Player player_arr[2]);
@@ -45,11 +49,8 @@ void gui_refresh(GameState *gameState,Player *player_arr);
 void gui_checkmate_window(int winner);
 
 //selects piece with click
-void Select_Piece(GtkWidget *widget, GdkEvent *event, gpointer data, GameState *gameState;)
-//selects target space with click
-void Select_Movement(GtkWidget *widget, GdkEvent *event, gpointer data, GameState *gameState);
-//Moves the selected Piece
-void Move_Piece(GameState *gameState);
+void Select_Piece(GtkWidget *widget, GdkEvent *event, gpointer data, GameState *gameState);
+
 
 
 #endif

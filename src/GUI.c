@@ -30,6 +30,7 @@ char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bi
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/background.png";
+char *HvH_Menu_path="res/HvH_Menu.png";
 
 // char icon[20];
 // strcat(square[0]);
@@ -70,7 +71,7 @@ int gui_init_window(int argc, char*argv[])
     gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
     gtk_container_set_border_width (GTK_CONTAINER(window), WINDOW_BORDER) ; 
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER) ; 
-    gtk_window_set_title(GTK_WINDOW(window), "King Me!") ; 
+    gtk_window_set_title(GTK_WINDOW(window), "King Me!");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
     layout = gtk_layout_new(NULL, NULL);
@@ -90,7 +91,11 @@ int gui_init_window(int argc, char*argv[])
 
 void gui_init(GameState *gameState,Player player_arr[2])
 {
-    
+    player_arr[0].identity=HUMAN;
+    player_arr[1].identity=COMPUTER;
+    player_arr[0].color=WHITE;
+    player_arr[1].color=BLACK;
+    player_arr[1].difficulty=EASY;
     int GameMode=gui_main_menu();
     switch(GameMode)
     {
@@ -201,8 +206,84 @@ gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     PlayerOptions *options=(PlayerOptions*)data;
     Player *player_arr=options->player_arr;
     printf("x:%d, y:%d\n",x,y);
+
     
+    if(x<151&&x>76&&y>241&&y<262)//BLACK
+    {
+        player_arr[0].color=BLACK;
+        player_arr[1].color=WHITE;
+        printf("BLACK\n");
+    }
+    
+    if(x>72&&x<145&&y<310&&y>289)//WHITE
+    {
+
+        player_arr[0].color=WHITE;
+        player_arr[1].color=BLACK;
+
+    }
+    
+    if(x>777&&x<845&&y<265&&y>242)//ESY
+    {
+
+        player_arr[1].difficulty=EASY;
+    }
+    if(x>758&&x<863&&y<310&&y>288)//MEDIUM
+    {
+
+	    player_arr[1].difficulty=MEDIUM;
+
+    }
+    
+     if(x>750&&x<882&&y<354&&y>334)//ADVANCED
+     {
+
+	    player_arr[1].difficulty=ADVANCED;
+
+    }
+
+
+    if(x>383&&x<575&&y>455&&y<514)//PLAY
+    {
+        options->play=1;
+    }
 }
+gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+    if(x<151&&x>76&&y>243&&y<266)
+    {
+        player_arr[0].color=BLACK;
+        player_arr[1].color=WHITE;
+        player_arr[0].identity=HUMAN;
+        player_arr[1].identity=COMPUTER;
+        printf("player One is Black");
+    }
+    
+    if(x>70&&x<147&&y<310&&y>282){
+
+	player_arr[0].color=WHITE;
+	player_arr[1].color=BLACK;
+	player_arr[0].identity=HUMAN;
+	player_arr[1].identity=COMPUTER;
+
+	printf("Player One is White");
+	
+    }
+   if(x>383&&x<575&&y>455&&y<514){
+        options->play=1;
+	printf("Starting The Game\n");
+    }
+   if(x>65&&x<164&&y>470&&y<505){
+  	gtk_widget_hide_all(window);
+
+    }
+} 
 
 void gui_player_HvC_menu(Player* player_arr)
 {
@@ -227,6 +308,23 @@ void gui_player_HvC_menu(Player* player_arr)
 
 void gui_player_HvH_menu(Player* player_arr)
 {
+  PlayerOptions options;
+    options.player_arr=player_arr;
+    options.play=0;
+
+    gdk_threads_enter();
+    HvH_pixbuf=load_pixbuf_from_file(HvH_Menu_path);
+    HvH_pixbuf=gdk_pixbuf_scale_simple(HvH_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+    
+    image = gtk_image_new_from_pixbuf(HvH_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(HvH_menu_callback), &options);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(options.play==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
 
 }
 
@@ -278,61 +376,6 @@ void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 }
 
 
-//selects piece with click
-void Select_Piece(GtkWidget *widget, GdkEvent *event, gpointer data){
-
-	int pixelX, pixelY, gridX, gridY, index, piece;
-	
-	//IDK what this is
- 	GdkModifierType state;
-	
-	//gets the location of where the person clicked
-	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
-
-	//change pixel to xy coordinates
-	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
-
-	//change xy to 1D and label as index
-	old_index = xy21d(gridX, gridY);
-
-	//gets info of what piece is on that space
-	//selected_piece = gameState->board[index];
-}
-
-//selects target space with click
-void Select_Movement(GtkWidget *widget, GdkEvent *event, gpointer data)
-{
-
-	int pixelX, pixelY, gridX, gridY, index, piece;
-	
-	//IDK what this is
- 	GdkModifierType state;
-	
-	//gets the location of where the person clicked
-	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
-
-	//change pixel to xy coordinates
-	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
-
-	//change xy to 1D and label as index
-	new_index = xy21d(gridX, gridY);
-}
-
-//checks if move selection is legal
-void Legal_Move_Check(GameState *gameState){
-	//idk how our move list works yet
-}
-
-//Moves the selected Piece
-void Move_Piece(GameState *gameState){
-	
-	//moves piece to new space
-	gameState->board[new_index] = selected_piece;
-	//erases piece from old position
-	gameState->board[old_index] = 0;
-	//update board, idk if this should be here or outside the function
-	DrawBoard(gameState);
-}
 
 
 void gui_gameplay_window(GameState *gameState)
@@ -433,7 +476,7 @@ int gui_play(GameState *gameState,Player *player)
     check_legal_start=0;
     check_MoveMade=0;
     env_free_container(gameState);
-  	return 0 ;
+    return 0 ;
 
 }
 

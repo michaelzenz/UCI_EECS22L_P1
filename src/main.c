@@ -15,21 +15,24 @@ int play(GameState *gameState,Player *player,int model)
     return quit;
 }
 
-void Game(int model)
+void Game(int argc, char *argv[],int model)
 {
+    gui_init_window(argc,argv); 
+
     Player player_arr[2];
     GameState gameState=env_init();
+    Player player1,player2;
     gui_init(&gameState,player_arr);
-    Player player1=player_arr[0],player2=player_arr[1];
+    player1=player_arr[0];
+    player2=player_arr[1];
     player1.id=PLAYER1;
     player2.id=PLAYER2;
-
     
-
-    while(1)
+    int quit=0;
+    while(quit==0)
     {
         int quit;
-        if(gameState.playerTurn==player1.color) 
+        if(gameState.playerTurn==player1.color)
             quit=play(&gameState,&player1,model);
         else 
             quit=play(&gameState,&player2,model);
@@ -296,9 +299,9 @@ int main(int argc, char *argv[])
     #endif
 
     //gui_init_window(argc,argv);
-    //test_gui_menu();//specially created for aria to test
+    //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    //     Game();
+    Game(argc,argv,1);
     
     srand(time(0));
     //test_env();
@@ -306,6 +309,6 @@ int main(int argc, char *argv[])
     //AI_Contest(1,1);
     //test_gamePlay_window(argc,argv);
     //AI_ContestWithGUI(argc,argv,1,1);
-    Test_AI_withGUI(argc,argv,1);
+    //Test_AI_withGUI(argc,argv,1);
     return 0;
 }
