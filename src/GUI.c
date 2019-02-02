@@ -31,11 +31,6 @@ char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/background.png";
 
-//variables for movement
-int old_index;
-int new_index;
-int selected_piece;
-
 // char icon[20];
 // strcat(square[0]);
 // strcat(icon,color[0]);
@@ -276,7 +271,6 @@ void DrawBoard(GameState *gamestate)
 
 }
 
-// pixel coordinates to board grid coordinates
 void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 {
         *g_x = (c_x - BOARD_BORDER_LEFT) / SQUARE_SIZE;
@@ -355,11 +349,8 @@ void gui_gameplay_window(GameState *gameState)
 //accept mouse press
     gdk_threads_leave();
 
-    //when mouse presses window callback (select piece)
-    //g_signal_connect(window, "button_press_event", G_CALLBACK(Select_Piece), NULL) ;
-    
-    //when mouse presses window callback (select movement)
-    //g_signal_connect(window, "button_press_event", G_CALLBACK(Select_Movement), NULL) ;
+    //when mouse presses window callback (TBD)
+  	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
 int check_MoveMade=0;
