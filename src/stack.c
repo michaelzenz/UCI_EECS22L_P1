@@ -24,51 +24,30 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	return -1;
 }
 
-void stack_push(Node** head_ref, char* new_log, size_t data_size)
+void stack_push(Node** head_ref, char new_log[20])
 {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    new_node->log = malloc(data_size);
-    new_node->next = (*head_ref);
-    (*head_ref)->prev = new_node;
-    new_node->prev = NULL;
+    //allocate memory for node
+    Node* new_node = (Node*) malloc(sizeof(Node));
 
-    // Copy contents of new_log to newly allocated memory. 
-    // Assumption: char takes 1 byte. 
-    int i;
-    for(i=0; i<data_size; i++)
-    {
-        *(char *)(new_node->log + i) = *(char *)(new_log + i);
-    }
-    // Change head pointer as new node is added at the beginning 
-    (*head_ref)    = new_node; 
+    new_node->log = new_log;
+    new_node->next = (*head_ref);
+    new_node->prev = NULL;
+    (*head_ref)->prev = new_node;
+    (*head_ref) = new_node;
+
 }
-char* stack_pop(Node** head_ref, size_t data_size)
+char* stack_pop(Node** head_ref)
 {
-    char* log = malloc(data_size);
-    // Copy contents of node->log to newly allocated memory. 
-    // Assumption: char takes 1 byte. 
-    int i;
-    for(i=0; i<data_size; i++)
+    Node* temp = (*head_ref);
+    if(temp)
     {
-        *(char *)(log + i) = *(char *)((*head_ref)->log + i);
+        (*head_ref) = temp->next;
     }
-    (*head_ref) = (*head_ref)->next;
-    free((*head_ref)->prev->log);//free the space in mem holding the log
-    free((*head_ref)->prev);//free the node that was holding the log
-    (*head_ref)->prev = NULL;
-    stack_get_size(2);//remove 1 from stack size
+    char log[20] = temp->log;
+    free(temp);
     return log;//returns a copy of the log
 }
-int stack_get_size(int operator)
-{
-    static int size = 0;
-    if (operator == 1)//if we are pushing increase size
-        size++;
-    else if (operator == 2) //if we poping decrease size
-        size--;
-    //if operator == 0 or anything else we just want to return size with out editing
-    return size;
-}
+
 
 
 
