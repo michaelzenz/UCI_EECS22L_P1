@@ -392,15 +392,49 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
     return legal_moves1;
 }
 
+void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start_pt)
+{
+    int x=start_pt%8, y=start_pt/8;
+    int playerTurn=gameState->playerTurn;
+    //space numbers are hardcoded in
+    if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
+    {
+        if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
+        {
+           vector_add(legal_moves,(58));
+        }
+        if((gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(62));
+        }
+    }
+       
+    if(((y==0)&&(x==4))&&(playerTurn==-1))//checks for king being in its original position
+    {
+        if(((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(2));
+        }
+        if((gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
+        {
+            vector_add(legal_moves,(6));
+        }
+    }
+}
+
 vector env_get_legal_king(GameState *gameState, int start_pt)
 {
-    vector legal_moves1,legal_moves2;
+    vector legal_moves1,legal_moves2,legal_moves3;
     vector_init(&legal_moves1);
     vector_init(&legal_moves2);
+    vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
+    env_get_legal_castling(gameState,&legal_moves3,start_pt);//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
+    vector_cat(&legal_moves1,&legal_moves3);
+    vector_free(&legal_moves3);
     return legal_moves1;
 }
 

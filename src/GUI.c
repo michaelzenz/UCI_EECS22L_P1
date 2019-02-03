@@ -412,6 +412,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
     if(!check_legal_start)
     {
         int move_vector_cnt=gameState->moves_vector_cnt;
+        
         for(int i=0;i<move_vector_cnt;i++)
         {
             if(pos==gameState->container[i].pos)
@@ -422,8 +423,19 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
                 break;
             }
         }
-        gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
-        DrawBoard(gameState,pos,cur_legal_moves);
+        if(check_legal_start)
+        {
+            gtk_container_remove(GTK_CONTAINER(layout), fixed);
+            DrawBoard(gameState,pos,cur_legal_moves);
+        }
+        else
+        {
+            vector empty;
+            vector_init(&empty);
+            gtk_container_remove(GTK_CONTAINER(layout), fixed);
+            DrawBoard(gameState,-1,empty);
+        }
+        
     }
     else 
     {
@@ -446,7 +458,8 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-    env_check_end(gameState,player);
+    int check=env_check_end(gameState,player);
+    if(check!=0)return check;
 	gdk_threads_enter();
     gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(gui_play_callback), gameState);
     gdk_threads_leave();
