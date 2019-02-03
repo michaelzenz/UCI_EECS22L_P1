@@ -24,51 +24,37 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	return -1;
 }
 
-void stack_push(Node** head_ref, char* new_log, size_t data_size)
+Node* stack_newNode(char *new_log)
 {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    new_node->log = malloc(data_size);
-    new_node->next = (*head_ref);
-    (*head_ref)->prev = new_node;
-    new_node->prev = NULL;
+    Node *new_node=(Node*)malloc(sizeof(Node));
+    new_node->next=NULL;
+    strcpy(new_node->log,new_log);
+    return new_node;
+}
 
-    // Copy contents of new_log to newly allocated memory. 
-    // Assumption: char takes 1 byte. 
-    int i;
-    for(i=0; i<data_size; i++)
-    {
-        *(char *)(new_node->log + i) = *(char *)(new_log + i);
-    }
-    // Change head pointer as new node is added at the beginning 
-    (*head_ref)    = new_node; 
-}
-char* stack_pop(Node** head_ref, size_t data_size)
+int isEmpty(Node* node) 
 {
-    char* log = malloc(data_size);
-    // Copy contents of node->log to newly allocated memory. 
-    // Assumption: char takes 1 byte. 
-    int i;
-    for(i=0; i<data_size; i++)
-    {
-        *(char *)(log + i) = *(char *)((*head_ref)->log + i);
-    }
-    (*head_ref) = (*head_ref)->next;
-    //free((*head_ref)->prev->log);//free the space in mem holding the log
-    free((*head_ref)->prev);//free the node that was holding the log
-    (*head_ref)->prev = NULL;
-    stack_get_size(2);//remove 1 from stack size
-    return log;//returns a copy of the log
-}
-int stack_get_size(int operator)
+    return !node;
+} 
+
+void stack_push(Node** head_ref, char* new_log)
 {
-    static int size = 0;
-    if (operator == 1)//if we are pushing increase size
-        size++;
-    else if (operator == 2) //if we poping decrease size
-        size--;
-    //if operator == 0 or anything else we just want to return size with out editing
-    return size;
+    Node *newNode=stack_newNode(new_log);
+    newNode->next=*head_ref;
+    *head_ref=newNode;
 }
+
+void stack_pop(Node** head_ref, char *ret_str)
+{
+    if(!isEmpty(*head_ref))
+    {
+        strcpy(ret_str,(*head_ref)->log);
+        Node *temp=*head_ref;
+        *head_ref=(*head_ref)->next;
+        free(temp);
+    }
+}
+
 
 
 
@@ -81,7 +67,9 @@ void move2string(char *str_move, Move *move)
     char str_captured[14]="\"captured\":";
     char str_cpos[10]="\"cpos\":";
     char str_smove[11]="\"smove\":";
-    char json_str[70]="{";
+    char json_str[70];
+    memset(json_str,'\0',sizeof(json_str));
+    json_str[0]='{';
     strcat(str_piece,my_itoa(move->piece,temp));
     strcat(json_str,str_piece);
     strcat(json_str,",");
@@ -106,6 +94,7 @@ void move2string(char *str_move, Move *move)
 
 Move string2move(char *str_move)
 {
+    jsmn_init(&str_move_parser);
     Move move;
     jsmntok_t t[50];
     char temp[2];

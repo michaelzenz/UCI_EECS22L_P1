@@ -1,7 +1,8 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 #include"vector.h"
-
+#include"constant.h"
+#include<assert.h>
 
 typedef struct _Player
 {
@@ -25,9 +26,9 @@ typedef struct _LegalMovesContainer
 
 typedef struct _Node
 {
-    char* log;
-    struct Node *next;
-    struct Node *prev;
+    char log[STR_NODE_SIZE];
+    struct _Node *next;
+
 }Node;
 
 typedef struct _Move{
@@ -46,7 +47,7 @@ typedef struct _GameState
     int board[8*8];
     LegalMovesContainer container[16];
     int moves_vector_cnt;
-    Node moves_stack;
+    Node *moves_stack;
 } GameState;
 
 typedef unsigned char uchar;

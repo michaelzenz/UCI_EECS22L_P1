@@ -95,6 +95,7 @@ int ai_model1_play(GameState *gameState, Player *player)
 }
 
 
+
 int ai_easy_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);

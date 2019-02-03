@@ -21,6 +21,7 @@ GameState env_init()
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
     gameState.moves_vector_cnt=0;
     memcpy(gameState.board,initial_board,sizeof(int)*64);
+    gameState.moves_stack=NULL;
     return gameState;
 }
 
@@ -38,11 +39,23 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
-    //Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
-    //char str_move[20];
-    //move2string(str_move,&move);
-    //gameState->moves_stack.log=str_move;
-    //stack_push(&(gameState->moves_stack),str_move,sizeof(str_move));
+    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    char str_move[STR_NODE_SIZE];
+    memset(str_move,'\0',sizeof(str_move));
+    move2string(str_move,&move);
+    stack_push(&(gameState->moves_stack),str_move);
+
+}
+
+void env_undo(GameState *gameState)
+{
+    char str_last_move[STR_NODE_SIZE];
+    stack_pop(&(gameState->moves_stack),str_last_move);
+    Move last_move=string2move(str_last_move);
+    gameState->board[last_move.start_pt]=last_move.piece;
+    gameState->board[last_move.end_pt]=BLANK;
+    gameState->board[last_move.captured_pos]=last_move.captured;
+    gameState->playerTurn*=-1;
 
 }
 
@@ -54,7 +67,6 @@ uchar env_check_end(GameState *gameState, Player *player)
     int pos=-1;
     uchar threatened=1;
     uchar end=1;
-    GameState check_state;
     for(int y=0;y<8;y++)
     {
         for(int x=0;x<8;x++)
@@ -73,10 +85,9 @@ uchar env_check_end(GameState *gameState, Player *player)
                     continue;
                 for(int i=0;i<legal_moves.count;i++)
                 {
-                    
-                    check_state=env_copy_State(gameState);
-                    env_play(&check_state,player,pos,vector_get(&legal_moves,i));
-                    threatened=env_is_threatened(&check_state,player);
+                    env_play(gameState,player,pos,vector_get(&legal_moves,i));
+                    threatened=env_is_threatened(gameState,player);
+                    env_undo(gameState);
                     if(threatened==0)
                     {
                         end=0;

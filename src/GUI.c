@@ -29,7 +29,7 @@ char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bi
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
-char *Background_path="res/background.png";
+char *Background_path="res/GamePlayBackground.jpg";
 char *HvH_Menu_path="res/HvH_Menu.png";
 
 // char icon[20];
@@ -400,8 +400,11 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 	//gets the location of where the person clicked
 	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
 
+    
+    if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
 	//change pixel to xy coordinates
 	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
+    
     int pos=gridY*8+gridX;
 
     printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
