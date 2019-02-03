@@ -55,7 +55,13 @@ void stack_pop(Node** head_ref, char *ret_str)
     }
 }
 
-
+void peek(Node* top, char *ret_str) 
+{ 
+    if(!stack_isEmpty(top))
+    {
+        strcpy(ret_str,top->log);
+    }
+} 
 
 
 void move2string(char *str_move, Move *move)
