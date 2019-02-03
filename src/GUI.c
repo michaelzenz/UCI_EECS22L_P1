@@ -177,22 +177,6 @@ int gui_main_menu()
     return GameMode;
 }
 
-
-
-
-//here you use window pointer to draw player menu
-//bind an event to listen to the click
-//then use a while loop to wait for the user click
-//after that return the GameMode
-//WARNING: you must use sleep(10) in your main loop
-//because gtk creates a new thread to render the window
-//thus you must let the main thread release some cpu resource for it to run
-
-//WARNING: Don`t forget to unbind the event to click
-
-/**************/
-//Because the Callback of gtk only take one variable, so you can create a new struct
-
 typedef struct _PlayerOptions{
     Player *player_arr;
     unsigned char play;
@@ -333,7 +317,7 @@ void gui_player_CvC_menu(Player* player_arr)
 
 }
 
-void DrawBoard(GameState *gamestate)
+void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
 {
 
     table = gtk_table_new (8, 8, TRUE) ;
@@ -347,7 +331,9 @@ void DrawBoard(GameState *gamestate)
         x = (i)%8;
         y = (i)/8;
         
-        strcat(path,str_square[(x+y)%2]);
+        if(vector_contain(&legal_moves,i))strcat(path,str_square[3]);
+        else if(i==start_pt)strcat(path,str_square[2]);
+        else strcat(path,str_square[(x+y)%2]);
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else
@@ -387,8 +373,9 @@ void gui_gameplay_window(GameState *gameState)
     Background_pixbuf=gdk_pixbuf_scale_simple(Background_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
     image = gtk_image_new_from_pixbuf(Background_pixbuf);
     gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
-
-    DrawBoard(gameState);
+    vector empty;
+    vector_init(&empty);
+    DrawBoard(gameState,-1,empty);
 //accept mouse press
     gdk_threads_leave();
 
@@ -428,10 +415,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
             {
                 cur_legal_moves=gameState->container[i].legal_moves;
                 int vector_cnt=cur_legal_moves.count;
-                for(int i=0;i<vector_cnt;i++)
-                {
-                    
-                }
+                
                 check_legal_start=1;
                 move_start=pos;
                 break;
@@ -506,7 +490,9 @@ void gui_refresh(GameState *gameState,Player *player_arr)
 
     gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
     
-    DrawBoard(gameState);
+    vector empty;
+    vector_init(&empty);
+    DrawBoard(gameState,-1,empty);
 
     gdk_threads_leave();
 }
