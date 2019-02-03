@@ -23,7 +23,7 @@ GdkPixbuf *CvC_pixbuf = NULL;
 GdkPixbuf *Background_pixbuf=NULL;
 
 //Look up table
-char *str_square[2]={"./res/WhiteSquare","./res/BlackSquare"};
+char *str_square[4]={"./res/WhiteSquare","./res/BlackSquare", "./res/SelectedSquare", "./res/LegalSquare"};
 char *str_color[2]={"White","Black"};
 char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bishop.jpg", "Queen.jpg", "King.jpg"};
 
@@ -333,7 +333,7 @@ void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
         
         if(vector_contain(&legal_moves,i))strcat(path,str_square[3]);
         else if(i==start_pt)strcat(path,str_square[2]);
-        else strcat(path,str_square[(x+y)%2]);
+        else strcat(path,str_square[(x+y+1)%2]);
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else
@@ -414,13 +414,13 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
             if(pos==gameState->container[i].pos)
             {
                 cur_legal_moves=gameState->container[i].legal_moves;
-                int vector_cnt=cur_legal_moves.count;
-                
                 check_legal_start=1;
                 move_start=pos;
                 break;
             }
         }
+        gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
+        DrawBoard(gameState,pos,cur_legal_moves);
     }
     else 
     {
@@ -435,7 +435,6 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
             move_end=-1;
             move_start=-1;
         }
-        
     }
     
     
