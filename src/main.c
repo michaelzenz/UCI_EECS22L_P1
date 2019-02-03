@@ -294,21 +294,21 @@ int main(int argc, char *argv[])
     printf("You are seeing this message because you are using a very old version of Glib\n");
     printf("This is strongly NOT recommended because when TODAY`s HUMAN BEINGS download you project from Internet\n");
     printf("You expect them to install the latest glib instead of some outdated version\n");
-    printf("But after all I can`t do anything to stop you.\n");
-    printf("Besides we got to finish our homework\n");
+    printf("But after all we can`t do anything to stop you.\n");
+    printf("Even if you may not really want to\n");
     #endif
 
     //gui_init_window(argc,argv);
     //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    Game(argc,argv,1);
+    //Game(argc,argv,1);
     
     srand(time(0));
     //test_env();
     //Test_AI(1);
     //AI_Contest(1,1);
     //test_gamePlay_window(argc,argv);
-    //AI_ContestWithGUI(argc,argv,1,1);
+    AI_ContestWithGUI(argc,argv,1,1);
     //Test_AI_withGUI(argc,argv,1);
     return 0;
 }

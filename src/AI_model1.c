@@ -1,6 +1,6 @@
 #include"AI.h"
 #define MAXSTEP 3
-#define CHECK_SCORE
+//#define CHECK_SCORE
 
 
 int ai_model1_simulate(GameState *gameState, Player *player, int depth)

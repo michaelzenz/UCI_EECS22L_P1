@@ -62,6 +62,42 @@ void env_undo(GameState *gameState)
 
 }
 
+uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots)
+{
+    int pos=-1;
+    vector legal_moves;
+    uchar threatened_area[64];
+    memset(threatened_area,0,sizeof(uchar)*64);
+    int K=-1;
+    for(int y=0;y<8;y++)
+    {
+        for(int x=0;x<8;x++)
+        {
+            pos=y*8+x;
+            if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
+            else if(gameState->board[pos]*gameState->playerTurn>0)
+            {
+                legal_moves=env_get_legal_moves(gameState,player,pos);
+                for(int i=0;i<legal_moves.count;i++)
+                {
+                    threatened_area[vector_get(&legal_moves,i)]=1;
+                }
+                vector_free(&legal_moves);
+            }
+        }
+    }
+    if(check_slots->count>0)
+    {
+        int cnt=check_slots->count;
+        for(int i=0;i<cnt;i++)
+        {
+            pos=vector_get(check_slots,i);
+            vector_set(check_slots,i,threatened_area[pos]);
+        }
+    }
+    else if(threatened_area[K]==1)return 1;
+    else return 0;
+}
 
 uchar env_check_end(GameState *gameState, Player *player)
 {
@@ -70,6 +106,8 @@ uchar env_check_end(GameState *gameState, Player *player)
     int pos=-1;
     uchar threatened=1;
     uchar end=1;
+    vector empty;
+    vector_init(&empty);
     for(int y=0;y<8;y++)
     {
         for(int x=0;x<8;x++)
@@ -89,7 +127,7 @@ uchar env_check_end(GameState *gameState, Player *player)
                 for(int i=0;i<legal_moves.count;i++)
                 {
                     env_play(gameState,player,pos,vector_get(&legal_moves,i));
-                    threatened=env_is_threatened(gameState,player);
+                    threatened=env_is_threatened(gameState,player,&empty);
                     env_undo(gameState);
                     if(threatened==0)
                     {
@@ -118,34 +156,7 @@ GameState env_copy_State(GameState *gameState)
 
 
 
-uchar env_is_threatened(GameState *gameState,Player *player)
-{
-    int pos=-1;
-    vector legal_moves;
-    uchar threatened_area[8*8];
-    memset(threatened_area,0,sizeof(uchar)*8*8);
-    int K=-1;
-    for(int y=0;y<8;y++)
-    {
-        for(int x=0;x<8;x++)
-        {
-            pos=y*8+x;
-            if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
-            else if(gameState->board[pos]*gameState->playerTurn>0)
-            {
-                legal_moves=env_get_legal_moves(gameState,player,pos);
-                for(int i=0;i<legal_moves.count;i++)
-                {
-                    threatened_area[vector_get(&legal_moves,i)]=1;
-                }
-                vector_free(&legal_moves);
-            }
-        }
-    }
-    if(K==-1)return 2;
-    else if(threatened_area[K]==1)return 1;
-    else return 0;
-}
+
 
 vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 {
