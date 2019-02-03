@@ -32,7 +32,7 @@ Node* stack_newNode(char *new_log)
     return new_node;
 }
 
-int isEmpty(Node* node) 
+int stack_isEmpty(Node* node) 
 {
     return !node;
 } 
@@ -46,7 +46,7 @@ void stack_push(Node** head_ref, char* new_log)
 
 void stack_pop(Node** head_ref, char *ret_str)
 {
-    if(!isEmpty(*head_ref))
+    if(!stack_isEmpty(*head_ref))
     {
         strcpy(ret_str,(*head_ref)->log);
         Node *temp=*head_ref;

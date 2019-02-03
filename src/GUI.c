@@ -383,7 +383,7 @@ void gui_gameplay_window(GameState *gameState)
   	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
-int check_MoveMade=0;
+int check_ActionMade=0;//1 is normal end, 2 is undo
 int check_legal_start=0;
 int move_start=-1;
 int move_end=-1;
@@ -400,15 +400,26 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 	//gets the location of where the person clicked
 	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
 
-    
+
+    printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
+    if(pixelX>=71&&pixelX<=178&&pixelY>=397&&pixelY<=422)
+    {
+        env_undo(gameState);
+        env_undo(gameState);
+        vector empty;
+        vector_init(&empty);
+        gtk_container_remove(GTK_CONTAINER(layout), fixed);
+        DrawBoard(gameState,-1,empty);
+        check_ActionMade=2;
+        return;
+    }
     if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
 	//change pixel to xy coordinates
 	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
     
     int pos=gridY*8+gridX;
 
-    printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
-
+    
     if(!check_legal_start)
     {
         int move_vector_cnt=gameState->moves_vector_cnt;
@@ -442,7 +453,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
         if(vector_contain(&cur_legal_moves,pos))
         {
             move_end=pos;
-            check_MoveMade=1;
+            check_ActionMade=1;
         }
         else
         {
@@ -459,21 +470,26 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 int gui_play(GameState *gameState,Player *player)
 {
     int check=env_check_end(gameState,player);
-    if(check!=0)return check;
+    if(check!=0)
+    {
+        env_free_container(gameState);
+        return check;
+    }
 	gdk_threads_enter();
     gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(gui_play_callback), gameState);
     gdk_threads_leave();
-    while(check_MoveMade==0){
+    while(check_ActionMade==0){
         sleep(1);
     }
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
-    env_play(gameState,player,move_start,move_end);
+
+    if(check_ActionMade!=2)env_play(gameState,player,move_start,move_end);
     move_start=-1;
     move_start=-1;
     check_legal_start=0;
-    check_MoveMade=0;
+    check_ActionMade=0;
     env_free_container(gameState);
     return 0 ;
 

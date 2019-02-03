@@ -49,13 +49,16 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 
 void env_undo(GameState *gameState)
 {
-    char str_last_move[STR_NODE_SIZE];
-    stack_pop(&(gameState->moves_stack),str_last_move);
-    Move last_move=string2move(str_last_move);
-    gameState->board[last_move.start_pt]=last_move.piece;
-    gameState->board[last_move.end_pt]=BLANK;
-    gameState->board[last_move.captured_pos]=last_move.captured;
-    gameState->playerTurn*=-1;
+    if(!stack_isEmpty((gameState->moves_stack)))
+    {
+        char str_last_move[STR_NODE_SIZE];
+        stack_pop(&(gameState->moves_stack),str_last_move);
+        Move last_move=string2move(str_last_move);
+        gameState->board[last_move.start_pt]=last_move.piece;
+        gameState->board[last_move.end_pt]=BLANK;
+        gameState->board[last_move.captured_pos]=last_move.captured;
+        gameState->playerTurn*=-1;
+    }
 
 }
 

@@ -7,7 +7,7 @@
 #define STACK_H
 
 Node* stack_newNode(char *new_log);
-int isEmpty(Node *node);
+int stack_isEmpty(Node *node);
 void stack_push(Node** head_ref, char* new_log);
 void stack_pop(Node** head_ref, char* ret_str);
 
