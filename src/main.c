@@ -301,14 +301,14 @@ int main(int argc, char *argv[])
     //gui_init_window(argc,argv);
     //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    //Game(argc,argv,1);
+    Game(argc,argv,1);
     
     srand(time(0));
     //test_env();
     //Test_AI(1);
     //AI_Contest(1,1);
     //test_gamePlay_window(argc,argv);
-    AI_ContestWithGUI(argc,argv,1,1);
+    //AI_ContestWithGUI(argc,argv,1,1);
     //Test_AI_withGUI(argc,argv,1);
     return 0;
 }

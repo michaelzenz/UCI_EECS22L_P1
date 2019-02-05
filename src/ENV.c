@@ -101,7 +101,6 @@ uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots
 
 uchar env_check_end(GameState *gameState, Player *player)
 {
-    int K=-1;
     vector legal_moves;
     int pos=-1;
     uchar threatened=1;

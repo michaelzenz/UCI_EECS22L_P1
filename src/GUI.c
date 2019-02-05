@@ -96,19 +96,24 @@ void gui_init(GameState *gameState,Player player_arr[2])
     player_arr[0].color=WHITE;
     player_arr[1].color=BLACK;
     player_arr[1].difficulty=EASY;
-    int GameMode=gui_main_menu();
-    switch(GameMode)
-    {
-    case GameMode_HvC:
-        gui_player_HvC_menu(player_arr);
-        break;
-    case GameMode_HvH:
-        gui_player_HvH_menu(player_arr);
-        break;
-    case GameMode_CvC:
-        gui_player_CvC_menu(player_arr);
-        break;
-    }
+    int play;
+
+    do{
+        int GameMode=gui_main_menu();
+        switch(GameMode)
+        {
+        case GameMode_HvC:
+            play=gui_player_HvC_menu(player_arr);
+            break;
+        case GameMode_HvH:
+            play=gui_player_HvH_menu(player_arr);
+            break;
+        case GameMode_CvC:
+            play=gui_player_CvC_menu(player_arr);
+            break;
+        }
+    }while(play!=1)
+
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
     gui_gameplay_window(gameState);
@@ -269,7 +274,7 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     }
 } 
 
-void gui_player_HvC_menu(Player* player_arr)
+int gui_player_HvC_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -288,6 +293,7 @@ void gui_player_HvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+    return options.play;
 }
 
 void gui_player_HvH_menu(Player* player_arr)
@@ -401,7 +407,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
 
 
-    printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
+    printf("pX: %d, pY: %d\n",pixelX,pixelY);
     if(pixelX>=71&&pixelX<=178&&pixelY>=397&&pixelY<=422)
     {
         env_undo(gameState);
@@ -416,7 +422,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
     if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
 	//change pixel to xy coordinates
 	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
-    
+    printf("gX:%d, gY:%d\n",gridX,gridY);
     int pos=gridY*8+gridX;
 
     

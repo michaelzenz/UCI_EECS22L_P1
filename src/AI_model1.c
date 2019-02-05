@@ -46,7 +46,7 @@ int ai_model1_simulate(GameState *gameState, Player *player, int depth)
 int ai_model1_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
-    
+    if(check_end!=0)return check_end;
     int MaxScore=-99999999;
     int score;
     vector BestMovesID,MovesStart,MovesEnd,Scores;
@@ -58,15 +58,17 @@ int ai_model1_play(GameState *gameState, Player *player)
     int BestMovesCnt=0;
     int cnt=0;
     vector CurLegalMoves;
-    for(int i=0;i<64;i++)
+    int container_size=gameState->moves_vector_cnt;
+    for(int i=0;i<container_size;i++)
     {
-        CurLegalMoves=env_get_legal_moves(gameState,player,i);
-        vector_cat(&MovesEnd,&CurLegalMoves);
+        CurLegalMoves=gameState->container[i].legal_moves;
         cnt=CurLegalMoves.count;
+        vector_cat(&MovesEnd,&CurLegalMoves);
+        int pos=gameState->container[i].pos;
         for(int j=0;j<cnt;j++)
-            vector_add(&MovesStart,i);
-        vector_free(&CurLegalMoves);
+            vector_add(&MovesStart,pos);
     }
+
     assert(MovesStart.count==MovesEnd.count);
     cnt=MovesStart.count;
     int playerTurn=gameState->playerTurn;
