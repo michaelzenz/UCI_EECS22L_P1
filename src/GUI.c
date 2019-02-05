@@ -31,7 +31,7 @@ char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/background.png";
 char *HvH_Menu_path="res/HvH_Menu.png";
-
+char *CvC_Menu_path="res/CvC_Menu.png";
 // char icon[20];
 // strcat(square[0]);
 // strcat(icon,color[0]);
@@ -261,7 +261,7 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
         player_arr[0].color=BLACK;
         player_arr[1].color=WHITE;
         player_arr[0].identity=HUMAN;
-        player_arr[1].identity=COMPUTER;
+        player_arr[1].identity=HUMAN;
         printf("player One is Black");
     }
     
@@ -270,7 +270,7 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 	player_arr[0].color=WHITE;
 	player_arr[1].color=BLACK;
 	player_arr[0].identity=HUMAN;
-	player_arr[1].identity=COMPUTER;
+	player_arr[1].identity=HUMAN;
 
 	printf("Player One is White");
 	
@@ -283,7 +283,48 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
   	gtk_widget_hide_all(window);
 
     }
-} 
+}
+gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+    if(x>777&&x<845&&y<265&&y>242)//ESY
+    {
+
+        player_arr[1].difficulty=EASY;
+        player_arr[0].difficulty=EASY;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+    if(x>758&&x<863&&y<310&&y>288)//MEDIUM
+    {
+
+        player_arr[1].difficulty=MEDIUM;
+        player_arr[0].difficulty=MEDIUM;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+
+    if(x>750&&x<882&&y<354&&y>334)//ADVANCED
+    {
+
+        player_arr[1].difficulty=ADVANCED;
+        player_arr[0].difficulty=ADVANCED;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+
+
+    if(x>383&&x<575&&y>455&&y<514)//PLAY
+    {
+        options->play=1;
+    }
+
+}
 
 void gui_player_HvC_menu(Player* player_arr)
 {
@@ -330,6 +371,25 @@ void gui_player_HvH_menu(Player* player_arr)
 
 void gui_player_CvC_menu(Player* player_arr)
 {
+
+    PlayerOptions options;
+    options.player_arr=player_arr;
+    options.play=0;
+
+    gdk_threads_enter();
+    CvC_pixbuf=load_pixbuf_from_file(CvC_Menu_path);
+    CvC_pixbuf=gdk_pixbuf_scale_simple(CvC_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+
+    image = gtk_image_new_from_pixbuf(CvC_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(CvC_menu_callback), &options);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(options.play==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
+
 
 }
 
