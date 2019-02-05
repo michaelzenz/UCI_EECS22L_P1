@@ -21,6 +21,7 @@ GameState env_init()
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
     gameState.moves_vector_cnt=0;
     memcpy(gameState.board,initial_board,sizeof(int)*64);
+    gameState.moves_stack=NULL;
     return gameState;
 }
 
@@ -38,23 +39,74 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     gameState->playerTurn*=-1;
-    //Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
-    //char str_move[20];
-    //move2string(str_move,&move);
-    //gameState->moves_stack.log=str_move;
-    //stack_push(&(gameState->moves_stack),str_move,sizeof(str_move));
+    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    char str_move[STR_NODE_SIZE];
+    memset(str_move,'\0',sizeof(str_move));
+    move2string(str_move,&move);
+    stack_push(&(gameState->moves_stack),str_move);
 
 }
 
+void env_undo(GameState *gameState)
+{
+    if(!stack_isEmpty((gameState->moves_stack)))
+    {
+        char str_last_move[STR_NODE_SIZE];
+        stack_pop(&(gameState->moves_stack),str_last_move);
+        Move last_move=string2move(str_last_move);
+        gameState->board[last_move.start_pt]=last_move.piece;
+        gameState->board[last_move.end_pt]=BLANK;
+        gameState->board[last_move.captured_pos]=last_move.captured;
+        gameState->playerTurn*=-1;
+    }
+
+}
+
+uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots)
+{
+    int pos=-1;
+    vector legal_moves;
+    uchar threatened_area[64];
+    memset(threatened_area,0,sizeof(uchar)*64);
+    int K=-1;
+    for(int y=0;y<8;y++)
+    {
+        for(int x=0;x<8;x++)
+        {
+            pos=y*8+x;
+            if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
+            else if(gameState->board[pos]*gameState->playerTurn>0)
+            {
+                legal_moves=env_get_legal_moves(gameState,player,pos);
+                for(int i=0;i<legal_moves.count;i++)
+                {
+                    threatened_area[vector_get(&legal_moves,i)]=1;
+                }
+                vector_free(&legal_moves);
+            }
+        }
+    }
+    if(check_slots->count>0)
+    {
+        int cnt=check_slots->count;
+        for(int i=0;i<cnt;i++)
+        {
+            pos=vector_get(check_slots,i);
+            vector_set(check_slots,i,threatened_area[pos]);
+        }
+    }
+    else if(threatened_area[K]==1)return 1;
+    else return 0;
+}
 
 uchar env_check_end(GameState *gameState, Player *player)
 {
-    int K=-1;
     vector legal_moves;
     int pos=-1;
     uchar threatened=1;
     uchar end=1;
-    GameState check_state;
+    vector empty;
+    vector_init(&empty);
     for(int y=0;y<8;y++)
     {
         for(int x=0;x<8;x++)
@@ -73,10 +125,9 @@ uchar env_check_end(GameState *gameState, Player *player)
                     continue;
                 for(int i=0;i<legal_moves.count;i++)
                 {
-                    
-                    check_state=env_copy_State(gameState);
-                    env_play(&check_state,player,pos,vector_get(&legal_moves,i));
-                    threatened=env_is_threatened(&check_state,player);
+                    env_play(gameState,player,pos,vector_get(&legal_moves,i));
+                    threatened=env_is_threatened(gameState,player,&empty);
+                    env_undo(gameState);
                     if(threatened==0)
                     {
                         end=0;
@@ -104,34 +155,7 @@ GameState env_copy_State(GameState *gameState)
 
 
 
-uchar env_is_threatened(GameState *gameState,Player *player)
-{
-    int pos=-1;
-    vector legal_moves;
-    uchar threatened_area[8*8];
-    memset(threatened_area,0,sizeof(uchar)*8*8);
-    int K=-1;
-    for(int y=0;y<8;y++)
-    {
-        for(int x=0;x<8;x++)
-        {
-            pos=y*8+x;
-            if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
-            else if(gameState->board[pos]*gameState->playerTurn>0)
-            {
-                legal_moves=env_get_legal_moves(gameState,player,pos);
-                for(int i=0;i<legal_moves.count;i++)
-                {
-                    threatened_area[vector_get(&legal_moves,i)]=1;
-                }
-                vector_free(&legal_moves);
-            }
-        }
-    }
-    if(K==-1)return 2;
-    else if(threatened_area[K]==1)return 1;
-    else return 0;
-}
+
 
 vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
 {
@@ -381,15 +405,49 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
     return legal_moves1;
 }
 
+void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start_pt)
+{
+    int x=start_pt%8, y=start_pt/8;
+    int playerTurn=gameState->playerTurn;
+    //space numbers are hardcoded in
+    if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
+    {
+        if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
+        {
+           vector_add(legal_moves,(58));
+        }
+        if((gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(62));
+        }
+    }
+       
+    if(((y==0)&&(x==4))&&(playerTurn==-1))//checks for king being in its original position
+    {
+        if(((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween
+        {
+            vector_add(legal_moves,(2));
+        }
+        if((gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
+        {
+            vector_add(legal_moves,(6));
+        }
+    }
+}
+
 vector env_get_legal_king(GameState *gameState, int start_pt)
 {
-    vector legal_moves1,legal_moves2;
+    vector legal_moves1,legal_moves2,legal_moves3;
     vector_init(&legal_moves1);
     vector_init(&legal_moves2);
+    vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
+    env_get_legal_castling(gameState,&legal_moves3,start_pt);//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
+    vector_cat(&legal_moves1,&legal_moves3);
+    vector_free(&legal_moves3);
     return legal_moves1;
 }
 

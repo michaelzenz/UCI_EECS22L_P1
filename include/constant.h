@@ -32,3 +32,4 @@
 #define ENPASSANT 1
 #define CASTLING 2
 
+#define STR_NODE_SIZE 70

@@ -23,13 +23,13 @@ GdkPixbuf *CvC_pixbuf = NULL;
 GdkPixbuf *Background_pixbuf=NULL;
 
 //Look up table
-char *str_square[2]={"./res/WhiteSquare","./res/BlackSquare"};
+char *str_square[4]={"./res/WhiteSquare","./res/BlackSquare", "./res/SelectedSquare", "./res/LegalSquare"};
 char *str_color[2]={"White","Black"};
 char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bishop.jpg", "Queen.jpg", "King.jpg"};
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
-char *Background_path="res/background.png";
+char *Background_path="res/GamePlayBackground.jpg";
 char *HvH_Menu_path="res/HvH_Menu.png";
 char *CvC_Menu_path="res/CvC_Menu.png";
 // char icon[20];
@@ -96,19 +96,24 @@ void gui_init(GameState *gameState,Player player_arr[2])
     player_arr[0].color=WHITE;
     player_arr[1].color=BLACK;
     player_arr[1].difficulty=EASY;
-    int GameMode=gui_main_menu();
-    switch(GameMode)
-    {
-    case GameMode_HvC:
-        gui_player_HvC_menu(player_arr);
-        break;
-    case GameMode_HvH:
-        gui_player_HvH_menu(player_arr);
-        break;
-    case GameMode_CvC:
-        gui_player_CvC_menu(player_arr);
-        break;
-    }
+    int play;
+
+    do{
+        int GameMode=gui_main_menu();
+        switch(GameMode)
+        {
+        case GameMode_HvC:
+            play=gui_player_HvC_menu(player_arr);
+            break;
+        case GameMode_HvH:
+            play=gui_player_HvH_menu(player_arr);
+            break;
+        case GameMode_CvC:
+            play=gui_player_CvC_menu(player_arr);
+            break;
+        }
+    }while(play!=1)
+
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
     gui_gameplay_window(gameState);
@@ -176,22 +181,6 @@ int gui_main_menu()
     gdk_threads_leave();
     return GameMode;
 }
-
-
-
-
-//here you use window pointer to draw player menu
-//bind an event to listen to the click
-//then use a while loop to wait for the user click
-//after that return the GameMode
-//WARNING: you must use sleep(10) in your main loop
-//because gtk creates a new thread to render the window
-//thus you must let the main thread release some cpu resource for it to run
-
-//WARNING: Don`t forget to unbind the event to click
-
-/**************/
-//Because the Callback of gtk only take one variable, so you can create a new struct
 
 typedef struct _PlayerOptions{
     Player *player_arr;
@@ -326,7 +315,7 @@ gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 
 }
 
-void gui_player_HvC_menu(Player* player_arr)
+int gui_player_HvC_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -345,6 +334,7 @@ void gui_player_HvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+    return options.play;
 }
 
 void gui_player_HvH_menu(Player* player_arr)
@@ -393,7 +383,7 @@ void gui_player_CvC_menu(Player* player_arr)
 
 }
 
-void DrawBoard(GameState *gamestate)
+void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
 {
 
     table = gtk_table_new (8, 8, TRUE) ;
@@ -407,7 +397,9 @@ void DrawBoard(GameState *gamestate)
         x = (i)%8;
         y = (i)/8;
         
-        strcat(path,str_square[(x+y)%2]);
+        if(vector_contain(&legal_moves,i))strcat(path,str_square[3]);
+        else if(i==start_pt)strcat(path,str_square[2]);
+        else strcat(path,str_square[(x+y+1)%2]);
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else
@@ -447,8 +439,9 @@ void gui_gameplay_window(GameState *gameState)
     Background_pixbuf=gdk_pixbuf_scale_simple(Background_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
     image = gtk_image_new_from_pixbuf(Background_pixbuf);
     gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
-
-    DrawBoard(gameState);
+    vector empty;
+    vector_init(&empty);
+    DrawBoard(gameState,-1,empty);
 //accept mouse press
     gdk_threads_leave();
 
@@ -456,7 +449,7 @@ void gui_gameplay_window(GameState *gameState)
   	//g_signal_connect(window, "button_press_event", G_CALLBACK( TBD ), NULL) ;
 }
 
-int check_MoveMade=0;
+int check_ActionMade=0;//1 is normal end, 2 is undo
 int check_legal_start=0;
 int move_start=-1;
 int move_end=-1;
@@ -473,37 +466,60 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 	//gets the location of where the person clicked
 	gdk_window_get_pointer(widget->window, &pixelX, &pixelY, &state);
 
+
+    printf("pX: %d, pY: %d\n",pixelX,pixelY);
+    if(pixelX>=71&&pixelX<=178&&pixelY>=397&&pixelY<=422)
+    {
+        env_undo(gameState);
+        env_undo(gameState);
+        vector empty;
+        vector_init(&empty);
+        gtk_container_remove(GTK_CONTAINER(layout), fixed);
+        DrawBoard(gameState,-1,empty);
+        check_ActionMade=2;
+        return;
+    }
+    if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
 	//change pixel to xy coordinates
 	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
+    printf("gX:%d, gY:%d\n",gridX,gridY);
     int pos=gridY*8+gridX;
 
-    printf("pX: %d, pY: %d, gX: %d, gY: %d\n",pixelX,pixelY,gridX,gridY);
-
+    
     if(!check_legal_start)
     {
         int move_vector_cnt=gameState->moves_vector_cnt;
+        
         for(int i=0;i<move_vector_cnt;i++)
         {
             if(pos==gameState->container[i].pos)
             {
                 cur_legal_moves=gameState->container[i].legal_moves;
-                int vector_cnt=cur_legal_moves.count;
-                for(int i=0;i<vector_cnt;i++)
-                {
-                    
-                }
                 check_legal_start=1;
                 move_start=pos;
                 break;
             }
         }
+        if(check_legal_start)
+        {
+            gtk_container_remove(GTK_CONTAINER(layout), fixed);
+            DrawBoard(gameState,pos,cur_legal_moves);
+        }
+        else
+        {
+            vector empty;
+            vector_init(&empty);
+            gtk_container_remove(GTK_CONTAINER(layout), fixed);
+            DrawBoard(gameState,-1,empty);
+        }
+        
     }
     else 
     {
         if(vector_contain(&cur_legal_moves,pos))
         {
             move_end=pos;
-            check_MoveMade=1;
+            check_ActionMade=1;
         }
         else
         {
@@ -511,7 +527,6 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
             move_end=-1;
             move_start=-1;
         }
-        
     }
     
     
@@ -520,21 +535,27 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 //don`t worry about this part first
 int gui_play(GameState *gameState,Player *player)
 {
-    env_check_end(gameState,player);
+    int check=env_check_end(gameState,player);
+    if(check!=0)
+    {
+        env_free_container(gameState);
+        return check;
+    }
 	gdk_threads_enter();
     gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(gui_play_callback), gameState);
     gdk_threads_leave();
-    while(check_MoveMade==0){
+    while(check_ActionMade==0){
         sleep(1);
     }
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
-    env_play(gameState,player,move_start,move_end);
+
+    if(check_ActionMade!=2)env_play(gameState,player,move_start,move_end);
     move_start=-1;
     move_start=-1;
     check_legal_start=0;
-    check_MoveMade=0;
+    check_ActionMade=0;
     env_free_container(gameState);
     return 0 ;
 
@@ -566,7 +587,9 @@ void gui_refresh(GameState *gameState,Player *player_arr)
 
     gtk_container_remove(GTK_CONTAINER(layout), fixed) ; 
     
-    DrawBoard(gameState);
+    vector empty;
+    vector_init(&empty);
+    DrawBoard(gameState,-1,empty);
 
     gdk_threads_leave();
 }

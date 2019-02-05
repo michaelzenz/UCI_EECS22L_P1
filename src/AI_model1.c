@@ -1,40 +1,52 @@
 #include"AI.h"
 #define MAXSTEP 3
-#define CHECK_SCORE
+//#define CHECK_SCORE
 
 
 int ai_model1_simulate(GameState *gameState, Player *player, int depth)
 {
-    uchar check=env_check_end(gameState,player);
-    if(check)return gameState->playerTurn*-99999999;
-    else if(depth>=MAXSTEP)return ai_sum_scores(gameState,player);
+    if(depth<=0)return ai_sum_scores(gameState,player);
 
     int MaxScore=-99999999;
     int score;
-    int moves_cnt=gameState->moves_vector_cnt;
     int playerTurn=gameState->playerTurn;
-    for(int i=0;i<moves_cnt;i++)
+
+    vector BestMovesID,MovesStart,MovesEnd,Scores;
+    vector_init(&BestMovesID);
+    vector_init(&MovesStart);
+    vector_init(&MovesEnd);
+    
+    int cnt=0;
+    vector CurLegalMoves;
+    for(int i=0;i<64;i++)
     {
-        int start_pt=gameState->container[i].pos;
-        vector legal_moves=gameState->container[i].legal_moves;
-        int cnt=legal_moves.count;
-        for(int k=0;k<cnt;k++)
-        {
-            GameState simulation;
-            simulation=env_copy_State(gameState);
-            env_play(&simulation,player,start_pt,vector_get(&legal_moves,k));
-            score=playerTurn*ai_model1_simulate(&simulation,player,depth+1);
-            MaxScore=MAX(MaxScore,score);
-        }
+        CurLegalMoves=env_get_legal_moves(gameState,player,i);
+        vector_cat(&MovesEnd,&CurLegalMoves);
+        cnt=CurLegalMoves.count;
+        for(int j=0;j<cnt;j++)
+            vector_add(&MovesStart,i);
+        vector_free(&CurLegalMoves);
     }
-    env_free_container(gameState);
+    assert(MovesStart.count==MovesEnd.count);
+    cnt=MovesStart.count;
+    for(int i=0;i<cnt;i++)
+    {
+        env_play(gameState,player,vector_get(&MovesStart,i),vector_get(&MovesEnd,i));
+        score=playerTurn*ai_model1_simulate(gameState,player,depth-1);
+        MaxScore=MAX(MaxScore,score);
+        env_undo(gameState);
+    }
+    vector_free(&BestMovesID);
+    vector_free(&MovesStart);
+    vector_free(&MovesEnd);
+    
     return MaxScore*playerTurn;
 }
 
 int ai_model1_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
-    if(check_end) return 1;
+    if(check_end!=0)return check_end;
     int MaxScore=-99999999;
     int score;
     vector BestMovesID,MovesStart,MovesEnd,Scores;
@@ -42,30 +54,34 @@ int ai_model1_play(GameState *gameState, Player *player)
     vector_init(&MovesStart);
     vector_init(&MovesEnd);
     vector_init(&Scores);
-    int moves_vector_cnt=gameState->moves_vector_cnt;
-    int AllMovesCnt=0,BestMovesCnt=0;
-    for(int i=0;i<moves_vector_cnt;i++)
+    
+    int BestMovesCnt=0;
+    int cnt=0;
+    vector CurLegalMoves;
+    int container_size=gameState->moves_vector_cnt;
+    for(int i=0;i<container_size;i++)
     {
-        int start_pt=gameState->container[i].pos;
-        vector legal_moves=gameState->container[i].legal_moves;
-        int cnt=legal_moves.count;
-        for(int k=0;k<cnt;k++)
-        {
-            int end_pt=vector_get(&legal_moves,k);
-            vector_add(&MovesStart,start_pt);
-            vector_add(&MovesEnd,end_pt);
-            GameState simulation;
-            simulation=env_copy_State(gameState);
-            env_play(&simulation,player,start_pt,end_pt);
-            score=gameState->playerTurn*ai_model1_simulate(&simulation,player,1);
-            vector_add(&Scores,score);
-            MaxScore=MAX(MaxScore,score);
-            AllMovesCnt++;
-        }
+        CurLegalMoves=gameState->container[i].legal_moves;
+        cnt=CurLegalMoves.count;
+        vector_cat(&MovesEnd,&CurLegalMoves);
+        int pos=gameState->container[i].pos;
+        for(int j=0;j<cnt;j++)
+            vector_add(&MovesStart,pos);
     }
 
-    
-    for(int i=0;i<AllMovesCnt;i++)
+    assert(MovesStart.count==MovesEnd.count);
+    cnt=MovesStart.count;
+    int playerTurn=gameState->playerTurn;
+    for(int i=0;i<cnt;i++)
+    {
+        env_play(gameState,player,vector_get(&MovesStart,i),vector_get(&MovesEnd,i));
+        score=playerTurn*ai_model1_simulate(gameState,player,MAXSTEP);
+        vector_add(&Scores,score);
+        MaxScore=MAX(MaxScore,score);
+        env_undo(gameState);
+    }
+
+    for(int i=0;i<cnt;i++)
     {
         if(vector_get(&Scores,i)==MaxScore)
         {
