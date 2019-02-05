@@ -31,13 +31,15 @@ char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/GamePlayBackground.jpg";
 char *HvH_Menu_path="res/HvH_Menu.png";
-
+char *CvC_Menu_path="res/CvC_Menu.png";
 // char icon[20];
 // strcat(square[0]);
 // strcat(icon,color[0]);
 // strcat(icon,piece[0]);
 
 // icon=="WhitePawnWhiteS.jpg";
+
+int GameMode=0;
 
 GdkPixbuf *load_pixbuf_from_file (const char *filename)
 {
@@ -96,23 +98,21 @@ void gui_init(GameState *gameState,Player player_arr[2])
     player_arr[0].color=WHITE;
     player_arr[1].color=BLACK;
     player_arr[1].difficulty=EASY;
-    int play;
 
-    do{
-        int GameMode=gui_main_menu();
-        switch(GameMode)
-        {
-        case GameMode_HvC:
-            play=gui_player_HvC_menu(player_arr);
-            break;
-        case GameMode_HvH:
-            play=gui_player_HvH_menu(player_arr);
-            break;
-        case GameMode_CvC:
-            play=gui_player_CvC_menu(player_arr);
-            break;
-        }
-    }while(play!=1)
+    GameMode=0;
+    GameMode=gui_main_menu();
+    switch(GameMode)
+    {
+    case GameMode_HvC:
+        gui_player_HvC_menu(player_arr);
+        break;
+    case GameMode_HvH:
+        gui_player_HvH_menu(player_arr);
+        break;
+    case GameMode_CvC:
+        gui_player_CvC_menu(player_arr);
+        break;
+    }
 
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
@@ -145,20 +145,20 @@ gint main_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     int x, y;
     GdkModifierType state;
     gdk_window_get_pointer(widget->window,&x,&y,&state);
-    int *GameMode=(int*)data;
+    
     if(x>715&&x<879&&y>238&&y<264)
     {
-        *GameMode=GameMode_HvC;
+        GameMode=GameMode_HvC;
     }
     else if(x>702&&x<887&&y>287&&y<319)
     {
-        *GameMode=GameMode_HvH;
+        GameMode=GameMode_HvH;
     }
     else if(x>630&&x<958&&y>346&&y<367)
     {
-        *GameMode=GameMode_CvC;
+        GameMode=GameMode_CvC;
     }
-    printf("GameMode:%d\n",*GameMode);
+    printf("GameMode:%d\n",GameMode);
 }
 
 //draw the main menu and set callback
@@ -171,8 +171,8 @@ int gui_main_menu()
     image = gtk_image_new_from_pixbuf(main_menu_pixbuf);
     gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
 
-    int GameMode=0;
-    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(main_menu_callback), &GameMode);
+    
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(main_menu_callback),NULL);
     gtk_widget_show_all(window);
     gdk_threads_leave();//after you finich calling gtk functions, call this
     while(GameMode==0)sleep(1);//must call sleep to release some cpu resources for gtk thread to run
@@ -187,6 +187,7 @@ typedef struct _PlayerOptions{
     unsigned char play;
 }PlayerOptions;
 
+
 gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
     int x, y;
@@ -196,85 +197,27 @@ gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     Player *player_arr=options->player_arr;
     printf("x:%d, y:%d\n",x,y);
 
-    
     if(x<151&&x>76&&y>241&&y<262)//BLACK
     {
         player_arr[0].color=BLACK;
         player_arr[1].color=WHITE;
-        printf("BLACK\n");
     }
     
     if(x>72&&x<145&&y<310&&y>289)//WHITE
     {
-
         player_arr[0].color=WHITE;
         player_arr[1].color=BLACK;
-
     }
     
-    if(x>777&&x<845&&y<265&&y>242)//ESY
-    {
-
-        player_arr[1].difficulty=EASY;
-    }
-    if(x>758&&x<863&&y<310&&y>288)//MEDIUM
-    {
-
-	    player_arr[1].difficulty=MEDIUM;
-
-    }
+    if(x>777&&x<845&&y<265&&y>242)player_arr[1].difficulty=EASY;
     
-     if(x>750&&x<882&&y<354&&y>334)//ADVANCED
-     {
+    if(x>758&&x<863&&y<310&&y>288)player_arr[1].difficulty=MEDIUM;
+    
+    if(x>750&&x<882&&y<354&&y>334)player_arr[1].difficulty=ADVANCED;
 
-	    player_arr[1].difficulty=ADVANCED;
-
-    }
-
-
-    if(x>383&&x<575&&y>455&&y<514)//PLAY
-    {
-        options->play=1;
-    }
+    if(x>383&&x<575&&y>455&&y<514)options->play=1;
 }
-gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
-{
-    int x, y;
-    GdkModifierType state;
-    gdk_window_get_pointer(widget->window,&x,&y,&state);
-    PlayerOptions *options=(PlayerOptions*)data;
-    Player *player_arr=options->player_arr;
-    printf("x:%d, y:%d\n",x,y);
-    if(x<151&&x>76&&y>243&&y<266)
-    {
-        player_arr[0].color=BLACK;
-        player_arr[1].color=WHITE;
-        player_arr[0].identity=HUMAN;
-        player_arr[1].identity=COMPUTER;
-        printf("player One is Black");
-    }
-    
-    if(x>70&&x<147&&y<310&&y>282){
-
-	player_arr[0].color=WHITE;
-	player_arr[1].color=BLACK;
-	player_arr[0].identity=HUMAN;
-	player_arr[1].identity=COMPUTER;
-
-	printf("Player One is White");
-	
-    }
-   if(x>383&&x<575&&y>455&&y<514){
-        options->play=1;
-	printf("Starting The Game\n");
-    }
-   if(x>65&&x<164&&y>470&&y<505){
-  	gtk_widget_hide_all(window);
-
-    }
-} 
-
-int gui_player_HvC_menu(Player* player_arr)
+void gui_player_HvC_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -293,12 +236,47 @@ int gui_player_HvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
-    return options.play;
+}
+
+gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+
+    player_arr[0].identity=HUMAN;
+    player_arr[1].identity=HUMAN;
+    if(x<151&&x>76&&y>243&&y<266)
+    {
+        player_arr[0].color=BLACK;
+        player_arr[1].color=WHITE;
+        printf("player One is Black");
+    }
+    
+    if(x>70&&x<147&&y<310&&y>282)
+    {
+
+        player_arr[0].color=WHITE;
+        player_arr[1].color=BLACK;
+	printf("Player One is White");
+    }
+
+    if(x>383&&x<575&&y>455&&y<514){
+        options->play=1;
+	    printf("Starting The Game\n");
+    }
+    if(x>65&&x<164&&y>470&&y<505){
+  	    // gtk_widget_hide_all(window);
+        printf("Clicking Unknown Area\n");
+    }
 }
 
 void gui_player_HvH_menu(Player* player_arr)
 {
-  PlayerOptions options;
+    PlayerOptions options;
     options.player_arr=player_arr;
     options.play=0;
 
@@ -317,9 +295,61 @@ void gui_player_HvH_menu(Player* player_arr)
     gdk_threads_leave();
 
 }
+gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+    player_arr[0].identity=COMPUTER;
+    player_arr[1].identity=COMPUTER;
+    if(x>777&&x<845&&y<265&&y>242)//ESY
+    {
 
+        player_arr[1].difficulty=EASY;
+        player_arr[0].difficulty=EASY;
+        
+    }
+    if(x>758&&x<863&&y<310&&y>288)//MEDIUM
+    {
+
+        player_arr[1].difficulty=MEDIUM;
+        player_arr[0].difficulty=MEDIUM;
+    }
+    if(x>750&&x<882&&y<354&&y>334)//ADVANCED
+    {
+
+        player_arr[1].difficulty=ADVANCED;
+        player_arr[0].difficulty=ADVANCED;
+    }
+    if(x>383&&x<575&&y>455&&y<514)//PLAY
+    {
+        options->play=1;
+    }
+}
 void gui_player_CvC_menu(Player* player_arr)
 {
+
+    PlayerOptions options;
+    options.player_arr=player_arr;
+    options.play=0;
+
+    gdk_threads_enter();
+    CvC_pixbuf=load_pixbuf_from_file(CvC_Menu_path);
+    CvC_pixbuf=gdk_pixbuf_scale_simple(CvC_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+
+    image = gtk_image_new_from_pixbuf(CvC_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(CvC_menu_callback), &options);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(options.play==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
+
 
 }
 
@@ -411,7 +441,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
     if(pixelX>=71&&pixelX<=178&&pixelY>=397&&pixelY<=422)
     {
         env_undo(gameState);
-        env_undo(gameState);
+        if(GameMode==GameMode_HvC)env_undo(gameState);
         vector empty;
         vector_init(&empty);
         gtk_container_remove(GTK_CONTAINER(layout), fixed);

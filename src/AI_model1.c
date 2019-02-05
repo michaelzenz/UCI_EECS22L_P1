@@ -55,7 +55,7 @@ int ai_model1_play(GameState *gameState, Player *player)
     vector_init(&MovesEnd);
     vector_init(&Scores);
     
-    int BestMovesCnt=0;
+    
     int cnt=0;
     vector CurLegalMoves;
     int container_size=gameState->moves_vector_cnt;
@@ -80,7 +80,7 @@ int ai_model1_play(GameState *gameState, Player *player)
         MaxScore=MAX(MaxScore,score);
         env_undo(gameState);
     }
-
+    int BestMovesCnt=0;
     for(int i=0;i<cnt;i++)
     {
         if(vector_get(&Scores,i)==MaxScore)

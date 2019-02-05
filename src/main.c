@@ -3,7 +3,7 @@
 #include"struct.h"
 #include"constant.h"
 
-int GameMode=0;
+
 #define MODEL 1
 
 int play(GameState *gameState,Player *player,int model)
