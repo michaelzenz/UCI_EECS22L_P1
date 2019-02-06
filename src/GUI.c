@@ -7,14 +7,13 @@
 
 /*Global Variables */
 
-GtkWidget *window ;
+GtkWidget *window;
 GtkWidget *image;
 GtkWidget *layout;
 GtkWidget *fixed;
 GtkWidget *chess_icon;
 GtkWidget *table;
 GtkWidget *button;
-GtkWidget *vbox;
 
 GdkPixbuf *main_menu_pixbuf = NULL;
 GdkPixbuf *HvC_pixbuf = NULL;
@@ -60,11 +59,11 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
 void gui_render()
 {
     gdk_threads_enter();
-    gtk_main() ;
+    gtk_main();
     gdk_threads_leave();
 }
 
-//Here you init the window and start the main loop
+//Here you init the window and start the main gtk loop
 //Don`t do anything to this part if you don`t know what it`s doing
 int gui_init_window(int argc, char*argv[])
 {
@@ -93,6 +92,7 @@ int gui_init_window(int argc, char*argv[])
 
 void gui_init(GameState *gameState,Player player_arr[2])
 {
+    //default settings
     player_arr[0].identity=HUMAN;
     player_arr[1].identity=COMPUTER;
     player_arr[0].color=WHITE;
@@ -449,7 +449,8 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
         check_ActionMade=2;
         return;
     }
-    if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
+    if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||
+        pixelY<=BOARD_BORDER_UP||pixelY>=BOARD_BORDER_DOWN)return;
 	//change pixel to xy coordinates
 	CoordToGrid(pixelX, pixelY, &gridX, &gridY);
     printf("gX:%d, gY:%d\n",gridX,gridY);

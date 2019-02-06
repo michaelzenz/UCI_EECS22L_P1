@@ -94,6 +94,7 @@ uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots
             pos=vector_get(check_slots,i);
             vector_set(check_slots,i,threatened_area[pos]);
         }
+        return NULL;
     }
     else if(threatened_area[K]==1)return 1;
     else return 0;

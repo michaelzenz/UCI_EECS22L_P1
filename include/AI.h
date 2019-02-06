@@ -8,8 +8,8 @@
 #ifndef AI_H
 #define AI_H
 
-#define MIN(X,Y) (X)>(Y)?(Y):(X)
-#define MAX(X,Y) (X)>(Y)?(X):(Y)
+#define MIN(X,Y) ((X)>(Y)?(Y):(X))
+#define MAX(X,Y) ((X)>(Y)?(X):(Y))
 
 typedef struct _SimpleMove{
     int start_pt;
@@ -34,6 +34,7 @@ extern int piece_scores[7];
 int ai_sum_scores(GameState *gameState, Player *player);
 
 int ai_model1_play(GameState *gameState, Player *player);
+int ai_model2_play(GameState *gameState, Player *player);
 
 int ai_easy_play(GameState *gameState, Player *player);
 

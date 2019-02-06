@@ -51,6 +51,7 @@ glib-2.0
 gthread-2.0
 ${GLIB_LDFLAGS})
 
+
 AUX_SOURCE_DIRECTORY("${PROJECT_SOURCE_DIR}/src" DIR_SRCS )
 add_executable(${PROJECT_NAME} ${DIR_SRCS})
 

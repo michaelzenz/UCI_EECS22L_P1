@@ -17,7 +17,7 @@ int play(GameState *gameState,Player *player,int model)
 
 void Game(int argc, char *argv[],int model)
 {
-    gui_init_window(argc,argv); 
+    gui_init_window(argc,argv);
 
     Player player_arr[2];
     GameState gameState=env_init();
@@ -167,7 +167,7 @@ void AI_Contest(int model1,int model2)
         if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
         else quit=ai_play(&gameState,&player2,model2);
         print_board(&gameState);
-        fprint_board(&gameState,fp);
+        //fprint_board(&gameState,fp);
     }
     fclose(fp);
 }
@@ -306,9 +306,9 @@ int main(int argc, char *argv[])
     srand(time(0));
     //test_env();
     //Test_AI(1);
-    //AI_Contest(1,1);
+    //AI_Contest(1,2);
     //test_gamePlay_window(argc,argv);
-    //AI_ContestWithGUI(argc,argv,1,1);
+    //AI_ContestWithGUI(argc,argv,1,2);
     //Test_AI_withGUI(argc,argv,1);
     return 0;
 }

@@ -63,6 +63,11 @@ void peek(Node* top, char *ret_str)
     }
 } 
 
+int stack_search(Node **head_ref)
+{
+    
+}
+
 
 void move2string(char *str_move, Move *move)
 {
