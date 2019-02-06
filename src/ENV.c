@@ -41,6 +41,10 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
     //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
+    if((abs(s_piece)==PAWN)&&(end_pt==gameState->check_en_passant[2])) //detects if en_passant is being performed
+    {
+        gameState->board[gameState->check_en_passant[3]] = 0; //sets the pawn who performed double move to captured
+    }
     if((abs(s_piece)==KING)&&(start_pt%8==4))
     {
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
@@ -241,25 +245,15 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
         if(x+dx<0||x+dx>7)continue;
         if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
     }
-        
-    //if(start_pt/8 == ((gameState->playerTurn>0)?6:1))//checking if on home row
-       //{
-          // if((gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)&&(gameState->board[(y+2*gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-            //   vector_add(&legal_moves,(y+2*gameState->playerTurn*-1)*8+x);
-           //checks if space ahead is clear and 2 ahead are clear or occupied by opposite color
-        //}
-              
-    //y+=gameState->playerTurn*-1*1;//if playerTurn=1, then goes up, but for image, it should go up, which means y should decrease
-    //checks if space ahead is empty/occupied by enemy
-    //also checks if pawns are not on the last rows
-    //if(((y+1<7)&&(y-1>0))  && (gameState->board[(y+gameState->playerTurn*-1)*8+x]*gameState->board[start_pt]<=0))
-        //vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x));
-    /*(gameState->board[(y+gameState->playerTurn*-1)*8+x]==0)||(*/
-
-	//checks diagonal attacks
-    //if((x+1>=0 && x+1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x+1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x+1));
-    //if((x-1>=0 && x-1<8 && y-1>=0 && y+1<8)&&(gameState->board[(y+gameState->playerTurn*-1)*8+x-1]*gameState->board[start_pt]<0))vector_add(&legal_moves,((y+gameState->playerTurn*-1)*8+x-1));
-                                                                                                                                                         
+    if(start_pt == gameState->check_en_passant[0])//checks for first en_passant_square
+    {
+        vector_add(&legal_moves, gameState->check_en_passant[2]);//sends the square that performs en_passant
+    }
+    if(start_pt == gameState->check_en_passant[1])//checks for other en_passant_square
+    {
+        vector_add(&legal_moves, gameState->check_en_passant[2]);//sends the square that perfroms en_passant
+    }
+                                                                   
     return legal_moves;
 }
 
@@ -526,6 +520,26 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
 void update_flags(GameState *gameState, int start_pt, int end_pt)
 {
     int s_piece = gameState->board[start_pt];
+    if ((s_piece == PAWN)&&(abs(start_pt - end_pt) == 16)) //detects if double move has been performed
+    {
+        if(end_pt%8 != 0)//check for left out of bounds
+            gameState->check_en_passant[1] = (end_pt - 1);
+        if(end_pt%8 !=7)//check for right out of bounds
+            gameState->check_en_passant[0] = (end_pt + 1);//adds flags for en_passant
+        if(end_pt > start_pt)//determines which direction the double pawn went
+            gameState->check_en_passant[2] = start_pt + 8;//if black set attack to square 1 row down
+        else
+            gameState->check_en_passant[2] = start_pt - 8;//if white set attack to square 1 row up
+        gameState->check_en_passant[3] = end_pt;//flag to delete this square if en_passant performed
+        
+    }
+    else
+    {
+        gameState->check_en_passant[0] = 0;//sets check_passant to 0, a square which a pawn can never perform en_passant
+        gameState->check_en_passant[1] = 0;
+        gameState->check_en_passant[2] = 0;
+        gameState->check_en_passant[3] = 0;
+    }
     
     if (s_piece == KING_W)//if white king moves
     {
