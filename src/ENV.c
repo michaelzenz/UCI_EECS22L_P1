@@ -50,22 +50,22 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
         {
             gameState->board[56]=0;
-            gameState->board[59]=3;
+            gameState->board[59]=CASTLE_W;
         }
         else if(end_pt==62)//castling bottom/right
         {
             gameState->board[63]=0;
-            gameState->board[61]=3;
+            gameState->board[61]=CASTLE_W;
         }
         else if(end_pt==6)//castling top/left
         {
             gameState->board[7]=0;
-            gameState->board[5]=3;
+            gameState->board[5]=CASTLE_B;
         }
         else if(end_pt==2)//castling top/right
         {
             gameState->board[0]=0;
-            gameState->board[3]=3;
+            gameState->board[3]=CASTLE_B;
         }
     }
     update_flags(gameState, start_pt, end_pt);
@@ -520,7 +520,7 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
 void update_flags(GameState *gameState, int start_pt, int end_pt)
 {
     int s_piece = gameState->board[start_pt];
-    if ((s_piece == PAWN)&&(abs(start_pt - end_pt) == 16)) //detects if double move has been performed
+    if ((abs(s_piece) == PAWN)&&(abs(start_pt - end_pt) == 16)) //detects if double move has been performed
     {
         if(end_pt%8 != 0)//check for left out of bounds
             gameState->check_en_passant[1] = (end_pt - 1);
