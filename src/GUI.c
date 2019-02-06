@@ -565,11 +565,17 @@ void gui_refresh(GameState *gameState,Player *player_arr)
     gdk_threads_leave();
 }
 
-void gui_checkmate_window(int winner)
+void gui_checkmate_window(GameState *gameState, int quit)
 {
   /*register event handlers*/
 //   g_signal_connect(window, "delete_event", G_CALLBACK(on_delete_event), NULL) ;
-
+    int colorID=MAX(gameState->playerTurn,0);
+    char EndMessage[20];
+    memset(EndMessage,'\0',sizeof(EndMessage));
+    if(quit==1) strcat(EndMessage,str_color[colorID]);
+    else strcat(EndMessage,str_color[colorID]);
+    strcat(EndMessage," WINS!!!");
+    printf("%s\n",EndMessage);
 }
 
 

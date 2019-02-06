@@ -38,7 +38,7 @@ void Game(int argc, char *argv[],int model)
             quit=play(&gameState,&player2,model);
         if(quit)
         {
-            gui_checkmate_window(quit);
+            gui_checkmate_window(&gameState,quit);
             return;
         }
         else gui_refresh(&gameState,player_arr);

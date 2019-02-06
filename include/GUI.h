@@ -48,11 +48,9 @@ int gui_play(GameState *gameState,Player *player);
 
 void gui_refresh(GameState *gameState,Player *player_arr);
 
-void gui_checkmate_window(int winner);
-
 //selects piece with click
 void Select_Piece(GtkWidget *widget, GdkEvent *event, gpointer data, GameState *gameState);
 
-
+void gui_checkmate_window(GameState *gameState, int winner);
 
 #endif

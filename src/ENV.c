@@ -56,12 +56,12 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
         else if(end_pt==6)//castling top/left
         {
             gameState->board[7]=0;
-            gameState->board[5]=3;
+            gameState->board[5]=CASTLE_B;
         }
         else if(end_pt==2)//castling top/right
         {
             gameState->board[0]=0;
-            gameState->board[3]=3;
+            gameState->board[3]=CASTLE_B;
         }
     }
     update_flags(gameState, start_pt, end_pt);
@@ -130,7 +130,7 @@ uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots
 uchar env_check_end(GameState *gameState, Player *player)
 {
     vector legal_moves;
-    int pos=-1;
+    int pos=-1,myK=-1;
     uchar threatened=1;
     uchar end=1;
     vector empty;
@@ -140,6 +140,7 @@ uchar env_check_end(GameState *gameState, Player *player)
         for(int x=0;x<8;x++)
         {
             pos=y*8+x;
+            if(gameState->board[pos]*gameState->playerTurn==KING)myK=pos;
             if(gameState->board[pos]*gameState->playerTurn>0)
             {
                 legal_moves=env_get_legal_moves(gameState,player,pos);
@@ -167,6 +168,7 @@ uchar env_check_end(GameState *gameState, Player *player)
             }
         }
     }
+    if(myK==-1)end=2;
     return end;
 }
 

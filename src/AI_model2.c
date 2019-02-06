@@ -64,7 +64,11 @@ int ai_model2_simulate(GameState *gameState, Player *player, int alpha, int beta
 int ai_model2_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
-    if(check_end!=0)return check_end;
+    if(check_end!=0)
+    {
+        env_free_container(gameState);
+        return check_end;
+    }
     int MaxScore=-99999999;
     int score;
     vector BestMovesID,MovesStart,MovesEnd,Scores;
