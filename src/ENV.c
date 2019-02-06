@@ -19,6 +19,7 @@ GameState env_init()
     gameState.playerTurn=WHITE;
     gameState.castling_arr[PLAYER1].Left=gameState.castling_arr[PLAYER1].Right=0;
     gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=0;
+
     gameState.moves_vector_cnt=0;
     memcpy(gameState.board,initial_board,sizeof(int)*64);
     return gameState;
@@ -33,27 +34,28 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
     if(((s_piece*==6)||(s_piece*==-6))&&(start_pt%8==4))
     {
-        if(end_pt==58)
+        if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
         {
             gameState->board[56]=0;
             gameState->board[59]=3;
         }
-        else if(end_pt==62)
+        else if(end_pt==62)//castling bottom/right
         {
             gameState->board[63]=0;
             gameState->board[61]=3;
         }
-        else if(end_pt==6)
+        else if(end_pt==6)//castling top/left
         {
             gameState->board[7]=0;
             gameState->board[5]=3;
         }
-        else if(end_pt==2)
+        else if(end_pt==2)//castling top/right
         {
             gameState->board[0]=0;
             gameState->board[3]=3;
         }
     }
+    update_flags(gameState, start_pt, end_pt)
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
     // char str_move[20];
@@ -379,11 +381,11 @@ void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start
     //space numbers are hardcoded in
     if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
     {
-        if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
+        if((gameState.castling_arr[PLAYER1].Left==0)&&((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween as well as if the flag is up
         {
            vector_add(legal_moves,(58));
         }
-        if((gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween
+        if((gameState.castling_arr[PLAYER1].Right==0)&&(gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween as if the flag is up
         {
             vector_add(legal_moves,(62));
         }
@@ -391,11 +393,11 @@ void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start
        
     if(((y==0)&&(x==4))&&(playerTurn==-1))//checks for king being in its original position
     {
-        if(((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween
+        if((gameState.castling_arr[PLAYER2].Left==0)&&((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween as if the flag is up
         {
             vector_add(legal_moves,(2));
         }
-        if((gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
+        if((gameState.castling_arr[PLAYER1].Right==0)&&(gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
         {
             vector_add(legal_moves,(6));
         }
@@ -489,4 +491,37 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
     }
     
     return legal_moves;
+}
+void update_flags(GameState *gameState, int start_pt, int end_pt)
+{
+    int s_piece = gameState->board[start_pt];
+    
+    if (s_piece == KING_W)//if white king moves
+    {
+        gameState.castling_arr[PLAYER1].Left=gameState.castling_arr[PLAYER1].Right=1;//sets both flags down
+    }
+    
+    if (s_piece == KING_B)//if black king moves
+    {
+      gameState.castling_arr[PLAYER2].Left=gameState.castling_arr[PLAYER2].Right=1;//sets both flags down
+    }
+    
+    
+    if (s_piece == CASTLE_W && start_ pt == 56)//if left rook moves from its original spot
+    {
+        gameState.castling_arr[PLAYER1].Left=1;//lowers left flag
+    }
+    if (s_piece == CASTLE_W && start_ pt == 63)//if left rook moves from its original spot
+    {
+        gameState.castling_arr[PLAYER1].Right=1;//lowers Right flag
+    }
+    if (s_piece == CASTLE_B && start_ pt == 0)//if left rook moves from its original spot
+    {
+        gameState.castling_arr[PLAYER2].Left=1;//lowers left flag
+    }
+    if (s_piece == CASTLE_B && start_ pt == 7)//if left rook moves from its original spot
+    {
+        gameState.castling_arr[PLAYER2].Right=1;//lowers left flag
+    }
+    
 }
