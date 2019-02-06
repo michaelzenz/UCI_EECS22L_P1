@@ -4,6 +4,8 @@
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 #define XY2ID(X,Y) ((Y)*8+X)
 
+void update_flags(GameState *gameState, int start_pt, int end_pt);
+
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
                         PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,
                         BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,BLANK,
@@ -38,6 +40,31 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     int e_piece=gameState->board[end_pt];
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
+    //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
+    if((abs(s_piece)==KING)&&(start_pt%8==4))
+    {
+        if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
+        {
+            gameState->board[56]=0;
+            gameState->board[59]=3;
+        }
+        else if(end_pt==62)//castling bottom/right
+        {
+            gameState->board[63]=0;
+            gameState->board[61]=3;
+        }
+        else if(end_pt==6)//castling top/left
+        {
+            gameState->board[7]=0;
+            gameState->board[5]=3;
+        }
+        else if(end_pt==2)//castling top/right
+        {
+            gameState->board[0]=0;
+            gameState->board[3]=3;
+        }
+    }
+    update_flags(gameState, start_pt, end_pt);
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
     char str_move[STR_NODE_SIZE];
@@ -495,4 +522,37 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
     }
     
     return legal_moves;
+}
+void update_flags(GameState *gameState, int start_pt, int end_pt)
+{
+    int s_piece = gameState->board[start_pt];
+    
+    if (s_piece == KING_W)//if white king moves
+    {
+        gameState->castling_arr[PLAYER1].Left=gameState->castling_arr[PLAYER1].Right=1;//sets both flags down
+    }
+    
+    else if (s_piece == KING_B)//if black king moves
+    {
+      	gameState->castling_arr[PLAYER2].Left=gameState->castling_arr[PLAYER2].Right=1;//sets both flags down
+    }
+    
+    
+    if (s_piece == CASTLE_W && start_pt == 56)//if left rook moves from its original spot
+    {
+        gameState->castling_arr[PLAYER1].Left=1;//lowers left flag
+    }
+    else if (s_piece == CASTLE_W && start_pt == 63)//if left rook moves from its original spot
+    {
+        gameState->castling_arr[PLAYER1].Right=1;//lowers Right flag
+    }
+    else if (s_piece == CASTLE_B && start_pt == 0)//if left rook moves from its original spot
+    {
+        gameState->castling_arr[PLAYER2].Left=1;//lowers left flag
+    }
+    else if (s_piece == CASTLE_B && start_pt == 7)//if left rook moves from its original spot
+    {
+        gameState->castling_arr[PLAYER2].Right=1;//lowers left flag
+    }
+    
 }
