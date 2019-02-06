@@ -18,6 +18,7 @@ GtkWidget *vbox;
 
 GdkPixbuf *main_menu_pixbuf = NULL;
 GdkPixbuf *HvC_pixbuf = NULL;
+//GdkPixbuf *HvC_Black_pixbuf = NULL;
 GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
 GdkPixbuf *Background_pixbuf=NULL;
@@ -31,7 +32,8 @@ char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/background.png";
 char *HvH_Menu_path="res/HvH_Menu.png";
-
+char *CvC_Menu_path="res/CvC_Menu.png";
+char *HvC_Menu_Black_path="res/HvC_Menu_Black.png";
 // char icon[20];
 // strcat(square[0]);
 // strcat(icon,color[0]);
@@ -96,19 +98,22 @@ void gui_init(GameState *gameState,Player player_arr[2])
     player_arr[0].color=WHITE;
     player_arr[1].color=BLACK;
     player_arr[1].difficulty=EASY;
-    int GameMode=gui_main_menu();
+    
+	int play=0;
+  do{ int GameMode=gui_main_menu();
     switch(GameMode)
     {
     case GameMode_HvC:
-        gui_player_HvC_menu(player_arr);
+       play= gui_player_HvC_menu(player_arr);
         break;
     case GameMode_HvH:
-        gui_player_HvH_menu(player_arr);
+       play= gui_player_HvH_menu(player_arr);
         break;
     case GameMode_CvC:
-        gui_player_CvC_menu(player_arr);
+       play= gui_player_CvC_menu(player_arr);
         break;
-    }
+    }}while(play!=1);
+      
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
     gui_gameplay_window(gameState);
@@ -169,7 +174,7 @@ int gui_main_menu()
     int GameMode=0;
     gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(main_menu_callback), &GameMode);
     gtk_widget_show_all(window);
-    gdk_threads_leave();//after you finich calling gtk functions, call this
+    gdk_threads_leave();//after you finish calling gtk functions, call this
     while(GameMode==0)sleep(1);//must call sleep to release some cpu resources for gtk thread to run
     gdk_threads_enter();//again, you know what I am gonna say
     g_signal_handler_disconnect(window,handlerID);
@@ -213,6 +218,17 @@ gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
         player_arr[0].color=BLACK;
         player_arr[1].color=WHITE;
         printf("BLACK\n");
+
+       /* gdk_threads_enter();
+        gtk_widget_hide(HvC_Menu_path);
+        HvC_Black_pixbuf=load_pixbuf_from_file(HvC_Menu_Black_path);
+        HvC_Black_pixbuf=gdk_pixbuf_scale_simple(HvC_Black_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+
+        image = gtk_image_new_from_pixbuf(HvC_Black_pixbuf);
+        gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+        gtk_widget_show_all(layout);
+        gdk_threads_leave();*/
+
     }
     
     if(x>72&&x<145&&y<310&&y>289)//WHITE
@@ -241,6 +257,9 @@ gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 	    player_arr[1].difficulty=ADVANCED;
 
     }
+     if(x>60&&y>470&&x<170&&y<503){
+	options->play=2;
+    }
 
 
     if(x>383&&x<575&&y>455&&y<514)//PLAY
@@ -261,7 +280,7 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
         player_arr[0].color=BLACK;
         player_arr[1].color=WHITE;
         player_arr[0].identity=HUMAN;
-        player_arr[1].identity=COMPUTER;
+        player_arr[1].identity=HUMAN;
         printf("player One is Black");
     }
     
@@ -270,7 +289,7 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 	player_arr[0].color=WHITE;
 	player_arr[1].color=BLACK;
 	player_arr[0].identity=HUMAN;
-	player_arr[1].identity=COMPUTER;
+	player_arr[1].identity=HUMAN;
 
 	printf("Player One is White");
 	
@@ -283,9 +302,50 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
   	gtk_widget_hide_all(window);
 
     }
-} 
+}
+gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
+{
+    int x, y;
+    GdkModifierType state;
+    gdk_window_get_pointer(widget->window,&x,&y,&state);
+    PlayerOptions *options=(PlayerOptions*)data;
+    Player *player_arr=options->player_arr;
+    printf("x:%d, y:%d\n",x,y);
+    if(x>777&&x<845&&y<265&&y>242)//ESY
+    {
 
-void gui_player_HvC_menu(Player* player_arr)
+        player_arr[1].difficulty=EASY;
+        player_arr[0].difficulty=EASY;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+    if(x>758&&x<863&&y<310&&y>288)//MEDIUM
+    {
+
+        player_arr[1].difficulty=MEDIUM;
+        player_arr[0].difficulty=MEDIUM;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+
+    if(x>750&&x<882&&y<354&&y>334)//ADVANCED
+    {
+
+        player_arr[1].difficulty=ADVANCED;
+        player_arr[0].difficulty=ADVANCED;
+        player_arr[0].identity=COMPUTER;
+        player_arr[1].identity=COMPUTER;
+    }
+
+
+    if(x>383&&x<575&&y>455&&y<514)//PLAY
+    {
+        options->play=1;
+    }
+
+}
+//
+int gui_player_HvC_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -304,9 +364,10 @@ void gui_player_HvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+	return options.play;
 }
 
-void gui_player_HvH_menu(Player* player_arr)
+int gui_player_HvH_menu(Player* player_arr)
 {
   PlayerOptions options;
     options.player_arr=player_arr;
@@ -325,12 +386,32 @@ void gui_player_HvH_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+	return options.play;
 
 }
 
-void gui_player_CvC_menu(Player* player_arr)
+int gui_player_CvC_menu(Player* player_arr)
 {
 
+    PlayerOptions options;
+    options.player_arr=player_arr;
+    options.play=0;
+
+    gdk_threads_enter();
+    CvC_pixbuf=load_pixbuf_from_file(CvC_Menu_path);
+    CvC_pixbuf=gdk_pixbuf_scale_simple(CvC_pixbuf,WINDOW_WIDTH,WINDOW_HEIGHT,GDK_INTERP_BILINEAR);
+
+    image = gtk_image_new_from_pixbuf(CvC_pixbuf);
+    gtk_layout_put(GTK_LAYOUT(layout), image, 0, 0);
+    gulong handlerID=g_signal_connect(window, "button_press_event", G_CALLBACK(CvC_menu_callback), &options);
+    gtk_widget_show_all(window);
+    gdk_threads_leave();
+    while(options.play==0)sleep(1);
+    gdk_threads_enter();
+    g_signal_handler_disconnect(window,handlerID);
+    gdk_threads_leave();
+
+	return options.play;
 }
 
 void DrawBoard(GameState *gamestate)

@@ -36,9 +36,9 @@ void gui_init(GameState *gameState,Player player_arr[2]);
 
 int gui_main_menu();
 
-void gui_player_HvC_menu(Player* player_arr);
-void gui_player_HvH_menu(Player* player_arr);
-void gui_player_CvC_menu(Player* player_arr);
+int gui_player_HvC_menu(Player* player_arr);
+int gui_player_HvH_menu(Player* player_arr);
+int gui_player_CvC_menu(Player* player_arr);
 
 void gui_gameplay_window(GameState *gameState);
 
