@@ -4,7 +4,7 @@
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 #define XY2ID(X,Y) ((Y)*8+X)
 
-void update_flags(GameState *gameState, int start_pt, int end_pt, int s_piece);
+void update_flags(GameState *gameState, int start_pt, int end_pt);
 
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
                         PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,PAWN_B,
@@ -38,13 +38,13 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     int s_piece=gameState->board[start_pt];
     int e_piece=gameState->board[end_pt];
+    
+    int captured_pos=end_pt;
+    int SPECIAL_MOVE=NOSPECIAL;
+    //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
+    update_flags(gameState, start_pt, end_pt);
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
-    //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
-    if((abs(s_piece)==PAWN)&&(end_pt==gameState->check_en_passant[2])) //detects if en_passant is being performed
-    {
-        gameState->board[gameState->check_en_passant[3]] = 0; //sets the pawn who performed double move to captured
-    }
     if((abs(s_piece)==KING)&&(start_pt%8==4))
     {
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
@@ -67,10 +67,24 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             gameState->board[0]=0;
             gameState->board[3]=CASTLE_B;
         }
+        SPECIAL_MOVE=CASTLING;
     }
-    update_flags(gameState, start_pt, end_pt, s_piece);
+    char str_last_move[STR_NODE_SIZE];
+    Move last_move;
+    stack_peek(gameState->moves_stack, str_last_move);
+    last_move = string2move(str_last_move);
+    
+    if(abs(last_move.piece )== PAWN && (abs(last_move.start_pt - last_move.end_pt) == 16)
+        && (abs(s_piece) == PAWN) && abs(start_pt - last_move.end_pt)== 1)
+        {
+            gameState->board[last_move.end_pt] = 0;
+            e_piece=PAWN*gameState->playerTurn*-1;
+            captured_pos=last_move.end_pt;
+            SPECIAL_MOVE=ENPASSANT;
+        }
+    
     gameState->playerTurn*=-1;
-    Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
+    Move move={s_piece,start_pt,end_pt,e_piece,captured_pos,SPECIAL_MOVE};
     char str_move[STR_NODE_SIZE];
     memset(str_move,'\0',sizeof(str_move));
     move2string(str_move,&move);
@@ -89,8 +103,22 @@ void env_undo(GameState *gameState)
         gameState->board[last_move.end_pt]=BLANK;
         gameState->board[last_move.captured_pos]=last_move.captured;
         gameState->playerTurn*=-1;
-    }
 
+        if(last_move.special_move==CASTLING)
+        {
+            int x=last_move.end_pt%8;
+            if(x==6)
+            {
+                gameState->board[last_move.end_pt+1]=gameState->playerTurn*CASTLE;
+                gameState->board[last_move.end_pt-1]=BLANK;
+            }
+            else if(x==2)
+            {
+                gameState->board[last_move.end_pt-2]=gameState->playerTurn*CASTLE;
+                gameState->board[last_move.end_pt+1]=BLANK;
+            }
+        }
+    }
 }
 
 uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots)
@@ -247,14 +275,15 @@ vector env_get_legal_pawn(GameState *gameState, int start_pt)
         if(x+dx<0||x+dx>7)continue;
         if(gameState->board[XY2ID(x+dx,y-playerTurn)]*playerTurn<0)vector_add(&legal_moves,XY2ID(x+dx,y-playerTurn));
     }
-    if(start_pt == gameState->check_en_passant[0])//checks for first en_passant_square
-    {
-        vector_add(&legal_moves, gameState->check_en_passant[2]);//sends the square that performs en_passant
-    }
-    if(start_pt == gameState->check_en_passant[1])//checks for other en_passant_square
-    {
-        vector_add(&legal_moves, gameState->check_en_passant[2]);//sends the square that perfroms en_passant
-    }
+    char str_last_move[STR_NODE_SIZE];
+    Move last_move;
+    stack_peek(gameState->moves_stack, str_last_move);
+    last_move = string2move(str_last_move);
+    if(abs(last_move.piece )== PAWN && (abs(last_move.start_pt - last_move.end_pt) == 16)
+        && abs(start_pt - last_move.end_pt)== 1)
+        {
+            vector_add(&legal_moves, last_move.start_pt + 8 * gameState->playerTurn);
+        }
                                                                    
     return legal_moves;
 }
@@ -519,30 +548,11 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
     
     return legal_moves;
 }
-void update_flags(GameState *gameState, int start_pt, int end_pt, int s_piece)
+void update_flags(GameState *gameState, int start_pt, int end_pt)
 {
     
-    if ((abs(s_piece) == PAWN)&&(abs(start_pt - end_pt) == 16)) //detects if double move has been performed
-    {
-        if(end_pt%8 != 0)//check for left out of bounds
-            gameState->check_en_passant[1] = (end_pt - 1);
-        if(end_pt%8 !=7)//check for right out of bounds
-            gameState->check_en_passant[0] = (end_pt + 1);//adds flags for en_passant
-        if(end_pt > start_pt)//determines which direction the double pawn went
-            gameState->check_en_passant[2] = start_pt + 8;//if black set attack to square 1 row down
-        else
-            gameState->check_en_passant[2] = start_pt - 8;//if white set attack to square 1 row up
-        gameState->check_en_passant[3] = end_pt;//flag to delete this square if en_passant performed
-        
-    }
-    else
-    {
-        gameState->check_en_passant[0] = 0;//sets check_passant to 0, a square which a pawn can never perform en_passant
-        gameState->check_en_passant[1] = 0;
-        gameState->check_en_passant[2] = 0;
-        gameState->check_en_passant[3] = 0;
-    }
-    
+
+    int s_piece=gameState->board[start_pt];
     if (s_piece == KING_W)//if white king moves
     {
         gameState->castling_arr[PLAYER1].Left=gameState->castling_arr[PLAYER1].Right=1;//sets both flags down

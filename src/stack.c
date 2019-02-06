@@ -55,7 +55,7 @@ void stack_pop(Node** head_ref, char *ret_str)
     }
 }
 
-void peek(Node* top, char *ret_str) 
+void stack_peek(Node* top, char *ret_str) 
 { 
     if(!stack_isEmpty(top))
     {
