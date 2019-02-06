@@ -68,7 +68,7 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             gameState->board[3]=CASTLE_B;
         }
     }
-    update_flags(gameState, start_pt, end_pt);
+    update_flags(gameState, start_pt, end_pt, s_piece);
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,end_pt,NOSPECIAL};
     char str_move[STR_NODE_SIZE];
@@ -517,9 +517,9 @@ vector env_get_legal_knight(GameState *gameState, int start_pt)
     
     return legal_moves;
 }
-void update_flags(GameState *gameState, int start_pt, int end_pt)
+void update_flags(GameState *gameState, int start_pt, int end_pt, int s_piece)
 {
-    int s_piece = gameState->board[start_pt];
+    
     if ((abs(s_piece) == PAWN)&&(abs(start_pt - end_pt) == 16)) //detects if double move has been performed
     {
         if(end_pt%8 != 0)//check for left out of bounds
