@@ -44,6 +44,7 @@ typedef struct _GameState
 {
     int playerTurn;
     Castling castling_arr[2];
+    int check_en_passant[4];
     int board[8*8];
     LegalMovesContainer container[16];
     int moves_vector_cnt;
