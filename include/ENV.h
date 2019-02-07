@@ -20,7 +20,7 @@ vector env_get_legal_knight(GameState *gameState, int start_pt);
 vector env_get_legal_castle(GameState *gameState, int start_pt);
 vector env_get_legal_bishop(GameState *gameState, int start_pt);
 vector env_get_legal_queen(GameState *gameState, int start_pt);
-vector env_get_legal_king(GameState *gameState, int start_pt);
+vector env_get_legal_king(GameState *gameState, Player *player, int start_pt);
 void env_undo(GameState *gameState);
 #endif
 

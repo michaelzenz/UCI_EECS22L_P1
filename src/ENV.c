@@ -69,13 +69,14 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
         }
         SPECIAL_MOVE=CASTLING;
     }
+
     char str_last_move[STR_NODE_SIZE];
     Move last_move;
     stack_peek(gameState->moves_stack, str_last_move);
     last_move = string2move(str_last_move);
     
-    if(abs(last_move.piece )== PAWN && (abs(last_move.start_pt - last_move.end_pt) == 16)
-        && (abs(s_piece) == PAWN) && abs(start_pt - last_move.end_pt)== 1)
+    if(abs(last_move.piece)== PAWN && (abs(last_move.start_pt - last_move.end_pt) == 16)
+        && (abs(s_piece) == PAWN) && abs(start_pt - last_move.end_pt)== 1 && abs(end_pt-last_move.end_pt)==1)
         {
             gameState->board[last_move.end_pt] = 0;
             e_piece=PAWN*gameState->playerTurn*-1;
@@ -83,6 +84,7 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             SPECIAL_MOVE=ENPASSANT;
         }
     
+
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,captured_pos,SPECIAL_MOVE};
     char str_move[STR_NODE_SIZE];
@@ -97,8 +99,13 @@ void env_undo(GameState *gameState)
     if(!stack_isEmpty((gameState->moves_stack)))
     {
         char str_last_move[STR_NODE_SIZE];
+        
         stack_pop(&(gameState->moves_stack),str_last_move);
         Move last_move=string2move(str_last_move);
+        if(last_move.end_pt==18)
+        {
+            int debug=1;
+        }
         gameState->board[last_move.start_pt]=last_move.piece;
         gameState->board[last_move.end_pt]=BLANK;
         gameState->board[last_move.captured_pos]=last_move.captured;
@@ -244,7 +251,7 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
             legal_moves=env_get_legal_queen(gameState,start_pt);
             break;
         case KING:
-            legal_moves=env_get_legal_king(gameState,start_pt);
+            legal_moves=env_get_legal_king(gameState,player,start_pt);
             break;
     }
     return legal_moves;
@@ -458,13 +465,21 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
     return legal_moves1;
 }
 
-void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start_pt)
+void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_moves, int start_pt)
 {
     int x=start_pt%8, y=start_pt/8;
     int playerTurn=gameState->playerTurn;
     //space numbers are hardcoded in
+    vector check_check_slots;
+    vector_init(&check_check_slots);
+    for(int i=-3;i<=2;i++)vector_add(&check_check_slots,start_pt+i);
+    gameState->playerTurn*=-1;
+    env_is_threatened(gameState,player,&check_check_slots);
+    gameState->playerTurn*=-1;
     if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
     {
+        
+        
         if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
         {
            vector_add(legal_moves,(58));
@@ -486,9 +501,10 @@ void env_get_legal_castling(GameState *gameState, vector *legal_moves, int start
             vector_add(legal_moves,(6));
         }
     }
+    vector_free(&check_check_slots);
 }
 
-vector env_get_legal_king(GameState *gameState, int start_pt)
+vector env_get_legal_king(GameState *gameState, Player *player, int start_pt)
 {
     vector legal_moves1,legal_moves2,legal_moves3;
     vector_init(&legal_moves1);
@@ -496,7 +512,7 @@ vector env_get_legal_king(GameState *gameState, int start_pt)
     vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
-    env_get_legal_castling(gameState,&legal_moves3,start_pt);//a third vector for castling
+    env_get_legal_castling(gameState,player,&legal_moves3,start_pt);//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
     vector_cat(&legal_moves1,&legal_moves3);
