@@ -32,6 +32,7 @@ typedef struct _Node
 {
     char log[STR_NODE_SIZE];
     struct _Node *next;
+
 }Node;
 
 //the struct containing all info for a move

@@ -53,11 +53,8 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     int colorID=MAX(gameState->playerTurn*-1,0);
     int PrevMoveCastlingState=(gameState->castling_arr[colorID].Left<<1)|(gameState->castling_arr[colorID].Right);
     update_flags(gameState, start_pt, end_pt);
-    
-
     gameState->board[start_pt]=0;
     gameState->board[end_pt]=s_piece;
-
     if((abs(s_piece)==KING)&&(start_pt%8==4))
     {
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
@@ -168,7 +165,6 @@ void env_undo(GameState *gameState)
                 gameState->board[last_move.end_pt+1]=BLANK;
             }
         }
-
     }
 }
 
