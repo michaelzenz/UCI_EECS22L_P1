@@ -38,6 +38,8 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     int s_piece=gameState->board[start_pt];
     int e_piece=gameState->board[end_pt];
+    int ey=end_pt/8;
+    int playerTurn=gameState->playerTurn;
     
     int captured_pos=end_pt;
     int SPECIAL_MOVE=NOSPECIAL;
@@ -68,6 +70,14 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             gameState->board[3]=CASTLE_B;
         }
         SPECIAL_MOVE=CASTLING;
+    }
+
+    if(abs(s_piece)==PAWN&&(7-ey*2)*playerTurn==7)
+    {
+        int PromotionSelection=0;
+        gameState->board[end_pt]=QUEEN*playerTurn;
+        //if(player->identity==HUMAN)scanf("%d\n",&PromotionSelection);
+        SPECIAL_MOVE=PROMOTION;
     }
 
     char str_last_move[STR_NODE_SIZE];
@@ -465,7 +475,7 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
     return legal_moves1;
 }
 
-void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_moves, int start_pt)
+void env_get_legal_castling(GameState *gameState, Player *player, vector *legal_moves, int start_pt)
 {
     int x=start_pt%8, y=start_pt/8;
     int playerTurn=gameState->playerTurn;
@@ -478,8 +488,6 @@ void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_m
     gameState->playerTurn*=-1;
     if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
     {
-        
-        
         if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
         {
            vector_add(legal_moves,(58));
@@ -512,7 +520,7 @@ vector env_get_legal_king(GameState *gameState, Player *player, int start_pt)
     vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
-    env_get_legal_castling(gameState,player,&legal_moves3,start_pt);//a third vector for castling
+    //env_get_legal_castling(gameState,player,&legal_moves3,start_pt);//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
     vector_cat(&legal_moves1,&legal_moves3);
