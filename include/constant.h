@@ -1,3 +1,5 @@
+
+//hard code for different objects and situation
 #define HUMAN 0
 #define COMPUTER 1
 
@@ -7,8 +9,8 @@
 #define WHITE 1
 #define BLACK -1
 
+//hard code for different kinds of pieces
 #define BLANK 0
-
 #define PAWN 1
 #define PAWN_W 1
 #define PAWN_B -1
@@ -28,12 +30,12 @@
 #define KING_W 6
 #define KING_B -6
 
+//code for special moves
 #define NOSPECIAL 0
 #define ENPASSANT 1
 #define CASTLING 2
 #define PROMOTION 3
 
-#define ILLEGALIZE_CASTLE 
-#define ILLEGALIZE_KING
-
+//the size of char array that should be used when 
+//calling stack_ and convertion between move and string functions
 #define STR_NODE_SIZE 80

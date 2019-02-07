@@ -2,7 +2,7 @@
 #define MAXSTEP 3
 //#define CHECK_SCORE
 
-
+//the simulation function for the branches in the searching tree
 int ai_model1_simulate(GameState *gameState, Player *player, int depth)
 {
     if(depth<=0)return ai_sum_scores(gameState,player);
@@ -27,6 +27,7 @@ int ai_model1_simulate(GameState *gameState, Player *player, int depth)
             vector_add(&MovesStart,i);
         vector_free(&CurLegalMoves);
     }
+
     assert(MovesStart.count==MovesEnd.count);
     cnt=MovesStart.count;
     for(int i=0;i<cnt;i++)
@@ -43,6 +44,7 @@ int ai_model1_simulate(GameState *gameState, Player *player, int depth)
     return MaxScore*playerTurn;
 }
 
+//the play function for the root in the searching tree, return the quit from check_end
 int ai_model1_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
@@ -114,7 +116,7 @@ int ai_model1_play(GameState *gameState, Player *player)
     return 0;
 }
 
-
+//Marshall`s experiment AI
 int ai_easy_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);

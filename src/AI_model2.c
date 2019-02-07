@@ -3,7 +3,7 @@
 //#define CHECK_SCORE
 #define MARGIN 0
 
-
+//the simulation function for the branches in the searching tree
 int ai_model2_simulate(GameState *gameState, Player *player, int alpha, int beta, int depth)
 {
     if(depth<=0)return ai_sum_scores(gameState,player);
@@ -60,7 +60,7 @@ int ai_model2_simulate(GameState *gameState, Player *player, int alpha, int beta
     
     return BestScore;
 }
-
+//the play function for the root in the searching tree, return the quit from check_end
 int ai_model2_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);

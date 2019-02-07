@@ -316,7 +316,7 @@ void Test_AI_withGUI(int argc, char *argv[],int model)
 
 int main(int argc, char *argv[])
 {   
-    #ifdef ANTEDILUVIAN
+    #ifdef SUPEROLD
     printf("\n\n\\********************\\\n");
     printf("You are seeing this message because you are using a very old version of Glib\n");
     printf("This is strongly NOT recommended because when TODAY`s HUMAN BEINGS download you project from Internet\n");
@@ -328,12 +328,12 @@ int main(int argc, char *argv[])
     //gui_init_window(argc,argv);
     //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    //Game(argc,argv,1);
+    Game(argc,argv,1);
     
     
     //test_env();
     //Test_AI(1);
-    AI_Contest(1,2);
+    //AI_Contest(1,2);
     //test_gamePlay_window(argc,argv);
     //AI_ContestWithGUI(argc,argv,1,2);
     //Test_AI_withGUI(argc,argv,1);

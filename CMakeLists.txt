@@ -7,7 +7,7 @@ SET(CMAKE_BUILD_TYPE Debug)
 SET(CMAKE_C_COMPILER "/usr/bin/gcc")
 SET(CMAKE_CXX_COMPILER "/usr/bin/g++")
 
-#add_definitions(-DANTEDILUVIAN)
+#add_definitions(-DSUPEROLD)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)

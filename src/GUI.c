@@ -3,23 +3,24 @@
 
 #include"GUI.h"
 
-#define xy21d(x,y) (y*8+x)
+#define xy21d(x,y) (y*8+x)//convert (x,y) coordinates in board to 1D coordinates
 
 /*Global Variables */
 
-GtkWidget *window;
-GtkWidget *image;
-GtkWidget *layout;
-GtkWidget *fixed;
-GtkWidget *chess_icon;
-GtkWidget *table;
-GtkWidget *button;
+//Widgets for gtk to use
+GtkWidget *window;//the window
+GtkWidget *image;//the widget to load image
+GtkWidget *layout;//the layout to put on background and contain fixed widget
+GtkWidget *fixed;//the widget to contain table
+GtkWidget *chess_icon;//the icon to draw on the board
+GtkWidget *table;//the widget to contain icons
 
+//the pixbuf to load image and resize from a .jpg or .png file
 GdkPixbuf *main_menu_pixbuf = NULL;
 GdkPixbuf *HvC_pixbuf = NULL;
 GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
-GdkPixbuf *Background_pixbuf=NULL;
+GdkPixbuf *Background_pixbuf=NULL;//for board
 
 //Look up table
 char *str_square[4]={"./res/WhiteSquare","./res/BlackSquare", "./res/SelectedSquare", "./res/LegalSquare"};
@@ -31,15 +32,10 @@ char *HvC_Menu_path="res/HvC_Menu.png";
 char *Background_path="res/GamePlayBackground.jpg";
 char *HvH_Menu_path="res/HvH_Menu.png";
 char *CvC_Menu_path="res/CvC_Menu.png";
-// char icon[20];
-// strcat(square[0]);
-// strcat(icon,color[0]);
-// strcat(icon,piece[0]);
-
-// icon=="WhitePawnWhiteS.jpg";
 
 int GameMode=0;
 
+//load .png and .jpg files to pixbuf
 GdkPixbuf *load_pixbuf_from_file (const char *filename)
 {
     GError *error = NULL;
@@ -55,7 +51,7 @@ GdkPixbuf *load_pixbuf_from_file (const char *filename)
 }
 
 
-
+//the thread to show and render the window
 void gui_render()
 {
     gdk_threads_enter();
@@ -83,13 +79,14 @@ int gui_init_window(int argc, char*argv[])
 
 
     gdk_threads_init();
-#ifdef ANTEDILUVIAN
+#ifdef SUPEROLD
 	g_thread_create((GThreadFunc)gui_render,NULL,TRUE,NULL);
 #else
     g_thread_new("render",(GThreadFunc)gui_render,NULL);
 #endif
 }
 
+//init menu, get infomation for players and draw gameplay window
 void gui_init(GameState *gameState,Player player_arr[2])
 {
     //default settings
@@ -123,7 +120,7 @@ void gui_init(GameState *gameState,Player player_arr[2])
 
 
 
-
+//Not used right now
 static gboolean on_delete_event (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
     /* If you return FALSE in the "delete_event" signal handler,
@@ -503,7 +500,8 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
     
 }
 
-//don`t worry about this part first
+//called if a human is the turn to play
+//connect click signal to window and draw the board based on the user`s action
 int gui_play(GameState *gameState,Player *player)
 {
     int check=env_check_end(gameState,player);
@@ -565,6 +563,7 @@ void gui_refresh(GameState *gameState,Player *player_arr)
     gdk_threads_leave();
 }
 
+//when checkmate, show this window to tell who wins
 void gui_checkmate_window(GameState *gameState, int quit)
 {
   /*register event handlers*/

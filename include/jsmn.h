@@ -19,6 +19,10 @@
 // THE SOFTWARE.
 
 
+//EECS22L team11:
+//this is the function for translating a string to a move
+//the licence is above
+
 
 #ifndef __JSMN_H_
 #define __JSMN_H_

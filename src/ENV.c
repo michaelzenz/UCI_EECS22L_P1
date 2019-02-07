@@ -4,6 +4,9 @@
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 #define XY2ID(X,Y) ((Y)*8+X)
 
+uchar human_promotion_flag=0;
+uchar HumanSelectedPromotion=QUEEN;
+
 void update_flags(GameState *gameState, int start_pt, int end_pt);
 
 int initial_board[64]={CASTLE_B,KNIGHT_B,BISHOP_B,QUEEN_B,KING_B,BISHOP_B,KNIGHT_B,CASTLE_B,
@@ -27,6 +30,7 @@ GameState env_init()
     return gameState;
 }
 
+//free up the memory of the container
 void env_free_container(GameState *gameState)
 {
     for(int i=0;i<gameState->moves_vector_cnt;i++)
@@ -34,13 +38,14 @@ void env_free_container(GameState *gameState)
     gameState->moves_vector_cnt=0;
 }
 
+
 void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     int s_piece=gameState->board[start_pt];
     int e_piece=gameState->board[end_pt];
 
     int sx=start_pt%8,sy=start_pt/8;
-    int ey=end_pt/8;
+    int ex=end_pt%8,ey=end_pt/8;
     
     int captured_pos=end_pt;
     int SPECIAL_MOVE=NOSPECIAL;
@@ -49,7 +54,11 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     int PrevMoveCastlingState=(gameState->castling_arr[colorID].Left<<1)|(gameState->castling_arr[colorID].Right);
     update_flags(gameState, start_pt, end_pt);
     
-    if((abs(s_piece)==KING)&&(start_pt%8==4)&&(sy*2-7)*gameState->playerTurn==7)
+
+    gameState->board[start_pt]=0;
+    gameState->board[end_pt]=s_piece;
+
+    if((abs(s_piece)==KING)&&(start_pt%8==4))
     {
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
         {
@@ -88,15 +97,29 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             SPECIAL_MOVE=ENPASSANT;
         }
     
-    if(abs(s_piece)==PAWN&&(7-2*ey)*gameState->playerTurn==7)
+    if(abs(s_piece)==PAWN&&(7-2*ey)*gameState->playerTurn==7&&ex==sx)
     {
-        gameState->board[end_pt]=QUEEN*gameState->playerTurn;
+        int SelectedPromotion=QUEEN;
+        if(player->identity==HUMAN)
+        {
+            human_promotion_flag=!human_promotion_flag;
+            if(human_promotion_flag)
+            {
+                printf("input the promotion you want\n");
+                char ch;
+                ch=getchar();
+                HumanSelectedPromotion=(int)(ch-'0');
+            }
+            SelectedPromotion=HumanSelectedPromotion;
+        }
+        else
+        {
+            SelectedPromotion=QUEEN;
+        }
+        
+        gameState->board[end_pt]=SelectedPromotion*gameState->playerTurn;
         SPECIAL_MOVE=PROMOTION;
     }
-    
-    gameState->board[start_pt]=0;
-    gameState->board[end_pt]=s_piece;
-
     gameState->playerTurn*=-1;
     Move move={s_piece,start_pt,end_pt,e_piece,captured_pos,SPECIAL_MOVE,PrevMoveCastlingState};
     char str_move[STR_NODE_SIZE];
@@ -106,6 +129,7 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 
 }
 
+//undo the last move
 void env_undo(GameState *gameState)
 {
     if(!stack_isEmpty((gameState->moves_stack)))
@@ -147,7 +171,9 @@ void env_undo(GameState *gameState)
 
     }
 }
-//check_castling, 1 if is checking castling
+
+//check whether the location in given vector or the enemy`s king is threatened
+//in the current player`s turn
 uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots)
 {
     int pos=-1;
@@ -187,6 +213,9 @@ uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots
     else return 0;
 }
 
+//check if checkmate, 0 for no checking
+//1 for lose
+//2 for win 
 uchar env_check_end(GameState *gameState, Player *player)
 {
     vector legal_moves;
@@ -486,6 +515,7 @@ vector env_get_legal_queen(GameState *gameState, int start_pt)
     return legal_moves1;
 }
 
+//check castling availability, add legal moves to legal_moves vector
 void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_moves, int start_pt)
 {
     int x=start_pt%8, y=start_pt/8;
@@ -559,6 +589,8 @@ void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_m
     vector_free(&check_check_slots);
 }
 
+//get king`s legal moves, check_castling==1 if 
+//try to check castling availability
 vector env_get_legal_king(GameState *gameState, Player *player, int start_pt, uchar check_castling)
 {
     vector legal_moves1,legal_moves2,legal_moves3;

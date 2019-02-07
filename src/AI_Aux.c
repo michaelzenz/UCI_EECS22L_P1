@@ -1,5 +1,6 @@
 #include"AI.h"
 
+//scores for different pieces at different position
 
 int pos_scores_pawn[2][64]=
 {
@@ -148,8 +149,10 @@ int pos_scores_kings_end[2][64]=
     -50,-40,-30,-20,-20,-30,-40,-50}
 };
 
+//scores of different pieces
 int piece_scores[7]={0,100,300,500,300,900,9000};
 
+//the print board function for ai, for logging
 void ai_print_board(GameState *gameState)
 {
     for(int i=0;i<64;i++)
@@ -160,6 +163,7 @@ void ai_print_board(GameState *gameState)
     printf("\n*****************\n*****************\n");
 }
 
+//sum up the scores including pieces and location scores
 int ai_sum_scores(GameState *gameState, Player *player)
 {
     int sum=0;
@@ -200,6 +204,7 @@ int ai_sum_scores(GameState *gameState, Player *player)
     return sum;
 }
 
+//the global function for ai to select model and play
 int ai_play(GameState *gameState,Player *player, int model)
 {
     int quit=0;
