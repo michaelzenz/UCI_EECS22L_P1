@@ -38,14 +38,18 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
 {
     int s_piece=gameState->board[start_pt];
     int e_piece=gameState->board[end_pt];
+
+    int sx=start_pt%8,sy=start_pt/8;
+    int ey=end_pt/8;
     
     int captured_pos=end_pt;
     int SPECIAL_MOVE=NOSPECIAL;
     //if(((s_piece*==6)||(s_piece*==-6))&&(pow((end_pt-start_pt),2)>1))
+    int colorID=MAX(gameState->playerTurn*-1,0);
+    int PrevMoveCastlingState=(gameState->castling_arr[colorID].Left<<1)|(gameState->castling_arr[colorID].Right);
     update_flags(gameState, start_pt, end_pt);
-    gameState->board[start_pt]=0;
-    gameState->board[end_pt]=s_piece;
-    if((abs(s_piece)==KING)&&(start_pt%8==4))
+    
+    if((abs(s_piece)==KING)&&(start_pt%8==4)&&(sy*2-7)*gameState->playerTurn==7)
     {
         if(end_pt==58)//one of the possible four endpoints of a castling bottom/left
         {
@@ -84,9 +88,17 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
             SPECIAL_MOVE=ENPASSANT;
         }
     
+    if(abs(s_piece)==PAWN&&(7-2*ey)*gameState->playerTurn==7)
+    {
+        gameState->board[end_pt]=QUEEN*gameState->playerTurn;
+        SPECIAL_MOVE=PROMOTION;
+    }
+    
+    gameState->board[start_pt]=0;
+    gameState->board[end_pt]=s_piece;
 
     gameState->playerTurn*=-1;
-    Move move={s_piece,start_pt,end_pt,e_piece,captured_pos,SPECIAL_MOVE};
+    Move move={s_piece,start_pt,end_pt,e_piece,captured_pos,SPECIAL_MOVE,PrevMoveCastlingState};
     char str_move[STR_NODE_SIZE];
     memset(str_move,'\0',sizeof(str_move));
     move2string(str_move,&move);
@@ -109,7 +121,14 @@ void env_undo(GameState *gameState)
         gameState->board[last_move.start_pt]=last_move.piece;
         gameState->board[last_move.end_pt]=BLANK;
         gameState->board[last_move.captured_pos]=last_move.captured;
+        
+        int left_castling_flag=last_move.pre_castling_state>>1;
+        int right_castlgin_flag=last_move.pre_castling_state&1;
+        
         gameState->playerTurn*=-1;
+        int colorID=MAX(gameState->playerTurn*-1,0);
+        gameState->castling_arr[colorID].Left=left_castling_flag;
+        gameState->castling_arr[colorID].Right=right_castlgin_flag;
 
         if(last_move.special_move==CASTLING)
         {
@@ -125,9 +144,10 @@ void env_undo(GameState *gameState)
                 gameState->board[last_move.end_pt+1]=BLANK;
             }
         }
+
     }
 }
-
+//check_castling, 1 if is checking castling
 uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots)
 {
     int pos=-1;
@@ -143,7 +163,8 @@ uchar env_is_threatened(GameState *gameState,Player *player, vector *check_slots
             if(gameState->board[pos]*gameState->playerTurn*-1==KING) K=pos;
             else if(gameState->board[pos]*gameState->playerTurn>0)
             {
-                legal_moves=env_get_legal_moves(gameState,player,pos);
+                if(gameState->board[pos]*gameState->playerTurn==KING)legal_moves=env_get_legal_king(gameState,player,pos,0);
+                else legal_moves=env_get_legal_moves(gameState,player,pos);
                 for(int i=0;i<legal_moves.count;i++)
                 {
                     threatened_area[vector_get(&legal_moves,i)]=1;
@@ -251,7 +272,7 @@ vector env_get_legal_moves(GameState *gameState, Player *player, int start_pt)
             legal_moves=env_get_legal_queen(gameState,start_pt);
             break;
         case KING:
-            legal_moves=env_get_legal_king(gameState,player,start_pt);
+            legal_moves=env_get_legal_king(gameState,player,start_pt,1);
             break;
     }
     return legal_moves;
@@ -476,35 +497,69 @@ void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_m
     gameState->playerTurn*=-1;
     env_is_threatened(gameState,player,&check_check_slots);
     gameState->playerTurn*=-1;
+    if(vector_get(&check_check_slots,3)==1)
+    {
+        vector_free(&check_check_slots);
+        return;
+    }
     if(((y==7)&&(x==4))&&(playerTurn==1))//checks for king being in its original position
     {
+        int i=1;//just set it to any other than 0
         
-        
-        if(((gameState->board[56]==3)&&(gameState->board[57]==0))&&((gameState->board[58]==0)&&(gameState->board[59]==0)))//checks for left castle and empty spaces inbetween
+        if(gameState->board[56]==3)
         {
-           vector_add(legal_moves,(58));
+            for(i=-3;i<0;i++)
+            {
+                if(gameState->castling_arr[0].Left)break;
+                if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;//3 is for the offset for i
+                else break;
+            }
         }
-        if((gameState->board[63]==3)&&((gameState->board[62]==0)&&(gameState->board[61]==0)))//checks for right castle and empty spaces inbetween
+        if(i==0)vector_add(legal_moves,(58));
+        i=1;
+        if(gameState->board[63]==3)
         {
-            vector_add(legal_moves,(62));
+            for(i=2;i>0;i--)
+            {
+                if(gameState->castling_arr[0].Right)break;
+                if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;
+                else break;
+            }
         }
+        if(i==0)vector_add(legal_moves,62);
+
     }
        
     if(((y==0)&&(x==4))&&(playerTurn==-1))//checks for king being in its original position
     {
-        if(((gameState->board[0]==-3)&&(gameState->board[1]==0))&&((gameState->board[2]==0)&&(gameState->board[3]==0)))//checks for left castle and empty spaces inbetween
+        int i=1;
+        if(gameState->board[0]==CASTLE_B)
         {
-            vector_add(legal_moves,(2));
+            
+            for(i=-3;i<0;i++)
+            {
+                if(gameState->castling_arr[0].Left)break;
+                if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;//3 is for the offset for i
+                else break;
+            }
         }
-        if((gameState->board[7]==-3)&&((gameState->board[5]==0)&&(gameState->board[6]==0)))
+        if(i==0)vector_add(legal_moves,(2));
+        i=1;
+        if(gameState->board[7]==CASTLE_B)
         {
-            vector_add(legal_moves,(6));
+            for(i=2;i>0;i--)
+            {
+                if(gameState->castling_arr[0].Right)break;
+                if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;
+                else break;
+            }
         }
+        if(i==0)vector_add(legal_moves,6);
     }
     vector_free(&check_check_slots);
 }
 
-vector env_get_legal_king(GameState *gameState, Player *player, int start_pt)
+vector env_get_legal_king(GameState *gameState, Player *player, int start_pt, uchar check_castling)
 {
     vector legal_moves1,legal_moves2,legal_moves3;
     vector_init(&legal_moves1);
@@ -512,7 +567,7 @@ vector env_get_legal_king(GameState *gameState, Player *player, int start_pt)
     vector_init(&legal_moves3);
     env_get_legal_cross(gameState,&legal_moves1,start_pt,1);
     env_get_legal_diagonal(gameState,&legal_moves2,start_pt,1);
-    env_get_legal_castling(gameState,player,&legal_moves3,start_pt);//a third vector for castling
+    if(check_castling)env_get_legal_castling(gameState,player,&legal_moves3,start_pt);//a third vector for castling
     vector_cat(&legal_moves1,&legal_moves2);
     vector_free(&legal_moves2);
     vector_cat(&legal_moves1,&legal_moves3);
@@ -569,12 +624,12 @@ void update_flags(GameState *gameState, int start_pt, int end_pt)
     
 
     int s_piece=gameState->board[start_pt];
-    if (s_piece == KING_W)//if white king moves
+    if (s_piece == KING_W&&start_pt==60)//if white king moves
     {
         gameState->castling_arr[PLAYER1].Left=gameState->castling_arr[PLAYER1].Right=1;//sets both flags down
     }
     
-    else if (s_piece == KING_B)//if black king moves
+    else if (s_piece == KING_B&&start_pt==4)//if black king moves
     {
       	gameState->castling_arr[PLAYER2].Left=gameState->castling_arr[PLAYER2].Right=1;//sets both flags down
     }

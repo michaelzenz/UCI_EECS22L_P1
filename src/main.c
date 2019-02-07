@@ -38,6 +38,7 @@ void Game(int argc, char *argv[],int model)
             quit=play(&gameState,&player2,model);
         if(quit)
         {
+            gui_refresh(&gameState,player_arr);
             gui_checkmate_window(&gameState,quit);
             return;
         }
@@ -150,6 +151,8 @@ void test_gui_menu(int argc, char *argv[])
 
 void AI_Contest(int model1,int model2)
 {
+    int ContestTimes=100;
+
     GameState gameState=env_init();
     Player player1,player2;
     player1.color=WHITE;
@@ -158,18 +161,42 @@ void AI_Contest(int model1,int model2)
     player2.id=1;
     player1.identity=player2.identity=COMPUTER;
     int quit=0;
-    print_board(&gameState);
 
     FILE *fp = NULL;
-    fp = fopen("TestLog/test", "w+");
-    while(quit==0)
+    
+    int round=0;
+    int model1_wins=0,model2_wins=0,draw=0;
+    for(int i=0;i<ContestTimes;i++)
     {
-        if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
-        else quit=ai_play(&gameState,&player2,model2);
-        print_board(&gameState);
-        //fprint_board(&gameState,fp);
+        fp = fopen("TestLog/test", "a");
+        round=0;
+        quit=0;
+        while(quit==0)
+        {
+            if(gameState.playerTurn==player1.color)quit=ai_play(&gameState,&player1,model1);
+            else quit=ai_play(&gameState,&player2,model2);
+            //print_board(&gameState);
+            //fprint_board(&gameState,fp);
+            round++;
+            if(round>=300)break;
+        }
+        if(quit==0) draw++;
+        else if(quit==1) 
+        {
+            if(gameState.playerTurn==player1.color)model2_wins++;
+            else model1_wins++;
+        }
+        else if(quit==2)
+        {
+            if(gameState.playerTurn==player1.color)model1_wins++;
+            else model2_wins++;
+        }
+        fprintf(fp,"model1 wins %d times, model2 wins %d times, draw %d times\n",model1_wins,model2_wins,draw);
+        fclose(fp);
     }
-    fclose(fp);
+    
+
+    
 }
 
 
@@ -297,16 +324,16 @@ int main(int argc, char *argv[])
     printf("But after all we can`t do anything to stop you.\n");
     printf("Even if you may not really want to\n");
     #endif
-
+    srand(time(0));
     //gui_init_window(argc,argv);
     //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    Game(argc,argv,1);
+    //Game(argc,argv,1);
     
-    srand(time(0));
+    
     //test_env();
     //Test_AI(1);
-    //AI_Contest(1,2);
+    AI_Contest(1,2);
     //test_gamePlay_window(argc,argv);
     //AI_ContestWithGUI(argc,argv,1,2);
     //Test_AI_withGUI(argc,argv,1);

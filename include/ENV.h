@@ -6,7 +6,7 @@
 #ifndef GAMEENV_H
 #define GAMEENV_H
 
-extern int playerTurn;
+
 
 
 GameState env_init();
@@ -20,7 +20,8 @@ vector env_get_legal_knight(GameState *gameState, int start_pt);
 vector env_get_legal_castle(GameState *gameState, int start_pt);
 vector env_get_legal_bishop(GameState *gameState, int start_pt);
 vector env_get_legal_queen(GameState *gameState, int start_pt);
-vector env_get_legal_king(GameState *gameState, Player *player, int start_pt);
+//1 if is doing castling
+vector env_get_legal_king(GameState *gameState, Player *player, int start_pt, uchar check_castling);
 void env_undo(GameState *gameState);
 #endif
 

@@ -38,6 +38,7 @@ typedef struct _Move{
     int captured;
     int captured_pos;
     int special_move;
+    int pre_castling_state;
 } Move;
 
 typedef struct _GameState

@@ -31,5 +31,9 @@
 #define NOSPECIAL 0
 #define ENPASSANT 1
 #define CASTLING 2
+#define PROMOTION 3
 
-#define STR_NODE_SIZE 70
+#define ILLEGALIZE_CASTLE 
+#define ILLEGALIZE_KING
+
+#define STR_NODE_SIZE 80

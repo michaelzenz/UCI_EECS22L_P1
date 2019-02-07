@@ -78,7 +78,8 @@ void move2string(char *str_move, Move *move)
     char str_captured[14]="\"captured\":";
     char str_cpos[10]="\"cpos\":";
     char str_smove[11]="\"smove\":";
-    char json_str[70];
+    char str_pcstate[7]="\"pcs\":";//previous castling state
+    char json_str[STR_NODE_SIZE];
     memset(json_str,'\0',sizeof(json_str));
     json_str[0]='{';
     strcat(str_piece,my_itoa(move->piece,temp));
@@ -98,6 +99,9 @@ void move2string(char *str_move, Move *move)
     strcat(json_str,",");
     strcat(str_smove,my_itoa(move->special_move,temp));
     strcat(json_str,str_smove);
+    strcat(json_str,",");
+    strcat(str_pcstate,my_itoa(move->pre_castling_state,temp));
+    strcat(json_str,str_pcstate);
     strcat(json_str,"}");
 
     strcpy(str_move,json_str);
@@ -107,7 +111,7 @@ Move string2move(char *str_move)
 {
     jsmn_init(&str_move_parser);
     Move move;
-    jsmntok_t t[50];
+    jsmntok_t t[25];
     char temp[2];
     int r=jsmn_parse(&str_move_parser, str_move,strlen(str_move),t,sizeof(t)/sizeof(t[0]));
     for(int i=1;i<r;i++)
@@ -152,6 +156,13 @@ Move string2move(char *str_move)
             sprintf(temp, "%.*s", t[i+1].end-t[i+1].start,
 					str_move + t[i+1].start);
             move.special_move=atoi(temp);
+			i++;
+        }
+        else if(jsoneq(str_move,&t[i],"pcs")==0)
+        {
+            sprintf(temp, "%.*s", t[i+1].end-t[i+1].start,
+					str_move + t[i+1].start);
+            move.pre_castling_state=atoi(temp);
 			i++;
         }
     }
