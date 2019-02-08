@@ -45,3 +45,17 @@ Change into the directory by running:
 To compile run this command:
 	bash SuperSimpleIntstallAndRun.sh
 
+
+Make Commands
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Before you run any make commands, please make sure you have used the command cmake to create the Makefile in the build directory and cd into the build directory
+
+make : 
+	this command will compile an executable for the King Me! program
+make clean: 
+	this command will remove the executable once you are done
+make tar: 
+	this command will tar all necessary source files into a source.tar.gz at project root directory
+make test: 
+	this command will run the program once you are ready to play
+
