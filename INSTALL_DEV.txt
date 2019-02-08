@@ -1,0 +1,47 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++
+INSTALLATION
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+System Requirements, Compatibility
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Hardware: PC Hardware (x86_64 server)
+Operating system: Linux OS (RHEL-6-x86_64)
+Dependent third-party software:
+i. gcc 
+ii. GNU make 
+iii. cmake
+Dependent libraries:
+i. GTK for graphical user interface
+
+
+Setup and Configuration
+++++++++++++++++++++++++++++++++++++++++++++++++++
+GTK + 2.0 library installation: Instructions can be found at https://www.gtk.org/download/index.php
+
+		
+Building, compilation, installation
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Method 1
+
+The software comes in a tar.gz package. After downloading, extract the package by running: 
+	tar –zxvf chess.tar.gz  
+Change into the directory by running: 
+	cd chess
+Compile code by running:
+	mkdir build
+	cd build
+	cmake ..
+	make
+Run the program by returning to root directory and running
+	./bin/chess
+
+Method 2
+
+Script for ease of use: The software comes in a tar.gz package. After downloading, extract the package by running: 
+	tar –zxvf chess.tar.gz 
+Change into the directory by running: 
+	cd chess
+To compile run this command:
+	bash SuperSimpleIntstallAndRun.sh
+

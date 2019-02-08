@@ -1,0 +1,30 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++
+INSTALLATION
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+System Requirements, Compatibility
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Hardware: PC Hardware (x86_64 server)
+Operating system: Linux OS (RHEL-6-x86_64)
+Dependent third-party software:
+i. gcc 
+ii. GNU make 
+Dependent libraries:
+i. GTK for graphical user interface
+
+
+Setup and Configuration
+++++++++++++++++++++++++++++++++++++++++++++++++++
+GTK + 2.0 library installation: Instructions can be found at https://www.gtk.org/download/index.php
+
+		
+Building, compilation, installation
+++++++++++++++++++++++++++++++++++++++++++++++++++
+The software comes in a tar.gz package. After downloading, extract the package by running: 
+	tar –zxvf Chess.tar.gz  
+Change into the directory by running: 
+cd Chess
+Run the program by running
+	cd bin
+	./chess
