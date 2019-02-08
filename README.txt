@@ -8,13 +8,19 @@ University of California Irvine
 Alpha Version
 Feb 1, 2019
 
+
+This is the Post-Alpha version of the project. At the moment, PvP, PvCpu and CpuVCpu are selectable from the menus. Most moves including Castling and En Passant work. The only features that aren't fully implemented is the difficulty, which is done but not enabled and the log feature, which hasn't been started.
+
+For more information on the program, see the user manual.
+
+
 Copyright © 2019 by Marshall Payatt, Keenan Lau, Zhifang Zeng, Armando Rodriguez, Aria Javanmard
 All rights reserved. This book and program or any portion thereof may not be reproduced or used in any manner whatsoever without the express written permission of the publisher except for the use of brief quotations in a book review
 
 Background image used: https://www.udemy.com/learn-chess/
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++
-Gameplay
+Gameplayl
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
 In the alpha release, only AI vs AI is playable. Launching the program will open the Chess Board GUI, and two AI players will begin automatically without any user input. The program closes if one AI player wins. In future versions we will have safeguards against stalemates but the current version will continue plating until the user closes the program.
