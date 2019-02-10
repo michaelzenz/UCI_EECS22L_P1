@@ -62,3 +62,21 @@ add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
 
 # set(SOURCE src/SDL_Sample.c)
 # add_executable(${PROJECT_NAME} ${SOURCE})
+
+
+
+add_custom_target(tar COMMAND
+    ${CMAKE_COMMAND} -E tar "zcvf" "../source.tar.gz" 
+    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/lib"
+    "${PROJECT_SOURCE_DIR}/res"
+    "${PROJECT_SOURCE_DIR}/src"
+    "${PROJECT_SOURCE_DIR}/CMakeLists.txt"
+    "${PROJECT_SOURCE_DIR}/jsmn LICENSE"
+    "${PROJECT_SOURCE_DIR}/SuperSimpleInstallAndRun.sh")
+
+ADD_TEST(NAME test 
+COMMAND "${EXECUTABLE_OUTPUT_PATH}/chess"
+WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH})
+ENABLE_TESTING()
+

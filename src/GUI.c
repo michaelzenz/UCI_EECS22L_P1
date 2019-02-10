@@ -366,7 +366,7 @@ void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
         
         if(vector_contain(&legal_moves,i))strcat(path,str_square[3]);
         else if(i==start_pt)strcat(path,str_square[2]);
-        else strcat(path,str_square[(x+y+1)%2]);
+        else strcat(path,str_square[(x+y)%2]);
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else

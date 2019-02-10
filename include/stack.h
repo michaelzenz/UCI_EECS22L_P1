@@ -14,6 +14,8 @@ void stack_peek(Node* top, char *ret_str) ;
 void move2string(char* str_move, Move *move);
 Move string2move(char* str_move);
 
+//Print Moves Log to MovesLog.txt
+void stack_print_log(Node** head_ref);
 
 
 #endif
