@@ -34,6 +34,7 @@ int ai_sum_scores(GameState *gameState, Player *player);
 //different model of AI to play
 int ai_model1_play(GameState *gameState, Player *player);
 int ai_model2_play(GameState *gameState, Player *player);
+int ai_model3_play(GameState *gameState, Player *player);
 
 //Marshall`s experiment AI
 int ai_easy_play(GameState *gameState, Player *player);

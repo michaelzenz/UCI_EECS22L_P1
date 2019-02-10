@@ -32,14 +32,18 @@ void Game(int argc, char *argv[],int model)
     {
         int quit;
         if(gameState.playerTurn==player1.color)
-            quit=play(&gameState,&player1,model);
+            quit=play(&gameState,&player1,player1.difficulty);
         else 
-            quit=play(&gameState,&player2,model);
+            quit=play(&gameState,&player2,player2.difficulty);
         stack_print_log(&(gameState.moves_stack));
-        if(quit)
+        if(quit==CUR_PLAYER_LOSE||quit==CUR_PLAYER_WIN)
         {
             gui_refresh(&gameState,player_arr);
             gui_checkmate_window(&gameState,quit);
+            return;
+        }
+        else if(quit==QUIT)
+        {
             return;
         }
         else gui_refresh(&gameState,player_arr);
@@ -157,7 +161,10 @@ int main(int argc, char *argv[])
     //gui_init_window(argc,argv);
     //test_gui_menu(argc,argv);//specially created for aria to test
     // while(1)
-    Game(argc,argv,1);
+    while(1){
+        Game(argc,argv,1);
+    }
+    
     
     
     //test_env();
@@ -166,7 +173,6 @@ int main(int argc, char *argv[])
     //test_gamePlay_window(argc,argv);
     //AI_ContestWithGUI(argc,argv,1,2);
     //Test_AI_withGUI(argc,argv,1);
-    char any_to_quit;
-    getchar();
+    
     return 0;
 }

@@ -39,3 +39,7 @@
 //the size of char array that should be used when 
 //calling stack_ and convertion between move and string functions
 #define STR_NODE_SIZE 80
+
+#define CUR_PLAYER_LOSE 1
+#define CUR_PLAYER_WIN 2
+#define QUIT 3

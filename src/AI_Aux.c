@@ -210,13 +210,15 @@ int ai_play(GameState *gameState,Player *player, int model)
     int quit=0;
     switch(model)
     {
-        case 1:
+        case EASY:
             quit=ai_model1_play(gameState,player);
             break;
-        case 2:
+        case MEDIUM:
             quit=ai_model2_play(gameState,player);
             break;
-        
+        case ADVANCED:
+            quit=ai_model3_play(gameState,player);
+            break;
     }
     return quit;
 }

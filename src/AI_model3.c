@@ -1,9 +1,9 @@
 #include"AI.h"
-#define MAXSTEP 2
+#define MAXSTEP 3
 //#define CHECK_SCORE
 
 //the simulation function for the branches in the searching tree
-int ai_model2_simulate(GameState *gameState, Player *player, int depth)
+int ai_model3_simulate(GameState *gameState, Player *player, int depth)
 {
     if(depth<=0)return ai_sum_scores(gameState,player);
 
@@ -33,7 +33,7 @@ int ai_model2_simulate(GameState *gameState, Player *player, int depth)
     for(int i=0;i<cnt;i++)
     {
         env_play(gameState,player,vector_get(&MovesStart,i),vector_get(&MovesEnd,i));
-        score=playerTurn*ai_model2_simulate(gameState,player,depth-1);
+        score=playerTurn*ai_model3_simulate(gameState,player,depth-1);
         MaxScore=MAX(MaxScore,score);
         env_undo(gameState);
     }
@@ -45,7 +45,7 @@ int ai_model2_simulate(GameState *gameState, Player *player, int depth)
 }
 
 //the play function for the root in the searching tree, return the quit from check_end
-int ai_model2_play(GameState *gameState, Player *player)
+int ai_model3_play(GameState *gameState, Player *player)
 {
     int check_end=env_check_end(gameState,player);
     if(check_end!=0)
@@ -81,7 +81,7 @@ int ai_model2_play(GameState *gameState, Player *player)
     for(int i=0;i<cnt;i++)
     {
         env_play(gameState,player,vector_get(&MovesStart,i),vector_get(&MovesEnd,i));
-        score=playerTurn*ai_model2_simulate(gameState,player,MAXSTEP);
+        score=playerTurn*ai_model3_simulate(gameState,player,MAXSTEP);
         vector_add(&Scores,score);
         MaxScore=MAX(MaxScore,score);
         env_undo(gameState);
