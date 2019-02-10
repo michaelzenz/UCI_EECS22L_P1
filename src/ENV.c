@@ -4,7 +4,7 @@
 #define MAX(X,Y) (X)>(Y)?(X):(Y)
 #define XY2ID(X,Y) ((Y)*8+X)
 
-uchar human_promotion_flag=0;
+uchar human_promotion_flag=1;
 uchar HumanSelectedPromotion=QUEEN;
 
 void update_flags(GameState *gameState, int start_pt, int end_pt);

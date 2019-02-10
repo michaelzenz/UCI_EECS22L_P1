@@ -8,14 +8,14 @@
 /*Global Variables */
 
 //Widgets for gtk to use
-GtkWidget *window;//the window
-GtkWidget *image;//the widget to load image
-GtkWidget *layout;//the layout to put on background and contain fixed widget
-GtkWidget *fixed;//the widget to contain table
-GtkWidget *chess_icon;//the icon to draw on the board
-GtkWidget *table;//the widget to contain icons
-GtkWidget *text_view; // widget to write text into log
-GtkWidget *scrolled_window;//widget to create log window
+GtkWidget *window=NULL;//the window
+GtkWidget *image=NULL;//the widget to load image
+GtkWidget *layout=NULL;//the layout to put on background and contain fixed widget
+GtkWidget *fixed=NULL;//the widget to contain table
+GtkWidget *chess_icon=NULL;//the icon to draw on the board
+GtkWidget *table=NULL;//the widget to contain icons
+GtkWidget *text_view=NULL; // widget to write text into log
+GtkWidget *scrolled_window=NULL;//widget to create log window
 
 //the pixbuf to load image and resize from a .jpg or .png file
 GdkPixbuf *main_menu_pixbuf = NULL;
@@ -23,7 +23,7 @@ GdkPixbuf *HvC_pixbuf = NULL;
 GdkPixbuf *HvH_pixbuf = NULL;
 GdkPixbuf *CvC_pixbuf = NULL;
 GdkPixbuf *Background_pixbuf=NULL;//for board
-GtkTextBuffer *Log_pixbuf = NULL; // for text log
+GtkTextBuffer *Log_pixbuff = NULL; // for text log
 
 //Look up table
 char *str_square[4]={"./res/WhiteSquare","./res/BlackSquare", "./res/SelectedSquare", "./res/LegalSquare"};
@@ -32,7 +32,7 @@ char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bi
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
-char *Background_path="res/GamePlayBackground.jpg";
+char *Background_path="res/GamePlayBackground.png";
 char *HvH_Menu_path="res/HvH_Menu.png";
 char *CvC_Menu_path="res/CvC_Menu.png";
 
@@ -64,8 +64,9 @@ void gui_render()
 
 //Here you init the window and start the main gtk loop
 //Don`t do anything to this part if you don`t know what it`s doing
-int gui_init_window(int argc, char*argv[])
+void gui_init_window(int argc, char*argv[])
 {
+    if(window!=NULL)return;
     gtk_init(&argc, &argv) ;
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
     gtk_widget_set_size_request(window, WINDOW_WIDTH, WINDOW_HEIGHT) ; 
@@ -98,21 +99,24 @@ void gui_init(GameState *gameState,Player player_arr[2])
     player_arr[0].color=WHITE;
     player_arr[1].color=BLACK;
     player_arr[1].difficulty=EASY;
+    int play;
 
-    GameMode=0;
-    GameMode=gui_main_menu();
-    switch(GameMode)
-    {
-    case GameMode_HvC:
-        gui_player_HvC_menu(player_arr);
-        break;
-    case GameMode_HvH:
-        gui_player_HvH_menu(player_arr);
-        break;
-    case GameMode_CvC:
-        gui_player_CvC_menu(player_arr);
-        break;
-    }
+    do{
+        gui_main_menu();
+        switch(GameMode)
+        {
+        case GameMode_HvC:
+            play=gui_player_HvC_menu(player_arr);
+            break;
+        case GameMode_HvH:
+            play=gui_player_HvH_menu(player_arr);
+            break;
+        case GameMode_CvC:
+            play=gui_player_CvC_menu(player_arr);
+            break;
+        }
+        GameMode=0;//reset GameMode
+    }while(play!=1);
 
     //here you use window pointer to draw gameplay window
     //bind an event to listen to the click
@@ -215,9 +219,12 @@ gint HvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
     
     if(x>750&&x<882&&y<354&&y>334)player_arr[1].difficulty=ADVANCED;
 
-    if(x>383&&x<575&&y>455&&y<514)options->play=1;
+    if(x>383&&x<575&&y>455&&y<514)options->play=1;//PLAY
+
+    if(x>71&&x<159&&y>472&&y<500)options->play=2;//BACK
+
 }
-void gui_player_HvC_menu(Player* player_arr)
+int gui_player_HvC_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -236,6 +243,7 @@ void gui_player_HvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+    return options.play;
 }
 
 gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
@@ -272,9 +280,11 @@ gint HvH_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
   	    // gtk_widget_hide_all(window);
         printf("Clicking Unknown Area\n");
     }
+
+    if(x>71&&x<159&&y>472&&y<500)options->play=2;//BACK
 }
 
-void gui_player_HvH_menu(Player* player_arr)
+int gui_player_HvH_menu(Player* player_arr)
 {
     PlayerOptions options;
     options.player_arr=player_arr;
@@ -293,7 +303,7 @@ void gui_player_HvH_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
-
+    return options.play;
 }
 gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
@@ -324,12 +334,11 @@ gint CvC_menu_callback (GtkWidget *widget, GdkEvent  *event, gpointer data)
         player_arr[1].difficulty=ADVANCED;
         player_arr[0].difficulty=ADVANCED;
     }
-    if(x>383&&x<575&&y>455&&y<514)//PLAY
-    {
-        options->play=1;
-    }
+    if(x>383&&x<575&&y>455&&y<514)options->play=1;//PLAY
+
+    if(x>71&&x<159&&y>472&&y<500)options->play=2;//BACK
 }
-void gui_player_CvC_menu(Player* player_arr)
+int gui_player_CvC_menu(Player* player_arr)
 {
 
     PlayerOptions options;
@@ -349,8 +358,26 @@ void gui_player_CvC_menu(Player* player_arr)
     gdk_threads_enter();
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
+    return options.play;
+}
 
+void DrawLog (){
+//Still needs to pass the parameters to know what moves have been done
 
+//create a log
+    Log_pixbuff = gtk_text_buffer_new(NULL);
+    text_view = gtk_text_view_new_with_buffer(Log_pixbuff);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);
+//create a scrolling window for text log
+    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+                                    GTK_POLICY_AUTOMATIC,
+                                    GTK_POLICY_AUTOMATIC);
+//adding log to the layout
+    gtk_container_add (GTK_CONTAINER (scrolled_window), text_view);
+    gtk_container_set_border_width (GTK_CONTAINER (scrolled_window), 2);
+    gtk_container_add (GTK_CONTAINER (layout), scrolled_window);
+//end DrawLog
 }
 
 void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
@@ -369,7 +396,7 @@ void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
         
         if(vector_contain(&legal_moves,i))strcat(path,str_square[3]);
         else if(i==start_pt)strcat(path,str_square[2]);
-        else strcat(path,str_square[(x+y+1)%2]);
+        else strcat(path,str_square[(x+y)%2]);
 
         if(gamestate->board[i]==BLANK)strcat(path,str_piece[BLANK]);
         else
@@ -383,7 +410,7 @@ void DrawBoard(GameState *gamestate,int start_pt,vector legal_moves)
         chess_icon=gtk_image_new_from_file(path);
         gtk_table_attach(GTK_TABLE(table), chess_icon, x, x+1, y, y+1, GTK_FILL, GTK_FILL, 0, 0);
     }
-
+    DrawLog();
     fixed = gtk_fixed_new();
     gtk_fixed_put(GTK_FIXED(fixed), table, BOARD_BORDER_LEFT, BOARD_BORDER_UP);
     gtk_container_add(GTK_CONTAINER(layout), fixed);
@@ -396,6 +423,7 @@ void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
         *g_x = (c_x - BOARD_BORDER_LEFT) / SQUARE_SIZE;
         *g_y = (c_y - BOARD_BORDER_UP) / SQUARE_SIZE;
 }
+
 
 void DrawLog (){
 //Still needs to pass the parameters to know what moves have been done
@@ -431,7 +459,7 @@ void gui_gameplay_window(GameState *gameState)
     vector empty;
     vector_init(&empty);
     DrawBoard(gameState,-1,empty);
-    DrawLog();
+    
     gdk_threads_leave();
 
     //when mouse presses window callback (TBD)
@@ -457,15 +485,14 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 
     printf("pX: %d, pY: %d\n",pixelX,pixelY);
-    if(pixelX>=71&&pixelX<=178&&pixelY>=397&&pixelY<=422)
+    if(pixelX>=842&&pixelX<=940&&pixelY>=66&&pixelY<=95)
     {
-        env_undo(gameState);
-        if(GameMode==GameMode_HvC)env_undo(gameState);
-        vector empty;
-        vector_init(&empty);
-        gtk_container_remove(GTK_CONTAINER(layout), fixed);
-        DrawBoard(gameState,-1,empty);
-        check_ActionMade=2;
+        check_ActionMade=ACTION_UNDO;
+        return;
+    }
+    if(pixelX>=852&&pixelX<=931&&pixelY>=117&&pixelY<=149)
+    {
+        check_ActionMade=ACTION_QUIT;
         return;
     }
     if(pixelX<=BOARD_BORDER_LEFT||pixelX>=BOARD_BORDER_RIGHT||
@@ -509,7 +536,7 @@ void gui_play_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
         if(vector_contain(&cur_legal_moves,pos))
         {
             move_end=pos;
-            check_ActionMade=1;
+            check_ActionMade=ACTION_PLAY;
         }
         else
         {
@@ -542,13 +569,21 @@ int gui_play(GameState *gameState,Player *player)
     g_signal_handler_disconnect(window,handlerID);
     gdk_threads_leave();
 
-    if(check_ActionMade!=2)env_play(gameState,player,move_start,move_end);
+    
+    if(check_ActionMade==ACTION_PLAY)env_play(gameState,player,move_start,move_end);
+    else if(check_ActionMade==ACTION_UNDO)
+    {
+        env_undo(gameState);
+        if(GameMode==GameMode_HvC)env_undo(gameState);
+    }
+    else if(check_ActionMade==ACTION_QUIT)
+        check= ACTION_QUIT;
     move_start=-1;
     move_start=-1;
     check_legal_start=0;
     check_ActionMade=0;
     env_free_container(gameState);
-    return 0 ;
+    return check ;
 
 }
 
@@ -593,8 +628,8 @@ void gui_checkmate_window(GameState *gameState, int quit)
     int colorID=MAX(gameState->playerTurn,0);
     char EndMessage[20];
     memset(EndMessage,'\0',sizeof(EndMessage));
-    if(quit==1) strcat(EndMessage,str_color[colorID]);
-    else strcat(EndMessage,str_color[colorID]);
+    if(quit==ACTION_PLAY) strcat(EndMessage,str_color[colorID]);
+    else if(quit==ACTION_UNDO) strcat(EndMessage,str_color[colorID]);
     strcat(EndMessage," WINS!!!");
     printf("%s\n",EndMessage);
 }

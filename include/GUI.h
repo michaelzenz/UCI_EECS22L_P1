@@ -28,19 +28,20 @@
 #define GameMode_HvH 2
 #define GameMode_CvC 3
 
-#define EASY 1
-#define MEDIUM 2
-#define ADVANCED 3
 
-int gui_init_window(int argc, char*argv[]);
+#define ACTION_PLAY 1
+#define ACTION_UNDO 2
+#define ACTION_QUIT 3
+
+void gui_init_window(int argc, char*argv[]);
 
 void gui_init(GameState *gameState,Player player_arr[2]);
 
 int gui_main_menu();
 
-void gui_player_HvC_menu(Player* player_arr);
-void gui_player_HvH_menu(Player* player_arr);
-void gui_player_CvC_menu(Player* player_arr);
+int gui_player_HvC_menu(Player* player_arr);
+int gui_player_HvH_menu(Player* player_arr);
+int gui_player_CvC_menu(Player* player_arr);
 
 void gui_gameplay_window(GameState *gameState);
 

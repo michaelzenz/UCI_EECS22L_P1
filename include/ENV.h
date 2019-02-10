@@ -6,6 +6,9 @@
 #ifndef GAMEENV_H
 #define GAMEENV_H
 
+#define EASY 1
+#define MEDIUM 2
+#define ADVANCED 3
 
 
 //initialize the GameState

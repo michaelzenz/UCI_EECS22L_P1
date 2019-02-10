@@ -6,6 +6,9 @@
 
 jsmn_parser str_move_parser;
 
+char *BoardIDX[8]={"A","B","C","D","E","F","G","H"};
+char *BoardIDY[8]={"1","2","3","4","5","6","7","8"};
+
 char *my_itoa(int num, char *str)
 {
         if(str == NULL)
@@ -53,6 +56,7 @@ void stack_pop(Node** head_ref, char *ret_str)
         *head_ref=(*head_ref)->next;
         free(temp);
     }
+    
 }
 
 void stack_peek(Node* top, char *ret_str) 
@@ -63,9 +67,36 @@ void stack_peek(Node* top, char *ret_str)
     }
 } 
 
-int stack_search(Node **head_ref)
+void stack_print_log(Node** head_ref)
 {
-    
+    FILE *fp;
+    fp=fopen("MovesLog.txt","w");
+    char TempStr[STR_NODE_SIZE],str_SID[2],str_EID[2],str_Move[10];
+    Node *TempHead=NULL;
+    while(!stack_isEmpty(*head_ref)){
+        stack_pop(head_ref,TempStr);
+        stack_push(&TempHead,TempStr);
+    }
+    while(!stack_isEmpty(TempHead)){
+        memset(str_SID,'\0',sizeof(str_SID));
+        memset(str_EID,'\0',sizeof(str_EID));
+        memset(str_Move,'\0',sizeof(str_Move));
+
+        stack_pop(&TempHead,TempStr);
+        Move CurMove=string2move(TempStr);
+        int sx=CurMove.start_pt%8,sy=CurMove.start_pt/8;
+        int ex=CurMove.end_pt%8,ey=CurMove.end_pt/8;
+        strcat(str_SID,BoardIDX[sx]);
+        strcat(str_SID,BoardIDY[7-sy]);
+        strcat(str_EID,BoardIDX[ex]);
+        strcat(str_EID,BoardIDY[7-ey]);
+        strcat(str_Move,str_SID);
+        strcat(str_Move," to ");
+        strcat(str_Move,str_EID);
+        fprintf(fp,"%s\n",str_Move);
+        stack_push(head_ref,TempStr);
+    }
+    fclose(fp);
 }
 
 
