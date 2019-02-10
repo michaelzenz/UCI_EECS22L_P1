@@ -410,9 +410,11 @@ void DrawLog (){
                                     GTK_POLICY_AUTOMATIC,
                                     GTK_POLICY_AUTOMATIC);
 //adding log to the layout
-    gtk_container_add (GTK_CONTAINER (scrolled_window), text_view);
+    gtk_container_add (GTK_CONTAINER (scrolled_window), text_view);  
     gtk_container_set_border_width (GTK_CONTAINER (scrolled_window), 2);
+    gtk_scrolled_window_put(GTK_SCROLLED_WINDOW(scrolled_window), text_view, BOARD_BORDER_LEFT, BOARD_BORDER_UP);
     gtk_container_add (GTK_CONTAINER (layout), scrolled_window);
+    gtk_widget_show_all(window);
 //end DrawLog
 }
 
