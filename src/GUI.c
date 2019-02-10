@@ -425,27 +425,6 @@ void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 }
 
 
-void DrawLog (){
-//Still needs to pass the parameters to know what moves have been done
-
-//create a log
-    Log_pixbuff = gtk_text_buffer_new(NULL);
-    text_view = gtk_text_view_new_with_buffer(Log_pixbuff);
-    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);
-//create a scrolling window for text log
-    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
-                                    GTK_POLICY_AUTOMATIC,
-                                    GTK_POLICY_AUTOMATIC);
-//adding log to the layout
-    gtk_container_add (GTK_CONTAINER (scrolled_window), text_view);  
-    gtk_container_set_border_width (GTK_CONTAINER (scrolled_window), 2);
-    gtk_scrolled_window_put(GTK_SCROLLED_WINDOW(scrolled_window), text_view, BOARD_BORDER_LEFT, BOARD_BORDER_UP);
-    gtk_container_add (GTK_CONTAINER (layout), scrolled_window);
-    gtk_widget_show_all(window);
-//end DrawLog
-}
-
 
 void gui_gameplay_window(GameState *gameState)
 {
