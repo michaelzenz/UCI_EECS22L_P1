@@ -426,7 +426,6 @@ void CoordToGrid(int c_x, int c_y, int *g_x, int *g_y)
 
 
 
-
 void gui_gameplay_window(GameState *gameState)
 {
 	/*create a table and draw the board*/
