@@ -32,7 +32,7 @@ char *str_piece[7]={"EmptySpace.jpg", "Pawn.jpg", "Knight.jpg", "Rook.jpg",  "Bi
 
 char *main_menu_path="res/MainMenu.png";
 char *HvC_Menu_path="res/HvC_Menu.png";
-char *Background_path="res/GamePlayBackground.png";
+char *Background_path="res/GamePlayBackground.jpg";
 char *HvH_Menu_path="res/HvH_Menu.png";
 char *CvC_Menu_path="res/CvC_Menu.png";
 
