@@ -71,7 +71,7 @@ void stack_print_log(Node** head_ref)
 {
     FILE *fp;
     fp=fopen("MovesLog.txt","w");
-    char TempStr[STR_NODE_SIZE],str_SID[2],str_EID[2],str_Move[10];
+    char TempStr[STR_NODE_SIZE],str_SID[3],str_EID[3],str_Move[11];
     Node *TempHead=NULL;
     while(!stack_isEmpty(*head_ref)){
         stack_pop(head_ref,TempStr);

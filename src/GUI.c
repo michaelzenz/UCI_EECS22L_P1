@@ -90,6 +90,8 @@ void gui_init_window(int argc, char*argv[])
 #endif
 }
 
+
+
 //init menu, get infomation for players and draw gameplay window
 void gui_init(GameState *gameState,Player player_arr[2])
 {
@@ -103,18 +105,16 @@ void gui_init(GameState *gameState,Player player_arr[2])
 
     do{
         gui_main_menu();
-        switch(GameMode)
+        if(GameMode==GameMode_HvC)play=gui_player_HvC_menu(player_arr);
+        else if(GameMode==GameMode_HvH)play=gui_player_HvH_menu(player_arr);
+        else if(GameMode==GameMode_CvC)play=gui_player_CvC_menu(player_arr);
+        else if(GameMode==GameMode_ONLINE)
         {
-        case GameMode_HvC:
-            play=gui_player_HvC_menu(player_arr);
-            break;
-        case GameMode_HvH:
-            play=gui_player_HvH_menu(player_arr);
-            break;
-        case GameMode_CvC:
-            play=gui_player_CvC_menu(player_arr);
-            break;
+            //gui_online_menu(player_arr);
+            //play=1;
+            //break;
         }
+
         GameMode=0;//reset GameMode
     }while(play!=1);
 

@@ -86,9 +86,9 @@ void env_play(GameState *gameState, Player *player, int start_pt, int end_pt)
     last_move = string2move(str_last_move);
     
     if(abs(last_move.piece)== PAWN && (abs(last_move.start_pt - last_move.end_pt) == 16)
-        && (abs(s_piece) == PAWN) && abs(start_pt - last_move.end_pt)== 1 && abs(end_pt-last_move.end_pt)==1)
+        && (abs(s_piece) == PAWN) && abs(start_pt - last_move.end_pt)== 1)
         {
-            gameState->board[last_move.end_pt] = 0;
+            gameState->board[last_move.end_pt] = BLANK;
             e_piece=PAWN*gameState->playerTurn*-1;
             captured_pos=last_move.end_pt;
             SPECIAL_MOVE=ENPASSANT;
@@ -564,7 +564,7 @@ void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_m
             
             for(i=-3;i<0;i++)
             {
-                if(gameState->castling_arr[0].Left)break;
+                if(gameState->castling_arr[1].Left)break;
                 if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;//3 is for the offset for i
                 else break;
             }
@@ -575,7 +575,7 @@ void env_get_legal_castling(GameState *gameState,Player *player, vector *legal_m
         {
             for(i=2;i>0;i--)
             {
-                if(gameState->castling_arr[0].Right)break;
+                if(gameState->castling_arr[1].Right)break;
                 if(gameState->board[start_pt+i]==BLANK&&!vector_get(&check_check_slots,i+3))continue;
                 else break;
             }

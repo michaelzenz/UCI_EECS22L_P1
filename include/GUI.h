@@ -27,7 +27,7 @@
 #define GameMode_HvC 1
 #define GameMode_HvH 2
 #define GameMode_CvC 3
-
+#define GameMode_ONLINE 4
 
 #define ACTION_PLAY 1
 #define ACTION_UNDO 2
